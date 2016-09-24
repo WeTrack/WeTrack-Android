@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WeTrack</string>
+    <string name="title_activity_main">WeTrack</string>
+    <string name="friends_button">Friend</string>
+    <string name="map_button">Map</string>
+
+</resources>
