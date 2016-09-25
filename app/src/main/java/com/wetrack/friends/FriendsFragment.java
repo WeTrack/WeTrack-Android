@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.wetrack.androiddevelopment.wetrack.R;
+import com.wetrack.R;
 
 /**
  * A simple {@link Fragment} subclass.

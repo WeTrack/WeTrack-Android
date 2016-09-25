@@ -14,7 +14,7 @@ import android.widget.Button;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.friends.FriendsFragment;
 import com.wetrack.map.MapFragment;
-import com.wetrack.androiddevelopment.wetrack.R;
+import com.wetrack.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
