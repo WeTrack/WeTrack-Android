@@ -5,13 +5,14 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.wetrack.BaseApplication;
+import com.wetrack.R;
 import com.wetrack.utils.ConstantValues;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapFragment extends SupportMapFragment {
 
     private GoogleMap mMap;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,19 +43,19 @@ public class MapFragment extends SupportMapFragment {
             mMap = googleMap;
             try {
                 mMap.setMyLocationEnabled(true);
-                mMap.setOnMyLocationChangeListener(new MyLocationListener());
             } catch (SecurityException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public void setLocation(Location location) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(
+                new LatLng(location.getLatitude(), location.getLongitude())));
+    }
 
-    private class MyLocationListener implements GoogleMap.OnMyLocationChangeListener {
-        public void onMyLocationChange(Location location){
-            Log.d(ConstantValues.debugTab,
-                    "LocationListener in MapFragment: (" + location.getLatitude() + ", " + location.getLongitude() + ")");
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        }
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 }

@@ -27,7 +27,6 @@ public class MapController {
 
     private MapController(Context context) {
         mContext = context;
-
     }
 
     public void addMapToView(FragmentManager fragmentManager, int viewId) {
@@ -35,5 +34,20 @@ public class MapController {
         mapFragment = new MapFragment();
         fragmentTransaction.add(viewId, mapFragment, "map_fragment");
         fragmentTransaction.commit();
+
+        GpsLocationManager.getInstance(mContext).setmGpsLocationListener(new GpsLocationManager.GpsLocationListener() {
+            @Override
+            public void onGpsLocationReceived(Location location) {
+                mapFragment.setLocation(location);
+            }
+        });
+    }
+
+    public void start() {
+        GpsLocationManager.getInstance(mContext).start();
+    }
+
+    public void stop() {
+        GpsLocationManager.getInstance(mContext).stop();
     }
 }

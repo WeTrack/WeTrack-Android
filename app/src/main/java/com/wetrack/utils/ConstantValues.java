@@ -6,4 +6,5 @@ package com.wetrack.utils;
 public class ConstantValues {
     //for debug
     public static String debugTab = "debug";
+    public static String gpsDebug = "gps";
 }
