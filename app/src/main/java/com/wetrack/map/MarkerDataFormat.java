@@ -44,4 +44,13 @@ public class MarkerDataFormat {
     }
 
     public String information;
+
+    @Override
+    public String toString() {
+        return "MarkerDataFormat{" +
+                "title='" + title + '\'' +
+                ", latLng=" + latLng +
+                ", information='" + information + '\'' +
+                '}';
+    }
 }

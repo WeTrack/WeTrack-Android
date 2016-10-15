@@ -2,10 +2,17 @@ package com.wetrack.map;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.phenotype.Flag;
+import com.wetrack.map.GoogleNavigation.GoogleNavigationFormat;
+import com.wetrack.map.GoogleNavigation.GoogleNavigationManager;
+import com.wetrack.map.GoogleNavigation.GoogleNavigationResultListener;
+import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.MathUtils;
 
 import java.util.ArrayList;
 
@@ -23,10 +30,19 @@ public class MapController {
     }
 
     private Context mContext;
+    private MapHandler mMapHandler;
     private GoogleMapFragment googleMapFragment;
+    private GoogleNavigationManager mGoogleNavigationManager;
+    private GpsLocationManager mGpsLocationManager;
+
 
     private MapController(Context context) {
         mContext = context;
+        mGoogleNavigationManager = GoogleNavigationManager.getInstance(mContext);
+        mMapHandler = new MapHandler();
+        mGpsLocationManager = GpsLocationManager.getInstance(mContext);
+
+        mGoogleNavigationManager.setmGoogleNavigationResultListener(new MyGoogleNavigationResultListener());
     }
 
     public void addMapToView(FragmentManager fragmentManager, int viewId) {
@@ -35,7 +51,9 @@ public class MapController {
         fragmentTransaction.add(viewId, googleMapFragment, "map_fragment");
         fragmentTransaction.commit();
 
-        GpsLocationManager.getInstance(mContext).setmGpsLocationListener(new GpsLocationManager.GpsLocationListener() {
+        mMapHandler.setmMapController(mMapController);
+
+        mGpsLocationManager.setmGpsLocationListener(new GpsLocationManager.GpsLocationListener() {
             @Override
             public void onGpsLocationReceived(Location location) {
                 myCurrentLocation = location;
@@ -43,10 +61,9 @@ public class MapController {
         });
     }
 
-    /**
-     * myCurrentLocation is the last gps location
-     * */
+    //below four are for localization service
     private Location myCurrentLocation = null;
+
     public LatLng getMyLocation() {
         if (myCurrentLocation != null) {
             return new LatLng(myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude());
@@ -54,53 +71,75 @@ public class MapController {
         return null;
     }
 
-    public void resetMarkers(ArrayList<MarkerDataFormat> markerData, boolean resetCamera) {
+    public void start() {
+        mGpsLocationManager.start();
+    }
+
+    public void stop() {
+        mGpsLocationManager.stop();
+    }
+
+    //below three are for markers
+    public void clearMarkers() {
         googleMapFragment.clearMarkers();
+    }
+
+    public void addMarkers(ArrayList<MarkerDataFormat> markerData, boolean resetCamera) {
         for (MarkerDataFormat aMarkerData : markerData) {
             googleMapFragment.addMarker(aMarkerData.title, aMarkerData.latLng, aMarkerData.information);
         }
 
-
         if (resetCamera) {
-            double allLatitude = 0;
-            double allLongitude = 0;
-            double latitudeMax = -90, latitudeMin = 90;
-            double longitudeMax = -180, longitudeMin = 180;
+
+            ArrayList<LatLng> allLatLng = new ArrayList<>();
             for (MarkerDataFormat aMarkerData : markerData) {
-                allLatitude += aMarkerData.latLng.latitude;
-                allLongitude += aMarkerData.latLng.longitude;
-
-                if (aMarkerData.latLng.latitude > latitudeMax) {
-                    latitudeMax = aMarkerData.latLng.latitude;
-                }
-                if (aMarkerData.latLng.latitude < latitudeMin){
-                    latitudeMin = aMarkerData.latLng.latitude;
-                }
-                if (aMarkerData.latLng.longitude > longitudeMax) {
-                    longitudeMax = aMarkerData.latLng.longitude;
-                }
-                if (aMarkerData.latLng.longitude < longitudeMin) {
-                    longitudeMin = aMarkerData.latLng.longitude;
-                }
+                allLatLng.add(aMarkerData.getLatLng());
             }
-            allLatitude /= markerData.size();
-            allLongitude /= markerData.size();
-
-            double latitudeRangeLength = Math.abs(latitudeMax - latitudeMin);
-            double longitudeRangeLength = Math.abs(longitudeMax - longitudeMin);
+            double[]result = MathUtils.getCenterAndLengthRange(allLatLng);
+            double centerLatitude = result[0];
+            double centerLongitude = result[1];
+            double latitudeRangeLength = result[2];
+            double longitudeRangeLength = result[3];
 
             googleMapFragment.setCameraLocation(
-                    new LatLng(allLatitude, allLongitude),
+                    new LatLng(centerLatitude, centerLongitude),
                     latitudeRangeLength,
                     longitudeRangeLength);
         }
     }
 
-    public void start() {
-        GpsLocationManager.getInstance(mContext).start();
+    public void setmOnInfoWindowClickListener(GoogleMapFragment.OnInfoWindowClickListener mOnInfoWindowClickListener) {
+        googleMapFragment.setmOnInfoWindowClickListener(mOnInfoWindowClickListener);
     }
 
-    public void stop() {
-        GpsLocationManager.getInstance(mContext).stop();
+    //below three are for navigation
+    public void planNavigation(LatLng fromPosition, LatLng toPosition) {
+        GoogleNavigationFormat googleNavigationData = new GoogleNavigationFormat();
+        googleNavigationData.origin = fromPosition;
+        googleNavigationData.destination = toPosition;
+
+        mGoogleNavigationManager.getResultFromGoogle(googleNavigationData);
+    }
+
+    private class MyGoogleNavigationResultListener implements GoogleNavigationResultListener {
+        @Override
+        public void onReceiveResult(ArrayList<LatLng> resultPath) {
+            mMapHandler.sendMapMessage(ConstantValues.NAVIGATION_RESULT_TAG, (Object) resultPath);
+        }
+    }
+
+    public void drawPathOnMap(ArrayList<LatLng> positions) {
+        googleMapFragment.drawPathOnMap(positions);
+
+        double[]result = MathUtils.getCenterAndLengthRange(positions);
+        double centerLatitude = result[0];
+        double centerLongitude = result[1];
+        double latitudeRangeLength = result[2];
+        double longitudeRangeLength = result[3];
+
+        googleMapFragment.setCameraLocation(
+                new LatLng(centerLatitude, centerLongitude),
+                latitudeRangeLength,
+                longitudeRangeLength);
     }
 }

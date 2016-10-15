@@ -2,6 +2,7 @@ package com.wetrack.map;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,9 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.wetrack.BaseApplication;
 import com.wetrack.R;
 import com.wetrack.utils.ConstantValues;
@@ -47,6 +51,7 @@ public class GoogleMapFragment extends SupportMapFragment {
                              Bundle savedInstanceState) {
         getMapAsync(new MyOnMapReadyCallback());
 
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -66,13 +71,16 @@ public class GoogleMapFragment extends SupportMapFragment {
                     return false;
                 }
             });
+
+            mMap.setOnInfoWindowClickListener(new MyOnInfoWindowClickListener());
+
         }
     }
 
     /**
      * if latitudeRangeLength == -1 || longitudeRangeLength == -1,
      * then these two paramters will not be used
-     * */
+     */
     public void setCameraLocation(LatLng centerPoint, double latitudeRangeLength, double longitudeRangeLength) {
 
         CameraPosition.Builder builder = new CameraPosition.Builder().bearing(0).target(centerPoint).tilt(0);
@@ -85,7 +93,8 @@ public class GoogleMapFragment extends SupportMapFragment {
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
-    private ArrayList<Marker>allMarkers = new ArrayList<>();
+    //the below 4 functions are for marker operation
+    private ArrayList<Marker> allMarkers = new ArrayList<>();
 
     synchronized public void markersArrayListOperation(int operationCode, Marker marker) {
         switch (operationCode) {
@@ -103,14 +112,44 @@ public class GoogleMapFragment extends SupportMapFragment {
     public void addMarker(String title, LatLng latLng, String information) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng).title(title).snippet(information).alpha(0.8f);
+//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(R.drawable.));
         Marker currentMarker = mMap.addMarker(markerOptions);
         markersArrayListOperation(ConstantValues.MARKERLIST_ADD, currentMarker);
-
-//        currentMarker.showInfoWindow();
     }
 
     public void clearMarkers() {
         markersArrayListOperation(ConstantValues.MARKERLIST_CLEAR, null);
+    }
+
+    //the below 4 are for marker OnInfoWindowClickListener
+    private class MyOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            if (mOnInfoWindowClickListener != null) {;
+                mOnInfoWindowClickListener.onInfoWindowClick(
+                        new MarkerDataFormat(marker.getTitle(), marker.getPosition(), marker.getSnippet()));
+            }
+        }
+    }
+
+    private OnInfoWindowClickListener mOnInfoWindowClickListener = null;
+
+    public void setmOnInfoWindowClickListener(OnInfoWindowClickListener mOnInfoWindowClickListener) {
+        this.mOnInfoWindowClickListener = mOnInfoWindowClickListener;
+    }
+
+    public interface OnInfoWindowClickListener {
+        public void onInfoWindowClick(MarkerDataFormat markerData);
+    }
+
+    //the below is for navigation
+    public void drawPathOnMap(ArrayList<LatLng>positions) {
+        PolylineOptions polylineOptions = new PolylineOptions();
+        for (LatLng position : positions) {
+            polylineOptions.add(position);
+        }
+        polylineOptions.color(Color.BLUE).width(10);
+        Polyline polyline = mMap.addPolyline(polylineOptions);
     }
 
     @Override
