@@ -43,9 +43,9 @@ public class MapHandler extends Handler {
                 Bundle bundle = msg.getData();
                 ArrayList<LatLng> resultPath = (ArrayList<LatLng>)bundle.getSerializable("serializableObject");
 
-                for (LatLng position : resultPath) {
-                    Log.d(ConstantValues.debugTab, "(" + position.latitude + ", " + position.longitude + ")");
-                }
+//                for (LatLng position : resultPath) {
+//                    Log.d(ConstantValues.debugTab, "(" + position.latitude + ", " + position.longitude + ")");
+//                }
 
                 mMapController.drawPathOnMap(resultPath);
 

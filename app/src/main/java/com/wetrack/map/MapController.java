@@ -113,6 +113,9 @@ public class MapController {
     }
 
     //below three are for navigation
+    /**
+     * show navigation path
+     * **/
     public void planNavigation(LatLng fromPosition, LatLng toPosition) {
         GoogleNavigationFormat googleNavigationData = new GoogleNavigationFormat();
         googleNavigationData.origin = fromPosition;
@@ -121,6 +124,9 @@ public class MapController {
         mGoogleNavigationManager.getResultFromGoogle(googleNavigationData);
     }
 
+    /**
+     * send result path to handler, back to the UI thread to draw path
+     * */
     private class MyGoogleNavigationResultListener implements GoogleNavigationResultListener {
         @Override
         public void onReceiveResult(ArrayList<LatLng> resultPath) {

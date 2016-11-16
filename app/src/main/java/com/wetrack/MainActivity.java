@@ -1,12 +1,35 @@
 package com.wetrack;
 
+import android.*;
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.map.GoogleMapFragment;
@@ -23,14 +46,21 @@ public class MainActivity extends FragmentActivity {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
+    private ImageButton openSidebarButton;
+    private RelativeLayout sidebarLayout;
+
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mContext = this;
         mMapController = MapController.getInstance(this);
 
         initMapInView(R.id.map_content);
+
+        initSidebar();
     }
 
     public void initMapInView(int viewId) {
@@ -45,6 +75,50 @@ public class MainActivity extends FragmentActivity {
 //            Log.d(ConstantValues.markerDebug, "marker callback: " + markerData.toString());
 //        }
 //    }
+
+    private void initSidebar() {
+        openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
+        openSidebarButton.setOnClickListener(new MySidebarOpenOnClickListener());
+
+        sidebarLayout = (RelativeLayout) findViewById(R.id.sidebar_layout);
+    }
+
+    private class MySidebarOpenOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            int width = sidebarLayout.getWidth();
+            if (sidebarLayout.getVisibility() == View.INVISIBLE) {
+                sidebarLayout.setVisibility(View.VISIBLE);
+                Animation am = new TranslateAnimation(-width * 1f, 0f, 0f, 0f);
+                am.setDuration(1000);
+//                am.setRepeatCount(0);
+                am.setInterpolator(new AccelerateInterpolator());
+                sidebarLayout.startAnimation(am);
+            } else {
+                Animation am = new TranslateAnimation(0f, -width * 1f, 0f, 0f);
+                am.setDuration(1000);
+//                am.setRepeatCount(0);
+                am.setInterpolator(new AccelerateInterpolator());
+                sidebarLayout.startAnimation(am);
+                am.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        sidebarLayout.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+        }
+    }
 
     private void showMarkerDemo() {
         new Thread(new Runnable() {
@@ -110,6 +184,11 @@ public class MainActivity extends FragmentActivity {
                     mMapController.planNavigation(new LatLng(22.3353712, 114.2636767), new LatLng(22.3363712, 114.2736767));
 
                     break;
+
+                case ConstantValues.CHECK_GPS:
+                    checkGps();
+                    break;
+
                 default:
                     break;
             }
@@ -120,10 +199,15 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+//        requestForLocationService();
+        checkGps();
+
         mMapController.start();
 
 //        showMarkerDemo();
         showNavigationDemo();
+
     }
 
     @Override
@@ -132,5 +216,60 @@ public class MainActivity extends FragmentActivity {
         mMapController.stop();
     }
 
+//    public boolean requestForLocationService() {
+//        int locationCheck1 = ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.ACCESS_COARSE_LOCATION);
+//        int locationCheck2 = ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION);
+//        if (locationCheck1 != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    ConstantValues.PERMISSION_ACCESS_FINE_LOCATION);
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//    }
+
+    private void checkGps() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d(ConstantValues.permission, "not getting gps");
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+            // Setting Dialog Title
+            alertDialog.setTitle("GPS is settings");
+
+            // Setting Dialog Message
+            alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+
+            // Setting Icon to Dialog
+            //alertDialog.setIcon(R.drawable.delete);
+
+            // On pressing Settings button
+            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+
+            // on pressing cancel button
+            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            // Showing Alert Message
+            alertDialog.show();
+        } else {
+            Log.d(ConstantValues.permission, "got gps");
+        }
+    }
 
 }

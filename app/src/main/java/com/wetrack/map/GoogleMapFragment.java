@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
@@ -64,6 +65,10 @@ public class GoogleMapFragment extends SupportMapFragment {
             } catch (SecurityException e) {
                 e.printStackTrace();
             }
+            UiSettings myUiSettings = mMap.getUiSettings();
+            myUiSettings.setCompassEnabled(true);
+            myUiSettings.setMyLocationButtonEnabled(true);
+            myUiSettings.setZoomControlsEnabled(true);
 
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override

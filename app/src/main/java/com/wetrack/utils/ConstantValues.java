@@ -6,8 +6,9 @@ package com.wetrack.utils;
 public class ConstantValues {
     //for debug
     public static String debugTab = "debug";
-    public static String gpsDebug = "gps";
+    public static String gpsDebug = "gps_debug";
     public static String markerDebug = "marker";
+    public static String permission = "permission";
 
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;
@@ -16,7 +17,10 @@ public class ConstantValues {
     //for handler
     public static final int MARKER_DEMO_TAG = 0xffffffef;
     public static final int NAVIGATION_DEMO_TAG = 0xffffffee;
-    public static final int NAVIGATION_RESULT_TAG = 0xffffffee;
+    public static final int NAVIGATION_RESULT_TAG = 0xffffffed;
+    public static final int CHECK_GPS = 0xffffffec;
 
-
+    //for request permissions
+    public static final int PERMISSION_ACCESS_FINE_LOCATION = 0xffffffdf;
+    public static final int PERMISSION_ACCESS_COARSE_LOCATION = 0xffffffde;
 }
