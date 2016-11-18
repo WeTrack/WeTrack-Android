@@ -2,12 +2,10 @@ package com.wetrack.map;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.phenotype.Flag;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationFormat;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationManager;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationResultListener;

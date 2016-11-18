@@ -1,0 +1,4 @@
+{
+  "statusCode": 403,
+  "message": "User with same username already exists."
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "e700063b2959ca62893c032d789ab00f",
+    "name": "Robert\u0027s Family",
+    "members": [
+      {
+        "username": "robert-peng",
+        "password": "0dda73248d5b6d2d6a79a6daa1f50614",
+        "nickname": "Robert Peng",
+        "iconUrl": "",
+        "email": "robert.peng@example.com",
+        "gender": "Male",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "username": "mr-dai",
+        "password": "c397ba5ee4c0eb77615fb5266e49ba66",
+        "nickname": "Mr. Dai",
+        "iconUrl": "",
+        "email": "mr.dai@example.com",
+        "gender": "Male",
+        "birthDate": "1970-01-01"
+      }
+    ]
+  },
+  {
+    "id": "bb7e530d991b446c72dc755acbe76d57",
+    "name": "Robert \u0026 Windy",
+    "members": [
+      {
+        "username": "windy-chan",
+        "password": "97d1f4438fef855514b54765ddf9a360",
+        "nickname": "Windy Chan",
+        "iconUrl": "",
+        "email": "windy.chan@example.com",
+        "gender": "Female",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "username": "robert-peng",
+        "password": "0dda73248d5b6d2d6a79a6daa1f50614",
+        "nickname": "Robert Peng",
+        "iconUrl": "",
+        "email": "robert.peng@example.com",
+        "gender": "Male",
+        "birthDate": "1970-01-01"
+      }
+    ]
+  }
+]

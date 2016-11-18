@@ -1,7 +1,5 @@
 package com.wetrack.utils;
 
-import android.content.Context;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;

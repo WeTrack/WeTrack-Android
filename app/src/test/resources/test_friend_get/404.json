@@ -1,0 +1,4 @@
+{
+  "status_code": 404,
+  "message": "User with given username does not exist."
+}

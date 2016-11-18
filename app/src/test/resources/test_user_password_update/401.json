@@ -1,0 +1,5 @@
+{
+  "status_code": 401,
+  "message": "The given old password is incorrect.",
+  "documentationUrl": ""
+}
