@@ -1,0 +1,4 @@
+{
+  "status_code": 400,
+  "message": "Token must be provided as query parameter."
+}

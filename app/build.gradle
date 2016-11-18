@@ -19,11 +19,30 @@ android {
     }
 }
 
+ext {
+    retrofitVersion = '2.1.0'
+    okHttpVersion = '3.4.2'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services:9.6.1'
     compile 'com.android.support:support-v4:23.4.0'
-    compile files('libs/json-20140107.jar')
+
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: "$retrofitVersion"
+    compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: "$retrofitVersion"
+    compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava', version: "$retrofitVersion"
+    compile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: "$okHttpVersion"
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.2.2'
+    compile group: 'io.reactivex', name: 'rxandroid', version: '1.2.1'
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.5'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+    compile group: 'org.json', name: 'json', version: '20160810'
+    // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+
+    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+    testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: "$okHttpVersion"
+    testCompile 'junit:junit:4.12'
 }
