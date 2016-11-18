@@ -34,6 +34,7 @@ public class MainActivity extends FragmentActivity {
     private MyHandler mHandler = new MyHandler();
 
     private ImageButton openSidebarButton;
+    private ContactView contactView;
     private SidebarView sidebarView;
     private ImageButton addContactButton;
     private ListView addOptionListView;
@@ -99,7 +100,13 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        String[] list = {"NewGroup","AddFriend"};
+        contactView = new ContactView(this);
+        mainLayout.addView(contactView, mainLayout.getChildCount());
+        contactView.setVisibility(View.GONE);
+        contactView.setLayoutParams(new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        final String[] list = {"NewGroup","AddFriend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (ListView) findViewById(R.id.add_option_listview);
 
@@ -109,6 +116,16 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                Toast.makeText(getApplicationContext(), "你選擇的是" + list[position], Toast.LENGTH_SHORT).show();
+
+                addOptionListView.setVisibility(View.GONE);
+
+                if (list[position].equals(list[0])) {
+                    contactView.setMode(ContactView.MODE_NEW_GROUP);
+                    contactView.show();
+                } else if (list[position].equals(list[1])){
+                    contactView.setMode(ContactView.MODE_NEW_GROUP);
+                    contactView.show();
+                }
             }
         });
 
@@ -116,7 +133,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 addContactButton.setEnabled(false);
-                if (addOptionListView.getVisibility() == View.INVISIBLE) {
+                if (addOptionListView.getVisibility() == View.GONE) {
                     addOptionListView.setVisibility(View.VISIBLE);
                 } else {
                     addOptionListView.setVisibility(View.GONE);

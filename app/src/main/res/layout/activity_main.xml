@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/main_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.wetrack.MainActivity">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.wetrack.MainActivity">
 
     <RelativeLayout
         android:id="@+id/main_contain"
@@ -30,28 +31,28 @@
             android:id="@+id/open_sidebar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:background="@color/transparent"
-            android:src="@drawable/open_sidebar"
-            android:layout_alignParentLeft="true"/>
+            android:src="@drawable/open_sidebar" />
 
         <ImageButton
             android:id="@+id/add_contact_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:background="@color/transparent"
-            android:src="@drawable/add_contact"
-            android:layout_alignParentRight="true"/>
+            android:src="@drawable/add_contact" />
     </RelativeLayout>
 
     <ListView
         android:id="@+id/add_option_listview"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/menu_bar"
         android:layout_alignParentRight="true"
+        android:layout_below="@id/menu_bar"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        android:background="#e0ffffff">
+        android:background="#e0ffffff"
+        android:visibility="gone">
 
     </ListView>
 </RelativeLayout>

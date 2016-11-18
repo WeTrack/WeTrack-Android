@@ -13,6 +13,9 @@
     <string name="signup">Sign Up</string>
     <string name="loginInSign">Already a member? Log in!</string>
 
+    <!-- in contact -->
+    <string name="newGroup">New Group</string>
+    <string name="addFriend">Add Friend</string>
 
 
 </resources>
