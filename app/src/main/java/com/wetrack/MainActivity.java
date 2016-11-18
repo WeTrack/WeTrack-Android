@@ -19,51 +19,65 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wetrack.login.LoginActivity;
 import com.wetrack.map.GoogleMapFragment;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.Tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
 public class MainActivity extends FragmentActivity {
-
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
     private ImageButton openSidebarButton;
-    private RelativeLayout sidebarLayout;
-
-    private Context mContext;
+    private SidebarView sidebarView;
+    private ImageButton addContactButton;
+    private ListView addOptionListView;
+    private RelativeLayout mainContain;
+    private RelativeLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContext = this;
-        mMapController = MapController.getInstance(this);
+
+        mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
+        mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
 
         initSidebar();
+
+        initAddContact();
     }
 
     public void initMapInView(int viewId) {
+        mMapController = MapController.getInstance(this);
         mMapController.addMapToView(getSupportFragmentManager(), viewId);
 
 //        mMapController.setmOnInfoWindowClickListener(new MyOnInfoWindowClickListener());
@@ -77,47 +91,60 @@ public class MainActivity extends FragmentActivity {
 //    }
 
     private void initSidebar() {
-        openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
-        openSidebarButton.setOnClickListener(new MySidebarOpenOnClickListener());
+        sidebarView = new SidebarView(this);
+        sidebarView.setLayoutParams(new RelativeLayout.LayoutParams(
+                Tools.getScreenW() * 2 / 3,
+                ViewGroup.LayoutParams.MATCH_PARENT));
 
-        sidebarLayout = (RelativeLayout) findViewById(R.id.sidebar_layout);
+        mainLayout.addView(sidebarView, 1);
+        openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
+        openSidebarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sidebarView.getVisibility() == View.INVISIBLE) {
+                    sidebarView.open();
+                } else {
+                    sidebarView.close();
+                }
+            }
+        });
+        sidebarView.setLogoutListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,
+                        LoginActivity.class);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }
+        });
     }
 
-    private class MySidebarOpenOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            int width = sidebarLayout.getWidth();
-            if (sidebarLayout.getVisibility() == View.INVISIBLE) {
-                sidebarLayout.setVisibility(View.VISIBLE);
-                Animation am = new TranslateAnimation(-width * 1f, 0f, 0f, 0f);
-                am.setDuration(1000);
-//                am.setRepeatCount(0);
-                am.setInterpolator(new AccelerateInterpolator());
-                sidebarLayout.startAnimation(am);
-            } else {
-                Animation am = new TranslateAnimation(0f, -width * 1f, 0f, 0f);
-                am.setDuration(1000);
-//                am.setRepeatCount(0);
-                am.setInterpolator(new AccelerateInterpolator());
-                sidebarLayout.startAnimation(am);
-                am.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
+    private void initAddContact() {
+        String[] list = {"NewGroup","AddFriend"};
+        addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
+        addOptionListView = (ListView) findViewById(R.id.add_option_listview);
 
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        sidebarLayout.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact,list);
+        addOptionListView.setAdapter(listAdapter);
+        addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getApplicationContext(), "你選擇的是" + list[position], Toast.LENGTH_SHORT).show();
             }
-        }
+        });
+
+        addContactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addContactButton.setEnabled(false);
+                if (addOptionListView.getVisibility() == View.INVISIBLE) {
+                    addOptionListView.setVisibility(View.VISIBLE);
+                } else {
+                    addOptionListView.setVisibility(View.GONE);
+                }
+                addContactButton.setEnabled(true);
+            }
+        });
     }
 
     private void showMarkerDemo() {

@@ -9,6 +9,7 @@ public class ConstantValues {
     public static String gpsDebug = "gps_debug";
     public static String markerDebug = "marker";
     public static String permission = "permission";
+    public static String touchDebug = "touch_debug";
 
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;

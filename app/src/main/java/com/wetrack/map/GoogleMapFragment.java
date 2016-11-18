@@ -52,7 +52,6 @@ public class GoogleMapFragment extends SupportMapFragment {
                              Bundle savedInstanceState) {
         getMapAsync(new MyOnMapReadyCallback());
 
-
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

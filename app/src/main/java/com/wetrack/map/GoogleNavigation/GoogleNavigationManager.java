@@ -30,6 +30,9 @@ public class GoogleNavigationManager {
         return mGoogleNavigationManager;
     }
 
+    //true means on work, false means this class should not work any more
+    static boolean state;
+
     public void setmGoogleNavigationResultListener(GoogleNavigationResultListener mGoogleNavigationResultListener) {
         this.mGoogleNavigationResultListener = mGoogleNavigationResultListener;
     }
@@ -40,12 +43,15 @@ public class GoogleNavigationManager {
 
     private GoogleNavigationManager(Context context) {
         mContext = context;
+        state = true;
     }
 
     public void getResultFromGoogle(GoogleNavigationFormat googleNavigationData) {
         String url = encodeGoogleNavigationFormatToUrl(googleNavigationData);
 
-        (new GetResultFromGoogleThread(url)).start();
+        if (state) {
+            (new GetResultFromGoogleThread(url)).start();
+        }
     }
 
     private String encodeGoogleNavigationFormatToUrl(GoogleNavigationFormat googleNavigationData) {
@@ -160,7 +166,7 @@ public class GoogleNavigationManager {
 
                 ArrayList<LatLng> result = decodeGoogleNavigationResult(resultString);
 
-                if (mGoogleNavigationResultListener != null && result != null) {
+                if (state == true && mGoogleNavigationResultListener != null && result != null) {
                     mGoogleNavigationResultListener.onReceiveResult(result);
                 }
 
@@ -170,4 +176,9 @@ public class GoogleNavigationManager {
         }
     }
 
+    public void stop() {
+        state = false;
+        mGoogleNavigationManager = null;
+        mGoogleNavigationResultListener = null;
+    }
 }

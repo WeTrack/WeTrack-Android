@@ -77,6 +77,8 @@ public class MapController {
 
     public void stop() {
         mGpsLocationManager.stop();
+        mGoogleNavigationManager.stop();
+        mMapController = null;
     }
 
     //below three are for markers
