@@ -10,6 +10,7 @@ public class ConstantValues {
     public static String markerDebug = "marker";
     public static String permission = "permission";
     public static String touchDebug = "touch_debug";
+    public static String databaseDebug = "mydatabase";
 
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;
@@ -24,4 +25,11 @@ public class ConstantValues {
     //for request permissions
     public static final int PERMISSION_ACCESS_FINE_LOCATION = 0xffffffdf;
     public static final int PERMISSION_ACCESS_COARSE_LOCATION = 0xffffffde;
+
+    //for contact view mode
+    final static public int CONTACT_MODE_NEW_GROUP = 0xffffffcf;
+    final static public int CONTACT_MODE_ADD_FRIEND = 0xffffffce;
+
+    //
+    final static public String NAME_SEPERATE_STRING = "|";
 }

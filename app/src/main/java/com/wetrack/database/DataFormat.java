@@ -8,20 +8,34 @@ import java.util.Map;
  * Created by moziliang on 16/10/1.
  */
 public class DataFormat {
-    private static String DATABASE_TABLE_NAME;
-    public static String getDatabaseTableName() {
-        return DATABASE_TABLE_NAME;
-    }
-    public static void setDatabaseTableName(String databaseTableName) {
-        DATABASE_TABLE_NAME = databaseTableName;
+    public DataFormat(String tableName, ArrayList<String>allDataNames, String keyColumnName) {
+        databaseTableName = tableName;
+        this.allDataNames = allDataNames;
+        this.keyColumnName = keyColumnName;
     }
 
-    private static ArrayList<String> allDataNames;
-    public static ArrayList<String> getAllDataNames() {
+    private String databaseTableName;
+    public String getDatabaseTableName() {
+        return databaseTableName;
+    }
+    public void setDatabaseTableName(String databaseTableName) {
+        this.databaseTableName = databaseTableName;
+    }
+
+    private ArrayList<String> allDataNames = new ArrayList<>();
+    public ArrayList<String> getAllDataNames() {
         return allDataNames;
     }
-    public static void setAllDataNames(ArrayList<String> allDataNames) {
-        DataFormat.allDataNames = allDataNames;
+    public void setAllDataNames(ArrayList<String> allDataNames) {
+        this.allDataNames = allDataNames;
+    }
+
+    private String keyColumnName;
+    public String getKeyColumnName() {
+        return keyColumnName;
+    }
+    public void setKeyColumnName(String keyColumnName) {
+        this.keyColumnName = keyColumnName;
     }
 
     private Map<String, String> dataNameAndValues = new HashMap<>();
@@ -36,9 +50,23 @@ public class DataFormat {
         }
     }
     public void setValueByName(String dataName, String value) {
-        if (!allDataNames.contains(dataName)) {
-            return;
-        }
         dataNameAndValues.put(dataName, value);
+    }
+    public Map<String, String> getDataNameAndValues() {
+        return dataNameAndValues;
+    }
+    public void setDataNameAndValues(Map<String, String> dataNameAndValues) {
+        this.dataNameAndValues = dataNameAndValues;
+    }
+
+    @Override
+    public String toString() {
+        String answer = "";
+        if (allDataNames != null && !allDataNames.isEmpty()) {
+            for (String name : allDataNames) {
+                answer += dataNameAndValues.get(name) + ", ";
+            }
+        }
+        return answer;
     }
 }

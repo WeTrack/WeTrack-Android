@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             disableAll();
+            String errorMessage = "";
             if (mode == true) {
                 //login
                 String email = emailInput.getText().toString();
@@ -74,39 +75,49 @@ public class LoginActivity extends AppCompatActivity {
                         password != null) {
                     PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, email);
 
-                    Intent intent = new Intent(LoginActivity.this,
-                            MainActivity.class);
-                    startActivity(intent);
-                    LoginActivity.this.finish();
+                    UserDataFormat userDataFormat = new UserDataFormat(email, password);
+
+                    if (userDataFormat.authentication()) {
+                        Intent intent = new Intent(LoginActivity.this,
+                                MainActivity.class);
+                        startActivity(intent);
+                        LoginActivity.this.finish();
+                        return;
+                    }
+                    errorMessage = "login info error";
                 } else {
-                    enableAll();
-                    Toast.makeText(LoginActivity.this, "wrong login message", Toast.LENGTH_SHORT).show();
+                    errorMessage = "info not completed";
                 }
+                enableAll();
+                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             } else {
                 //signup
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
-                String rePassword = passwordInput.getText().toString();
+                String rePassword = passwordReinput.getText().toString();
                 String nickname = nicknameInput.getText().toString();
                 int genderId = gender_radiogroup.getCheckedRadioButtonId();
-                String gender = ((RadioButton)findViewById(genderId)).getText().toString();
+                String gender = ((RadioButton) findViewById(genderId)).getText().toString();
                 if (email != null && !email.equals("") &&
                         password != null && rePassword != null && password.equals(rePassword) &&
                         nickname != null && !nickname.equals("") &&
                         gender != null && !gender.equals("")) {
                     PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, email);
 
-                    UserDataFormat userDataFormat = new UserDataFormat(email, password, nickname, null, email, gender,null);
-                    userDataFormat.addUser();
-
-                    Intent intent = new Intent(LoginActivity.this,
-                            MainActivity.class);
-                    startActivity(intent);
-                    LoginActivity.this.finish();
+                    UserDataFormat userDataFormat = new UserDataFormat(email, password, nickname, null, email, gender, null);
+                    if (userDataFormat.addUser() == true) {
+                        Intent intent = new Intent(LoginActivity.this,
+                                MainActivity.class);
+                        startActivity(intent);
+                        LoginActivity.this.finish();
+                        return;
+                    }
+                    errorMessage = "username already exist";
                 } else {
-                    enableAll();
-                    Toast.makeText(LoginActivity.this, "wrong signup message", Toast.LENGTH_SHORT).show();
+                    errorMessage = "info not completed, or two passwords different";
                 }
+                enableAll();
+                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -191,3 +202,4 @@ public class LoginActivity extends AppCompatActivity {
         secondButton.setEnabled(false);
     }
 }
+

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wetrack.database.UserDataFormat;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.utils.PreferenceUtils;
 
@@ -53,7 +54,7 @@ public class SidebarView extends RelativeLayout {
         RelativeLayout sidebarLayout = (RelativeLayout)layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
 
-        setVisibility(INVISIBLE);
+        setVisibility(GONE);
 
         portraitImageView = (ImageView) findViewById(R.id.portrait_imageview);
         usernameTextView = (TextView) findViewById(R.id.username_textview);
@@ -65,7 +66,14 @@ public class SidebarView extends RelativeLayout {
         String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
         usernameTextView.setText(username);
 
+        UserDataFormat userDataFormat = new UserDataFormat(username);
+        userDataFormat.getDataByUsername();
 
+        if (userDataFormat.getValueByName(UserDataFormat.ATTRI_GENDER).equals("male")) {
+            genderImageView.setImageResource(R.drawable.gender_male);
+        } else {
+            genderImageView.setImageResource(R.drawable.gender_female);
+        }
     }
 
     public void close() {
@@ -83,7 +91,7 @@ public class SidebarView extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                setVisibility(View.INVISIBLE);
+                setVisibility(View.GONE);
             }
 
             @Override

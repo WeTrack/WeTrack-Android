@@ -17,5 +17,7 @@
     <string name="newGroup">New Group</string>
     <string name="addFriend">Add Friend</string>
 
+    <!-- group -->
+    <string name="allFriend">All Friend</string>
 
 </resources>

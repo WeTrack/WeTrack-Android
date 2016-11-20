@@ -4,8 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.wetrack.utils.ConstantValues;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Created by moziliang on 16/10/1.
@@ -20,7 +27,8 @@ public class DataBaseManager {
         return mDataBaseManager;
     }
 
-    private MySQLiteOpenHelper MyDB;
+    static private MySQLiteOpenHelper MyDB;
+    static private ArrayList<String>allTableNames = null;
 
     private DataBaseManager(Context context) {
         mContext = context;
@@ -48,14 +56,19 @@ public class DataBaseManager {
     }
 
     public ArrayList<String> getAllTables() {
-        SQLiteDatabase db = MyDB.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        if (allTableNames == null) {
+            SQLiteDatabase db = MyDB.getReadableDatabase();
+            Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
 
-        ArrayList<String>allTableNames = new ArrayList<>();
-        if (c.moveToFirst()) {
-            while ( !c.isAfterLast() ) {
-                allTableNames.add(c.getString( c.getColumnIndex("name")));
-                c.moveToNext();
+            allTableNames = new ArrayList<>();
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast()) {
+                    allTableNames.add(c.getString(c.getColumnIndex("name")));
+                    c.moveToNext();
+                }
+            }
+            for (String name : allTableNames) {
+                Log.d(ConstantValues.databaseDebug, "allTableNames: " + name);
             }
         }
         return allTableNames;
@@ -73,22 +86,22 @@ public class DataBaseManager {
         return true;
     }
 
-    public boolean CheckColumnDuplicated(DataFormat data, String checkedColumnName) {
-        if (data.getValueByName(checkedColumnName) == null) {
+    public boolean CheckColumnDuplicated(DataFormat data) {
+        if (data.getValueByName(data.getKeyColumnName()) == null) {
             return false;
         }
-        ArrayList<DataFormat> allRows = getAllRows(data.getDatabaseTableName(), data.getAllDataNames());
+        ArrayList<DataFormat> allRows = getAllRows(data.getDatabaseTableName(), data.getAllDataNames(), data.getKeyColumnName(), null);
         for (DataFormat row : allRows) {
-            if (row.getValueByName(checkedColumnName) != null &&
-                    row.getValueByName(checkedColumnName).equals(data.getValueByName(checkedColumnName))) {
+            if (row.getValueByName(data.getKeyColumnName()) != null &&
+                    row.getValueByName(data.getKeyColumnName()).equals(data.getValueByName(data.getKeyColumnName()))) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean insert(DataFormat data, String keyColumnName) {
-        if (CheckColumnDuplicated(data, keyColumnName)) {
+    public boolean insert(DataFormat data) {
+        if (CheckColumnDuplicated(data)) {
             return false;
         }
 
@@ -102,19 +115,19 @@ public class DataBaseManager {
         return true;
     }
 
-    public boolean remove(DataFormat data, String keyColumnName) {
-        if (!CheckColumnDuplicated(data, keyColumnName)) {
+    public boolean remove(DataFormat data) {
+        if (!CheckColumnDuplicated(data)) {
             return false;
         }
         SQLiteDatabase db = MyDB.getWritableDatabase();
-        String whereClause = keyColumnName + " = ?";
-        String[] whereArgs = new String[] {data.getValueByName(keyColumnName)};
+        String whereClause = data.getKeyColumnName() + " = ?";
+        String[] whereArgs = new String[] {data.getValueByName(data.getKeyColumnName())};
         db.delete(data.getDatabaseTableName(), whereClause, whereArgs);
         return true;
     }
 
-    public boolean update(DataFormat data, String keyColumnName) {
-        if (!CheckColumnDuplicated(data, keyColumnName)) {
+    public boolean update(DataFormat data) {
+        if (!CheckColumnDuplicated(data)) {
             return false;
         }
         SQLiteDatabase db = MyDB.getWritableDatabase();
@@ -123,18 +136,40 @@ public class DataBaseManager {
             String name = data.getAllDataNames().get(i);
             values.put(name, data.getValueByName(name));
         }
-        String whereClause = keyColumnName + " = ?";
-        String[] whereArgs = new String[] {data.getValueByName(keyColumnName)};
+        String whereClause = data.getKeyColumnName() + " = ?";
+        String[] whereArgs = new String[] {data.getValueByName(data.getKeyColumnName())};
         db.update(data.getDatabaseTableName(), values, whereClause, whereArgs);
         return true;
     }
 
-    public ArrayList<DataFormat> getAllRows(String tableName, ArrayList<String> allDataNames) {
+    static public ArrayList<DataFormat> getAllRows(
+            String tableName, ArrayList<String> allDataNames,
+            String keyColumnName, Map<String, String>whereMap) {
         SQLiteDatabase db = MyDB.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
+//        for (Map.Entry<String, String> entry : whereMap.entrySet()) {
+//            whereClause += UserDataFormat.KEY_ACCOUNT_NAME + " = ? OR " + UserDataFormat.KEY_CURRENCY_TYPE + " = ?";
+//            whereArgs = new String[]{
+//                    "accountname1",
+//                    "currencytype1"
+//            };
+//            index++;
+//        }
 
+        String whereClause = null;
+        String[] whereArgs = null;
+        if (whereMap != null) {
+            whereClause = "";
+            whereArgs = new String[whereMap.size()];
+            int index = 0;
+            for (Map.Entry<String, String> entry : whereMap.entrySet()) {
+                whereClause += entry.getKey() + " = ?";
+                whereArgs[index] = entry.getValue();
+                index++;
+            }
+        }
 //        String whereClause = UserDataFormat.KEY_ACCOUNT_NAME + " = ? OR " + UserDataFormat.KEY_CURRENCY_TYPE + " = ?";
 //        String[] whereArgs = new String[] {
 //                "accountname1",
@@ -148,8 +183,8 @@ public class DataBaseManager {
         Cursor cursor = db.query(
                 tableName,  // The table to query
                 (String[])allDataNames.toArray(new String[0]), // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
+                whereClause,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 null                                 // The sort order
@@ -159,7 +194,7 @@ public class DataBaseManager {
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                DataFormat row = new DataFormat();
+                DataFormat row = new DataFormat(tableName, allDataNames, keyColumnName);
                 for (int i = 0; i < allDataNames.size(); i++) {
                     String name = allDataNames.get(i);
                     row.setValueByName(name, cursor.getString(cursor.getColumnIndexOrThrow(name)));

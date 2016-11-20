@@ -14,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wetrack.contact.ContactView;
+import com.wetrack.database.GroupDataFormat;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
@@ -37,7 +40,11 @@ public class MainActivity extends FragmentActivity {
     private ContactView contactView;
     private SidebarView sidebarView;
     private ImageButton addContactButton;
-    private ListView addOptionListView;
+    private AddOptionListView addOptionListView;
+    private Button groupListButton;
+    private ImageButton dropListImageButton;
+    private GroupListView groupListView;
+
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
 
@@ -54,6 +61,8 @@ public class MainActivity extends FragmentActivity {
         initSidebar();
 
         initAddContact();
+
+        initDropList();
     }
 
     public void initMapInView(int viewId) {
@@ -81,7 +90,8 @@ public class MainActivity extends FragmentActivity {
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sidebarView.getVisibility() == View.INVISIBLE) {
+                if (sidebarView.getVisibility() == View.GONE) {
+                    hideAllLayout(sidebarView);
                     sidebarView.open();
                 } else {
                     sidebarView.close();
@@ -108,22 +118,21 @@ public class MainActivity extends FragmentActivity {
 
         final String[] list = {"NewGroup","AddFriend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
-        addOptionListView = (ListView) findViewById(R.id.add_option_listview);
+        addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
+        addOptionListView.setVisibility(View.GONE);
 
         ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact,list);
         addOptionListView.setAdapter(listAdapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getApplicationContext(), "你選擇的是" + list[position], Toast.LENGTH_SHORT).show();
-
                 addOptionListView.setVisibility(View.GONE);
-
+                addOptionListView.close();
                 if (list[position].equals(list[0])) {
-                    contactView.setMode(ContactView.MODE_NEW_GROUP);
+                    contactView.setMode(ConstantValues.CONTACT_MODE_NEW_GROUP);
                     contactView.show();
                 } else if (list[position].equals(list[1])){
-                    contactView.setMode(ContactView.MODE_NEW_GROUP);
+                    contactView.setMode(ConstantValues.CONTACT_MODE_ADD_FRIEND);
                     contactView.show();
                 }
             }
@@ -134,13 +143,61 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 addContactButton.setEnabled(false);
                 if (addOptionListView.getVisibility() == View.GONE) {
-                    addOptionListView.setVisibility(View.VISIBLE);
+                    hideAllLayout(addOptionListView);
+                    addOptionListView.open();
                 } else {
-                    addOptionListView.setVisibility(View.GONE);
+                    addOptionListView.close();
                 }
                 addContactButton.setEnabled(true);
             }
         });
+    }
+
+    private void initDropList() {
+        groupListButton = (Button) findViewById(R.id.group_list_button);
+        dropListImageButton = (ImageButton) findViewById(R.id.drop_list_imagebutton);
+
+        groupListButton.setText(R.string.allFriend);
+
+        groupListView = new GroupListView(this);
+        groupListView.setVisibility(View.GONE);
+        mainLayout.addView(groupListView, 1);
+
+        View.OnClickListener dropListListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (groupListView.getVisibility() == View.GONE) {
+                    hideAllLayout(groupListView);
+                    dropListImageButton.setImageResource(R.drawable.list_drop_up);
+                    groupListView.open();
+                } else {
+                    dropListImageButton.setImageResource(R.drawable.list_drop_down);
+                    groupListView.close();
+                }
+            }
+        };
+
+        dropListImageButton.setOnClickListener(dropListListener);
+        groupListButton.setOnClickListener(dropListListener);
+    }
+
+    private void hideAllLayout(Object object) {
+        if (!(object instanceof GroupListView)) {
+            if (groupListView.getVisibility() == View.VISIBLE) {
+                dropListImageButton.setImageResource(R.drawable.list_drop_down);
+                groupListView.close();
+            }
+        }
+        if (!(object instanceof AddOptionListView)) {
+            if (addOptionListView.getVisibility() == View.VISIBLE) {
+                addOptionListView.setVisibility(View.GONE);
+            }
+        }
+        if (!(object instanceof SidebarView)) {
+            if (sidebarView.getVisibility() == View.VISIBLE) {
+                sidebarView.close();
+            }
+        }
     }
 
     private void showMarkerDemo() {
