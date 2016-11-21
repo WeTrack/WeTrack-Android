@@ -2,8 +2,8 @@
   "username": "robert-peng",
   "nickname": "Robert Peng",
   "password": "Not Matter, really",
-  "iconUrl": "",
+  "icon_url": "",
   "email": "",
   "gender": "Male",
-  "birthDate": "1970-01-01"
+  "birth_date": "1970-01-01"
 }

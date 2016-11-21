@@ -40,8 +40,8 @@ public class UserPasswordUpdateTest extends WeTrackClientTest {
 
         JsonObject requestBody = gson.fromJson(request.getBody().readUtf8(), JsonObject.class);
         assertThat(requestBody.entrySet().size(), is(2));
-        assertThat(requestBody.get("oldPassword").getAsString(), is(CryptoUtils.md5Digest(oldPassword)));
-        assertThat(requestBody.get("newPassword").getAsString(), is(newPassword));
+        assertThat(requestBody.get("old_password").getAsString(), is(CryptoUtils.md5Digest(oldPassword)));
+        assertThat(requestBody.get("new_password").getAsString(), is(newPassword));
     }
 
     @Test

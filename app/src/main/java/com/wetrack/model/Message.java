@@ -1,9 +1,6 @@
 package com.wetrack.model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Message {
-    @SerializedName("status_code")
     private int statusCode;
     private String message;
 

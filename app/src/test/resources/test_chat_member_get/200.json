@@ -3,18 +3,18 @@
     "username": "robert-peng",
     "password": "0dda73248d5b6d2d6a79a6daa1f50614",
     "nickname": "Robert Peng",
-    "iconUrl": "",
+    "icon_url": "",
     "email": "robert.peng@example.com",
     "gender": "Male",
-    "birthDate": "1970-01-01"
+    "birth_date": "1970-01-01"
   },
   {
     "username": "mr-dai",
     "password": "c397ba5ee4c0eb77615fb5266e49ba66",
     "nickname": "Mr. Dai",
-    "iconUrl": "",
+    "icon_url": "",
     "email": "mr.dai@example.com",
     "gender": "Male",
-    "birthDate": "1970-01-01"
+    "birth_date": "1970-01-01"
   }
 ]

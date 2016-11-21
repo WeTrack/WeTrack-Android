@@ -1,5 +1,4 @@
 {
   "status_code": 401,
-  "message": "The given username or password is incorrect.",
-  "documentationUrl": ""
+  "message": "The given username or password is incorrect."
 }

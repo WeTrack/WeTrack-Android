@@ -56,7 +56,7 @@ public class UserTokenValidateTest extends WeTrackClientTest {
         JsonObject responseBody = gson.fromJson(testResponse, JsonObject.class);
         assertThat(receivedToken.getToken(), is(responseBody.get("token").getAsString()));
         assertThat(receivedToken.getUsername(), is(responseBody.get("username").getAsString()));
-        assertThat(receivedToken.getExpireTime().toString(), is(responseBody.get("expireTime").getAsString()));
+        assertThat(receivedToken.getExpireTime().toString(), is(responseBody.get("expire_time").getAsString()));
     }
 
 }
