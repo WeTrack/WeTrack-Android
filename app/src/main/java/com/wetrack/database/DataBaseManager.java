@@ -9,10 +9,7 @@ import android.util.Log;
 import com.wetrack.utils.ConstantValues;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * Created by moziliang on 16/10/1.

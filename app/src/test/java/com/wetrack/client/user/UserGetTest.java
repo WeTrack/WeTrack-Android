@@ -1,12 +1,10 @@
 package com.wetrack.client.user;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.wetrack.client.EntityResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.User;
 
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;

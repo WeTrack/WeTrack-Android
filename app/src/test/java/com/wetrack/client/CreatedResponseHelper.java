@@ -1,7 +1,5 @@
 package com.wetrack.client;
 
-import com.wetrack.client.CreatedMessageCallback;
-
 public class CreatedResponseHelper {
 
     private boolean successful;

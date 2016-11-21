@@ -1,7 +1,6 @@
 package com.wetrack.client;
 
 import com.google.gson.Gson;
-import com.wetrack.client.WeTrackClient;
 import com.wetrack.model.User;
 
 import org.apache.commons.io.Charsets;

@@ -1,7 +1,5 @@
 package com.wetrack.client;
 
-import com.wetrack.client.MessageCallback;
-
 public class MessageResponseHelper {
     private final int successfulStatusCode;
 

@@ -1,7 +1,5 @@
 package com.wetrack.client;
 
-import com.wetrack.client.ResultCallback;
-
 public class ResultResponseHelper {
 
     private final int successfulStatusCode;

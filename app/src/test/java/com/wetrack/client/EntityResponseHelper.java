@@ -1,7 +1,6 @@
 package com.wetrack.client;
 
 import com.google.gson.Gson;
-import com.wetrack.client.EntityCallback;
 import com.wetrack.model.Message;
 
 public class EntityResponseHelper<T> {

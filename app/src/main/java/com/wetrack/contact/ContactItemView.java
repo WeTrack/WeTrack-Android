@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.wetrack.BaseApplication;
 import com.wetrack.R;
-import com.wetrack.database.DataFormat;
 import com.wetrack.database.FriendDataFormat;
 import com.wetrack.database.GroupDataFormat;
 import com.wetrack.utils.ConstantValues;

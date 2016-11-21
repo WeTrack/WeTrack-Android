@@ -16,12 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.contact.ContactView;
-import com.wetrack.database.GroupDataFormat;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;

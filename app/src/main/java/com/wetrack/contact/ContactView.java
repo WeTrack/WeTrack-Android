@@ -16,8 +16,8 @@ import com.wetrack.R;
 import com.wetrack.database.DataFormat;
 import com.wetrack.database.FriendDataFormat;
 import com.wetrack.database.GroupDataFormat;
-import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

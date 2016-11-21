@@ -1,12 +1,10 @@
 package com.wetrack;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -16,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.wetrack.database.UserDataFormat;
-import com.wetrack.login.LoginActivity;
 import com.wetrack.utils.PreferenceUtils;
 
 /**
