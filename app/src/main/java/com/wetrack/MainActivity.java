@@ -35,13 +35,13 @@ public class MainActivity extends FragmentActivity {
     private MyHandler mHandler = new MyHandler();
 
     private ImageButton openSidebarButton;
-    private ContactView contactView;
-    private SidebarView sidebarView;
+    private ContactView contactView = null;
+    private SidebarView sidebarView = null;
     private ImageButton addContactButton;
-    private AddOptionListView addOptionListView;
+    private AddOptionListView addOptionListView = null;
     private Button groupListButton;
     private ImageButton dropListImageButton;
-    private GroupListView groupListView;
+    private GroupListView groupListView = null;
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
@@ -294,7 +294,21 @@ public class MainActivity extends FragmentActivity {
         mMapController.stop();
     }
 
-//    public boolean requestForLocationService() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (groupListView != null) {
+            groupListView.destroy();
+        }
+        if (contactView != null) {
+            contactView.destroy();
+        }
+        if (sidebarView != null) {
+            sidebarView.destroy();
+        }
+    }
+
+    //    public boolean requestForLocationService() {
 //        int locationCheck1 = ContextCompat.checkSelfPermission(this,
 //                android.Manifest.permission.ACCESS_COARSE_LOCATION);
 //        int locationCheck2 = ContextCompat.checkSelfPermission(this,

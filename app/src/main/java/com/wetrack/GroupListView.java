@@ -1,10 +1,12 @@
 package com.wetrack;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -13,18 +15,18 @@ import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
-import com.wetrack.database.DataFormat;
-import com.wetrack.database.FriendDataFormat;
-import com.wetrack.database.GroupDataFormat;
-
-import java.util.ArrayList;
+import com.wetrack.client.WeTrackClient;
+import com.wetrack.utils.ConstantValues;
 
 /**
  * Created by moziliang on 16/11/20.
  */
 public class GroupListView extends RelativeLayout{
+    private WeTrackClient client = WeTrackClient.getInstance(ConstantValues.serverBaseUrl, ConstantValues.timeoutSeconds);
+    private GroupListUpdateReceiver mGroupListUpdateReceiver = null;
+    private LinearLayout groupListLinearLayout;
+
     public GroupListView(Context context) {
         super(context);
         init();
@@ -38,9 +40,8 @@ public class GroupListView extends RelativeLayout{
         init();
     }
 
-
-    private LinearLayout groupListLinearLayout;
     public void init() {
+        initBroadcastReceiver();
         //set params for this view
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -59,14 +60,14 @@ public class GroupListView extends RelativeLayout{
         groupListLinearLayout.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(groupListLinearLayout);
         addView(scrollView);
-//        reLoadGroupList();
+        reLoadGroupList();
     }
 
-//    private void reLoadGroupList() {
+    private void reLoadGroupList() {
 //        groupListLinearLayout.removeAllViews();
 //        // get all groupList items
 //        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-//        ArrayList<DataFormat> allgroups = GroupDataFormat.getAllGroups();
+//        allgroups = GroupDataFormat.getAllGroups();
 //
 //        //get all friends to form a group, and add this group into allgroups
 //        ArrayList<String>allFriends = new ArrayList<>();
@@ -103,7 +104,7 @@ public class GroupListView extends RelativeLayout{
 //                }
 //            });
 //        }
-//    }
+    }
 
     public void close() {
         int height = getHeight();
@@ -130,13 +131,31 @@ public class GroupListView extends RelativeLayout{
     }
 
     public void open() {
-//        reLoadGroupList();
-
         int height = getHeight();
         setVisibility(View.VISIBLE);
         Animation am = new TranslateAnimation(0f, 0f, -height * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
+    }
+
+    private void initBroadcastReceiver() {
+        mGroupListUpdateReceiver = new GroupListUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_GROUP_LIST);
+        getContext().registerReceiver(mGroupListUpdateReceiver, intentFilter);
+    }
+
+    public void destroy() {
+        if (mGroupListUpdateReceiver != null) {
+            getContext().unregisterReceiver(mGroupListUpdateReceiver);
+            mGroupListUpdateReceiver = null;
+        }
+    }
+
+    private class GroupListUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //reload
+        }
     }
 }
