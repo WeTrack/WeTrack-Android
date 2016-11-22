@@ -82,8 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                 client.userLogin(username, password, new EntityCallback<UserToken>() {
                     @Override
                     protected void onReceive(UserToken token) {
-                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, token.getUsername());
-                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_TOKEN, token.getToken());
+//                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, token.getUsername());
+//                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_TOKEN, token.getToken());
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         LoginActivity.this.finish();
@@ -129,9 +129,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected void onSuccess(String username, String message) {
                         enableAll();
-                        UserDataFormat userDataFormat = new UserDataFormat(username, password, nickname, null, username, gender, null);
+//                        UserDataFormat userDataFormat = new UserDataFormat(username, password, nickname, null, username, gender, null);
                         Toast.makeText(LoginActivity.this, "You have successfully signed up. Please try to sign in again with your new username and password.", Toast.LENGTH_SHORT).show();
-                        userDataFormat.addUser();
+//                        userDataFormat.addUser();
                         toggleButton.callOnClick();
                     }
 

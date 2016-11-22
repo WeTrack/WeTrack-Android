@@ -59,51 +59,51 @@ public class GroupListView extends RelativeLayout{
         groupListLinearLayout.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(groupListLinearLayout);
         addView(scrollView);
-        reLoadGroupList();
+//        reLoadGroupList();
     }
 
-    private void reLoadGroupList() {
-        groupListLinearLayout.removeAllViews();
-        // get all groupList items
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        ArrayList<DataFormat> allgroups = GroupDataFormat.getAllGroups();
-
-        //get all friends to form a group, and add this group into allgroups
-        ArrayList<String>allFriends = new ArrayList<>();
-        for (DataFormat friendDataFormat : FriendDataFormat.getAllFriend()) {
-            allFriends.add(friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME));
-        }
-        allgroups.add(0, new GroupDataFormat(getContext().getResources().getText(R.string.allFriend).toString(), allFriends));
-
-        //show all groups items in linearLayout
-        for (DataFormat dataFormat : allgroups) {
-            GroupDataFormat groupDataFormat = new GroupDataFormat(dataFormat);
-            RelativeLayout groupListItemLayout = (RelativeLayout) layoutInflater.inflate(R.layout.group_list_item, null);
-
-            TextView groupNameTextView = (TextView) groupListItemLayout.findViewById(R.id.group_name);
-            groupNameTextView.setText(groupDataFormat.getValueByName(GroupDataFormat.ATTRI_NAME));
-
-            TextView groupMemberTextView = (TextView) groupListItemLayout.findViewById(R.id.group_member);
-            String memberString = "";
-            ArrayList<String> members = groupDataFormat.getGroupMembers();
-            for (int i = 0; i < members.size(); i++) {
-                if (i != members.size() - 1) {
-                    memberString += members.get(i) + ", ";
-                } else {
-                    memberString += members.get(i);
-                }
-            }
-            groupMemberTextView.setText(memberString);
-            groupListLinearLayout.addView(groupListItemLayout);
-
-            groupListItemLayout.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-        }
-    }
+//    private void reLoadGroupList() {
+//        groupListLinearLayout.removeAllViews();
+//        // get all groupList items
+//        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+//        ArrayList<DataFormat> allgroups = GroupDataFormat.getAllGroups();
+//
+//        //get all friends to form a group, and add this group into allgroups
+//        ArrayList<String>allFriends = new ArrayList<>();
+//        for (DataFormat friendDataFormat : FriendDataFormat.getAllFriend()) {
+//            allFriends.add(friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME));
+//        }
+//        allgroups.add(0, new GroupDataFormat(getContext().getResources().getText(R.string.allFriend).toString(), allFriends));
+//
+//        //show all groups items in linearLayout
+//        for (DataFormat dataFormat : allgroups) {
+//            GroupDataFormat groupDataFormat = new GroupDataFormat(dataFormat);
+//            RelativeLayout groupListItemLayout = (RelativeLayout) layoutInflater.inflate(R.layout.group_list_item, null);
+//
+//            TextView groupNameTextView = (TextView) groupListItemLayout.findViewById(R.id.group_name);
+//            groupNameTextView.setText(groupDataFormat.getValueByName(GroupDataFormat.ATTRI_NAME));
+//
+//            TextView groupMemberTextView = (TextView) groupListItemLayout.findViewById(R.id.group_member);
+//            String memberString = "";
+//            ArrayList<String> members = groupDataFormat.getGroupMembers();
+//            for (int i = 0; i < members.size(); i++) {
+//                if (i != members.size() - 1) {
+//                    memberString += members.get(i) + ", ";
+//                } else {
+//                    memberString += members.get(i);
+//                }
+//            }
+//            groupMemberTextView.setText(memberString);
+//            groupListLinearLayout.addView(groupListItemLayout);
+//
+//            groupListItemLayout.setOnClickListener(new OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
+//        }
+//    }
 
     public void close() {
         int height = getHeight();
@@ -130,7 +130,7 @@ public class GroupListView extends RelativeLayout{
     }
 
     public void open() {
-        reLoadGroupList();
+//        reLoadGroupList();
 
         int height = getHeight();
         setVisibility(View.VISIBLE);

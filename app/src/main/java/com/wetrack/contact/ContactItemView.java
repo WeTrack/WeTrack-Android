@@ -100,31 +100,31 @@ public class ContactItemView extends RelativeLayout {
         username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
     }
 
-    public void setContact(FriendDataFormat friendDataFormat) {
-        this.friendDataFormat = friendDataFormat;
-        friendName = friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME);
-        friendGender = friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_GENDER);
-
-        nameTextView.setText(friendName);
-        if (friendGender.equals("male")) {
-            portraitImageView.setImageResource(R.drawable.portrait_boy);
-            genderImageView.setImageResource(R.drawable.gender_male);
-        } else {
-            portraitImageView.setImageResource(R.drawable.portrait_girl);
-            genderImageView.setImageResource(R.drawable.gender_female);
-        }
-
-        switch (mode) {
-            case ConstantValues.CONTACT_MODE_NEW_GROUP:
-                addButton.setVisibility(GONE);
-                checkBox.setVisibility(VISIBLE);
-                break;
-            case ConstantValues.CONTACT_MODE_ADD_FRIEND:
-                addButton.setVisibility(VISIBLE);
-                checkBox.setVisibility(GONE);
-                break;
-        }
-    }
+//    public void setContact(FriendDataFormat friendDataFormat) {
+//        this.friendDataFormat = friendDataFormat;
+//        friendName = friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME);
+//        friendGender = friendDataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_GENDER);
+//
+//        nameTextView.setText(friendName);
+//        if (friendGender.equals("male")) {
+//            portraitImageView.setImageResource(R.drawable.portrait_boy);
+//            genderImageView.setImageResource(R.drawable.gender_male);
+//        } else {
+//            portraitImageView.setImageResource(R.drawable.portrait_girl);
+//            genderImageView.setImageResource(R.drawable.gender_female);
+//        }
+//
+//        switch (mode) {
+//            case ConstantValues.CONTACT_MODE_NEW_GROUP:
+//                addButton.setVisibility(GONE);
+//                checkBox.setVisibility(VISIBLE);
+//                break;
+//            case ConstantValues.CONTACT_MODE_ADD_FRIEND:
+//                addButton.setVisibility(VISIBLE);
+//                checkBox.setVisibility(GONE);
+//                break;
+//        }
+//    }
 
     static public void setMode(int mode_code) {
         mode = mode_code;

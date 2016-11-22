@@ -84,22 +84,22 @@ public class ContactView extends RelativeLayout {
             ContactItemView.setMode(ConstantValues.CONTACT_MODE_ADD_FRIEND);
 
             ContactItemView contactItemView1 = new ContactItemView(getContext());
-            contactItemView1.setContact(new FriendDataFormat(username, "Cherry", "female"));
+//            contactItemView1.setContact(new FriendDataFormat(username, "Cherry", "female"));
             listLinearLayout.addView(contactItemView1);
             contactItemView1.setOnAddFriendSucceed(new MyOnAddFriendSucceedListener());
 
             ContactItemView contactItemView2 = new ContactItemView(getContext());
-            contactItemView2.setContact(new FriendDataFormat(username, "Jerry", "male"));
+//            contactItemView2.setContact(new FriendDataFormat(username, "Jerry", "male"));
             listLinearLayout.addView(contactItemView2);
             contactItemView2.setOnAddFriendSucceed(new MyOnAddFriendSucceedListener());
 
             ContactItemView contactItemView3 = new ContactItemView(getContext());
-            contactItemView3.setContact(new FriendDataFormat(username, "Manyee", "female"));
+//            contactItemView3.setContact(new FriendDataFormat(username, "Manyee", "female"));
             listLinearLayout.addView(contactItemView3);
             contactItemView3.setOnAddFriendSucceed(new MyOnAddFriendSucceedListener());
 
             ContactItemView contactItemView4 = new ContactItemView(getContext());
-            contactItemView4.setContact(new FriendDataFormat(username, "Mike", "male"));
+//            contactItemView4.setContact(new FriendDataFormat(username, "Mike", "male"));
             listLinearLayout.addView(contactItemView4);
             contactItemView4.setOnAddFriendSucceed(new MyOnAddFriendSucceedListener());
         }
@@ -117,22 +117,22 @@ public class ContactView extends RelativeLayout {
         @Override
         public void onClick(View v) {
             ArrayList<String>groupMembers = new ArrayList<>();
-            for (DataFormat dataFormat : dataAndIsChecked.keySet()) {
-                groupMembers.add(dataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME));
-            }
-            if ((new GroupDataFormat("new group", groupMembers)).addGroup()) {
+//            for (DataFormat dataFormat : dataAndIsChecked.keySet()) {
+//                groupMembers.add(dataFormat.getValueByName(FriendDataFormat.ATTRI_FRIEND_NAME));
+//            }
+//            if ((new GroupDataFormat("new group", groupMembers)).addGroup()) {
                 hide();
-            }
+//            }
         }
     }
     private Map<DataFormat, Boolean> dataAndIsChecked = new HashMap();
     private void listAllFriend() {
-        for(DataFormat dataFormat : FriendDataFormat.getAllFriend()) {
-            ContactItemView contactItemView = new ContactItemView(getContext());
-            contactItemView.setContact(new FriendDataFormat(dataFormat));
-            listLinearLayout.addView(contactItemView);
-            contactItemView.setOnMyCheckedChangeListener(new ItemCheckedChangedListener());
-        }
+//        for(DataFormat dataFormat : FriendDataFormat.getAllFriend()) {
+//            ContactItemView contactItemView = new ContactItemView(getContext());
+//            contactItemView.setContact(new FriendDataFormat(dataFormat));
+//            listLinearLayout.addView(contactItemView);
+//            contactItemView.setOnMyCheckedChangeListener(new ItemCheckedChangedListener());
+//        }
     }
     private class ItemCheckedChangedListener implements ContactItemView.OnMyCheckedChangedListener {
         @Override

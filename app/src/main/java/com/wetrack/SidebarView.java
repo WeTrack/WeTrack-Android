@@ -60,17 +60,18 @@ public class SidebarView extends RelativeLayout {
         settingButton = (Button) findViewById(R.id.setting_button);
         logoutButton = (Button) findViewById(R.id.logout_button);
 
-        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
+//        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
+        String username = "ken";
         usernameTextView.setText(username);
 
-        UserDataFormat userDataFormat = new UserDataFormat(username);
-        userDataFormat.getDataByUsername();
+//        UserDataFormat userDataFormat = new UserDataFormat(username);
+//        userDataFormat.getDataByUsername();
 
-        if (userDataFormat.getValueByName(UserDataFormat.ATTRI_GENDER).equals("male")) {
+//        if (userDataFormat.getValueByName(UserDataFormat.ATTRI_GENDER).equals("male")) {
             genderImageView.setImageResource(R.drawable.gender_male);
-        } else {
-            genderImageView.setImageResource(R.drawable.gender_female);
-        }
+//        } else {
+//            genderImageView.setImageResource(R.drawable.gender_female);
+//        }
     }
 
     public void close() {
