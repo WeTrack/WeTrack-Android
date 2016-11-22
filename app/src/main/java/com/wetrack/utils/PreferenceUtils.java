@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 public class PreferenceUtils {
 	public static final String KEY_USERNAME = "username";
+	public static final String KEY_TOKEN = "token";
 
 	public static final String PREFERENCE_NAME = "setting";
 	

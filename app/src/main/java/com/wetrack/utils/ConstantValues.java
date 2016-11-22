@@ -1,6 +1,8 @@
 package com.wetrack.utils;
 
-public class ConstantValues {
+import com.wetrack.client.WeTrackClient;
+
+public abstract class ConstantValues {
     //for debug
     public static String debugTab = "debug";
     public static String gpsDebug = "gps_debug";
@@ -29,4 +31,12 @@ public class ConstantValues {
 
     //
     final static public String NAME_SEPERATE_STRING = "|";
+
+    private static WeTrackClient instance;
+
+    public static synchronized WeTrackClient client() {
+        if (instance == null)
+            instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
+        return instance;
+    }
 }

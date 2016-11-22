@@ -28,11 +28,11 @@
 
             <!-- Email Label -->
             <EditText
-                android:id="@+id/input_email"
+                android:id="@+id/input_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:hint="Username"
+                android:inputType="text" />
 
             <!-- Password Label -->
             <EditText
@@ -44,7 +44,7 @@
 
             <!-- reinput Password Label -->
             <EditText
-                android:id="@+id/reinput_password"
+                android:id="@+id/input_password_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password Again"
@@ -64,7 +64,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:id="@+id/gender_radiogroup"
+                android:id="@+id/gender_radio_group"
                 android:visibility="gone">
                 <RadioButton android:id="@+id/radio_male"
                     android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
             </RadioGroup>
 
             <Button
-                android:id="@+id/first_button"
+                android:id="@+id/log_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
@@ -90,7 +90,7 @@
                 android:text="@string/login" />
 
             <Button
-                android:id="@+id/second_button"
+                android:id="@+id/option_toggle_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
