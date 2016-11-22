@@ -12,6 +12,7 @@ import java.util.List;
 public class Chat {
     @DatabaseField(columnName = "id", id = true)
     private String chatId;
+    @DatabaseField
     private String name;
     @DatabaseField(columnName = "members", persisterClass = StringListPersister.class)
     @SerializedName("members") private List<String> memberNames;

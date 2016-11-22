@@ -13,9 +13,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-/**
- * Created by moziliang on 16/11/17.
- */
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.database.WeTrackDatabaseHelper;
+import com.wetrack.model.User;
+import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.PreferenceUtils;
+
 public class SidebarView extends RelativeLayout {
 
     private ImageView portraitImageView;
@@ -30,22 +35,20 @@ public class SidebarView extends RelativeLayout {
         super(context);
         init();
     }
+
     public SidebarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public SidebarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
-//    public SidebarView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-//        super(context, attrs, defStyleAttr, defStyleRes);
-//        init();
-//    }
 
     public void init() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        RelativeLayout sidebarLayout = (RelativeLayout)layoutInflater.inflate(R.layout.sidebar, null);
+        RelativeLayout sidebarLayout = (RelativeLayout) layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
 
         setVisibility(GONE);
@@ -57,18 +60,53 @@ public class SidebarView extends RelativeLayout {
         settingButton = (Button) findViewById(R.id.setting_button);
         logoutButton = (Button) findViewById(R.id.logout_button);
 
-//        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
-        String username = "ken";
-        usernameTextView.setText(username);
+        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
 
-//        UserDataFormat userDataFormat = new UserDataFormat(username);
-//        userDataFormat.getDataByUsername();
-
-//        if (userDataFormat.getValueByName(UserDataFormat.ATTRI_GENDER).equals("male")) {
+        // Load user information from local cache
+        RuntimeExceptionDao<User, String> userDao =
+                OpenHelperManager.getHelper(this.getContext(), WeTrackDatabaseHelper.class).getUserDao();
+        final User user = userDao.queryForId(username);
+        OpenHelperManager.releaseHelper();
+        if (user != null) {
+            usernameTextView.setText(user.getNickname());
+            if (user.getGender() == User.Gender.Male) {
+                portraitImageView.setImageResource(R.drawable.portrait_boy);
+                genderImageView.setImageResource(R.drawable.gender_male);
+            } else {
+                portraitImageView.setImageResource(R.drawable.portrait_girl);
+                genderImageView.setImageResource(R.drawable.gender_female);
+            }
+        } else {
+            usernameTextView.setText("User Nickname");
+            portraitImageView.setImageResource(R.drawable.portrait_boy);
             genderImageView.setImageResource(R.drawable.gender_male);
-//        } else {
-//            genderImageView.setImageResource(R.drawable.gender_female);
-//        }
+        }
+
+        // Fetch user's latest information from server
+        ConstantValues.client().getUserInfo(username, new EntityCallback<User>() {
+            @Override
+            protected void onReceive(User receivedUser) {
+                if (!receivedUser.equals(user)) { // Update local cache if necessary
+                    RuntimeExceptionDao<User, String> userDao =
+                            OpenHelperManager.getHelper(
+                                    SidebarView.this.getContext(),
+                                    WeTrackDatabaseHelper.class
+                            ).getUserDao();
+                    if (user == null)
+                        userDao.create(receivedUser);
+                    else
+                        userDao.update(receivedUser);
+                    OpenHelperManager.releaseHelper();
+                    if (receivedUser.getGender() == User.Gender.Male) {
+                        portraitImageView.setImageResource(R.drawable.portrait_boy);
+                        genderImageView.setImageResource(R.drawable.gender_male);
+                    } else {
+                        portraitImageView.setImageResource(R.drawable.portrait_girl);
+                        genderImageView.setImageResource(R.drawable.gender_female);
+                    }
+                }
+            }
+        });
     }
 
     public void close() {
@@ -80,9 +118,7 @@ public class SidebarView extends RelativeLayout {
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -90,9 +126,7 @@ public class SidebarView extends RelativeLayout {
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
     }
 

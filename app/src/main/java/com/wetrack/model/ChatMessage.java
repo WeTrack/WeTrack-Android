@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "messages")
 public class ChatMessage extends Notification {
+    @DatabaseField(columnName = "chat_id", index = true)
     private String chatId;
     @DatabaseField(columnName = "from")
     @SerializedName("from") private String fromUsername;

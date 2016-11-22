@@ -19,10 +19,14 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.contact.ContactView;
+import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
+import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.Tools;
 
@@ -33,6 +37,8 @@ import java.util.Arrays;
 public class MainActivity extends FragmentActivity {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
+
+    private RuntimeExceptionDao<User, String> userDao;
 
     private ImageButton openSidebarButton;
     private ContactView contactView;
@@ -51,15 +57,14 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        userDao = OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class).getUserDao();
+
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
         mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
-
         initSidebar();
-
         initAddContact();
-
         initDropList();
     }
 
@@ -294,7 +299,14 @@ public class MainActivity extends FragmentActivity {
         mMapController.stop();
     }
 
-//    public boolean requestForLocationService() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userDao = null;
+        OpenHelperManager.releaseHelper();
+    }
+
+    //    public boolean requestForLocationService() {
 //        int locationCheck1 = ContextCompat.checkSelfPermission(this,
 //                android.Manifest.permission.ACCESS_COARSE_LOCATION);
 //        int locationCheck2 = ContextCompat.checkSelfPermission(this,
