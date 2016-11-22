@@ -35,9 +35,8 @@ public class MapController {
     private GpsLocationManager mGpsLocationManager;
 
     private MapController(Context context) {
-        initBroadcastReceiver();
-
         mContext = context;
+        initBroadcastReceiver();
         mGoogleNavigationManager = GoogleNavigationManager.getInstance(mContext);
         mMapHandler = new MapHandler();
         mGpsLocationManager = GpsLocationManager.getInstance(mContext);
