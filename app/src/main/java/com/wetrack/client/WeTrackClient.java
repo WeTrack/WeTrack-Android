@@ -52,13 +52,21 @@ public class WeTrackClient {
     private final FriendService friendService;
     private final LocationService locationService;
 
+    private static WeTrackClient instance = null;
+    public static synchronized WeTrackClient getInstance() {
+        if (instance == null) {
+            instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
+        }
+        return instance;
+    }
+
     /**
      * Creates a {@code WeTrackClient} connected to the given base URL with given timeout in seconds.
      *
      * @param baseUrl the given base URL.
      * @param timeoutSeconds the given timeout in seconds.
      */
-    public WeTrackClient(String baseUrl, int timeoutSeconds) {
+    private WeTrackClient(String baseUrl, int timeoutSeconds) {
         this(baseUrl, timeoutSeconds, Schedulers.io(), AndroidSchedulers.mainThread());
     }
 

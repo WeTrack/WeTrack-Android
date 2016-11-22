@@ -34,23 +34,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
     private RuntimeExceptionDao<User, String> userDao;
 
     private ImageButton openSidebarButton;
-    private ContactView contactView;
-    private SidebarView sidebarView;
+    private ContactView contactView = null;
+    private SidebarView sidebarView = null;
     private ImageButton addContactButton;
-    private AddOptionListView addOptionListView;
+    private AddOptionListView addOptionListView = null;
     private Button groupListButton;
     private ImageButton dropListImageButton;
-    private GroupListView groupListView;
+    private GroupListView groupListView = null;
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
+
+    private Button chat_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,8 @@ public class MainActivity extends FragmentActivity {
         initSidebar();
         initAddContact();
         initDropList();
+
+        initChatButton();
     }
 
     public void initMapInView(int viewId) {
@@ -237,6 +241,8 @@ public class MainActivity extends FragmentActivity {
         }).start();
     }
 
+
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -284,24 +290,33 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
 
 //        requestForLocationService();
-        checkGps();
+//        checkGps();
 
-        mMapController.start();
+//        mMapController.start();
 
 //        showMarkerDemo();
-        showNavigationDemo();
+//        showNavigationDemo();
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mMapController.stop();
+//        mMapController.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (groupListView != null) {
+            groupListView.destroy();
+        }
+        if (contactView != null) {
+            contactView.destroy();
+        }
+        if (sidebarView != null) {
+            sidebarView.destroy();
+        }
         userDao = null;
         OpenHelperManager.releaseHelper();
     }
@@ -362,4 +377,19 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    private void initChatButton(){
+        chat_button = (Button) findViewById(R.id.chat_button);
+        chat_button.setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.chat_button:
+                Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+                startActivity(i);
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -1,6 +1,9 @@
 package com.wetrack;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
@@ -23,6 +27,7 @@ import com.wetrack.utils.PreferenceUtils;
 
 public class SidebarView extends RelativeLayout {
 
+    private UserInfoUpdateReceiver mUserInfoUpdateReceiver = null;
     private ImageView portraitImageView;
     private ImageView genderImageView;
     private TextView usernameTextView;
@@ -47,6 +52,8 @@ public class SidebarView extends RelativeLayout {
     }
 
     public void init() {
+        initBroadcastReceiver();
+
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         RelativeLayout sidebarLayout = (RelativeLayout) layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
@@ -83,7 +90,7 @@ public class SidebarView extends RelativeLayout {
         }
 
         // Fetch user's latest information from server
-        ConstantValues.client().getUserInfo(username, new EntityCallback<User>() {
+        WeTrackClient.getInstance().getUserInfo(username, new EntityCallback<User>() {
             @Override
             protected void onReceive(User receivedUser) {
                 if (!receivedUser.equals(user)) { // Update local cache if necessary
@@ -141,5 +148,25 @@ public class SidebarView extends RelativeLayout {
 
     public void setLogoutListener(View.OnClickListener onClickListener) {
         logoutButton.setOnClickListener(onClickListener);
+    }
+
+    private void initBroadcastReceiver() {
+        mUserInfoUpdateReceiver = new UserInfoUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_USER_INFO);
+        getContext().registerReceiver(mUserInfoUpdateReceiver, intentFilter);
+    }
+
+    public void destroy() {
+        if (mUserInfoUpdateReceiver != null) {
+            getContext().unregisterReceiver(mUserInfoUpdateReceiver);
+            mUserInfoUpdateReceiver = null;
+        }
+    }
+
+    private class UserInfoUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //reload
+        }
     }
 }

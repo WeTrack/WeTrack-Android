@@ -1,6 +1,9 @@
 package com.wetrack.contact;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 
 import com.wetrack.BaseApplication;
 import com.wetrack.R;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.database.DataFormat;
 import com.wetrack.database.FriendDataFormat;
 import com.wetrack.utils.ConstantValues;
@@ -26,7 +30,8 @@ import java.util.Map;
  * Created by moziliang on 16/11/18.
  */
 public class ContactView extends RelativeLayout {
-
+    private WeTrackClient client = WeTrackClient.getInstance();
+    private FriendListUpdateReceiver mFriendListUpdateReceiver = null;
     private ImageButton backButton;
     private TextView titleTextView;
     private Button configButton;
@@ -51,6 +56,8 @@ public class ContactView extends RelativeLayout {
     }
 
     public void init() {
+        initBroadcastReceiver();
+
         username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
@@ -170,5 +177,25 @@ public class ContactView extends RelativeLayout {
 
     public void hide() {
         setVisibility(GONE);
+    }
+
+    private void initBroadcastReceiver() {
+        mFriendListUpdateReceiver = new FriendListUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_FRIEND_LIST);
+        getContext().registerReceiver(mFriendListUpdateReceiver, intentFilter);
+    }
+
+    public void destroy() {
+        if (mFriendListUpdateReceiver != null) {
+            getContext().unregisterReceiver(mFriendListUpdateReceiver);
+            mFriendListUpdateReceiver = null;
+        }
+    }
+
+    private class FriendListUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //reload
+        }
     }
 }
