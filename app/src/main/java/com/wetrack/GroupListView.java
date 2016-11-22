@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -13,13 +12,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
-
-import com.wetrack.database.DataFormat;
-import com.wetrack.database.FriendDataFormat;
-import com.wetrack.database.GroupDataFormat;
-
-import java.util.ArrayList;
 
 /**
  * Created by moziliang on 16/11/20.

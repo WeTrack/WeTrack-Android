@@ -10,9 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by moziliang on 16/10/1.
- */
 public class UserDataFormat extends DataFormat {
     public static String ATTRI_USERNAME = "USERNAME";
     public static String ATTRI_PASSWORD = "PASSWORD";
