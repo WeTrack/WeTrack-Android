@@ -1,11 +1,17 @@
 package com.wetrack.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.wetrack.database.LocalDateTimePersister;
+
 import org.joda.time.LocalDateTime;
 
+@DatabaseTable(tableName = "locations")
 public class Location {
     private String username;
     private double longitude;
     private double latitude;
+    @DatabaseField(persisterClass = LocalDateTimePersister.class)
     private LocalDateTime time;
 
     public Location() {}

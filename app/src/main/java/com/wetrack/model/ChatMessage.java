@@ -1,9 +1,13 @@
 package com.wetrack.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable(tableName = "messages")
 public class ChatMessage extends Notification {
     private String chatId;
+    @DatabaseField(columnName = "from")
     @SerializedName("from") private String fromUsername;
 
     public String getChatId() { return chatId; }

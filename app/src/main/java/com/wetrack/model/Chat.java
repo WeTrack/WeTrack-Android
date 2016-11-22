@@ -1,13 +1,19 @@
 package com.wetrack.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.wetrack.database.StringListPersister;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@DatabaseTable(tableName = "chats")
 public class Chat {
+    @DatabaseField(columnName = "id", id = true)
     private String chatId;
     private String name;
+    @DatabaseField(columnName = "members", persisterClass = StringListPersister.class)
     @SerializedName("members") private List<String> memberNames;
 
     public Chat() {}

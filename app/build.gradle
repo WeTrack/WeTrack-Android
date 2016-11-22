@@ -40,7 +40,8 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.9.5'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
     compile group: 'org.json', name: 'json', version: '20160810'
-    // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
 
     testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
     testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: "$okHttpVersion"
