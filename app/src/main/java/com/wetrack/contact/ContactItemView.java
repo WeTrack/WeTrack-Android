@@ -17,7 +17,6 @@ import com.wetrack.BaseApplication;
 import com.wetrack.R;
 import com.wetrack.database.FriendDataFormat;
 import com.wetrack.database.GroupDataFormat;
-import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
 
 import java.util.ArrayList;

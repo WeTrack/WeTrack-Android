@@ -11,13 +11,10 @@ import com.wetrack.utils.ConstantValues;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by moziliang on 16/10/1.
- */
-public class DataBaseManager {
+class DataBaseManager {
     static private DataBaseManager mDataBaseManager = null;
-    private Context mContext = null;
-    static public DataBaseManager getInstance(Context context) {
+
+    static DataBaseManager getInstance(Context context) {
         if (mDataBaseManager == null) {
             mDataBaseManager = new DataBaseManager(context);
         }
@@ -28,8 +25,7 @@ public class DataBaseManager {
     static private ArrayList<String>allTableNames = null;
 
     private DataBaseManager(Context context) {
-        mContext = context;
-        MyDB  = new MySQLiteOpenHelper(mContext);
+        MyDB  = new MySQLiteOpenHelper(context);
     }
 
     public boolean createTable(String tableName, ArrayList<String>allDataNames) {

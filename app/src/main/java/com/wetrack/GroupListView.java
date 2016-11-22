@@ -15,7 +15,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.utils.ConstantValues;
 

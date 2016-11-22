@@ -75,4 +75,12 @@
         android:background="#e0ffffff">
 
     </com.wetrack.AddOptionListView>
+    <Button
+        android:id="@+id/chat_button"
+        android:layout_width="55dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/chat_button"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

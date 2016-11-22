@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
@@ -45,6 +45,8 @@ public class MainActivity extends FragmentActivity {
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
+
+    private Button chat_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,8 @@ public class MainActivity extends FragmentActivity {
         initAddContact();
 
         initDropList();
+
+        initChatButton();
     }
 
     public void initMapInView(int viewId) {
@@ -232,6 +236,8 @@ public class MainActivity extends FragmentActivity {
         }).start();
     }
 
+
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -279,19 +285,19 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
 
 //        requestForLocationService();
-        checkGps();
+//        checkGps();
 
-        mMapController.start();
+//        mMapController.start();
 
 //        showMarkerDemo();
-        showNavigationDemo();
+//        showNavigationDemo();
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mMapController.stop();
+//        mMapController.stop();
     }
 
     @Override
@@ -364,4 +370,19 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    private void initChatButton(){
+        chat_button = (Button) findViewById(R.id.chat_button);
+        chat_button.setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.chat_button:
+                Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+                startActivity(i);
+                break;
+            default:
+                break;
+        }
+    }
 }

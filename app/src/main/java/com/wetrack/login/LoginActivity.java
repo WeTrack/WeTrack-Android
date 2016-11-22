@@ -14,24 +14,28 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.google.ads.AdRequest;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.BaseApplication;
 import com.wetrack.MainActivity;
 import com.wetrack.R;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.database.UserDataFormat;
+import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
 
+import retrofit2.Response;
+
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getCanonicalName();
 
     private WeTrackClient client = WeTrackClient.getInstance(ConstantValues.serverBaseUrl, ConstantValues.timeoutSeconds);
+    private RuntimeExceptionDao<User, String> userDao;
 
     private EditText usernameInput;
     private EditText passwordInput;
@@ -49,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        userDao = OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class).getUserDao();
 
         usernameInput = (EditText) findViewById(R.id.input_username);
         passwordInput = (EditText) findViewById(R.id.input_password);
@@ -81,6 +87,11 @@ public class LoginActivity extends AppCompatActivity {
             if (isSignIn) { // Sign in
                 client.userLogin(username, password, new EntityCallback<UserToken>() {
                     @Override
+                    protected void onResponse(Response<UserToken> response) {
+                        enableAll();
+                    }
+
+                    @Override
                     protected void onReceive(UserToken token) {
                         PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, token.getUsername());
                         PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_TOKEN, token.getToken());
@@ -91,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     protected void onErrorMessage(Message response) {
-                        enableAll();
                         if (response.getStatusCode() == 401)
                             Toast.makeText(LoginActivity.this, "Username or password is incorrect.", Toast.LENGTH_SHORT).show();
                         else
@@ -100,13 +110,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     protected void onException(Throwable ex) {
-                        enableAll();
                         Toast.makeText(LoginActivity.this, "Exception occurred during the connection: " + ex.getClass().getName(), Toast.LENGTH_SHORT).show();
                         Log.w(TAG, ex);
                     }
                 });
             } else { // Sign up
-                String passwordConfirm = passwordConfirmInput.getText().toString();
+                final String passwordConfirm = passwordConfirmInput.getText().toString();
                 if (passwordConfirm.isEmpty() || !password.equals(passwordConfirm)) {
                     Toast.makeText(LoginActivity.this, "Password confirmation is not the same as the provided password.", Toast.LENGTH_SHORT).show();
                     return;
@@ -123,15 +132,16 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 final String gender = ((RadioButton) findViewById(genderId)).getText().toString();
 
-                User user = new User(username, password, nickname);
+                final User user = new User(username, password, nickname);
                 user.setGender(User.Gender.valueOf(gender));
                 client.createUser(user, new CreatedMessageCallback() {
                     @Override
                     protected void onSuccess(String username, String message) {
                         enableAll();
-//                        UserDataFormat userDataFormat = new UserDataFormat(username, password, nickname, null, username, gender, null);
+                        userDao.create(user);
                         Toast.makeText(LoginActivity.this, "You have successfully signed up. Please try to sign in again with your new username and password.", Toast.LENGTH_SHORT).show();
-//                        userDataFormat.addUser();
+                        User savedUser = userDao.queryForId(username);
+                        Log.d(TAG, "Saved User{username=" + savedUser.getUsername() + "}");
                         toggleButton.callOnClick();
                     }
 
@@ -210,10 +220,16 @@ public class LoginActivity extends AppCompatActivity {
             }
             enableAll();
         }
-
     }
 
-    /* Enables all input controls */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userDao = null;
+        OpenHelperManager.releaseHelper();
+    }
+
+    /** Enables all input controls */
     private void enableAll() {
         usernameInput.setEnabled(true);
         passwordInput.setEnabled(true);
@@ -224,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
         toggleButton.setEnabled(true);
     }
 
-    /* Disables all input controls */
+    /** Disables all input controls */
     private void disableAll() {
         usernameInput.setEnabled(false);
         passwordInput.setEnabled(false);

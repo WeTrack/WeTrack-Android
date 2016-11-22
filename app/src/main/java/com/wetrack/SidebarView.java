@@ -16,13 +16,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.wetrack.database.UserDataFormat;
 import com.wetrack.utils.ConstantValues;
-import com.wetrack.utils.PreferenceUtils;
 
-/**
- * Created by moziliang on 16/11/17.
- */
 public class SidebarView extends RelativeLayout {
 
     private UserInfoUpdateReceiver mUserInfoUpdateReceiver = null;

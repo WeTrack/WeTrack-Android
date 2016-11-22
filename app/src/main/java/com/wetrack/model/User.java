@@ -1,14 +1,22 @@
 package com.wetrack.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.wetrack.database.LocalDateTimePersister;
+
 import org.joda.time.LocalDate;
 
+@DatabaseTable(tableName = "users")
 public class User {
+    @DatabaseField(id = true)
     private String username;
     private String password;
     private String nickname;
+    @DatabaseField(columnName = "icon_url")
     private String iconUrl;
     private String email;
     private Gender gender;
+    @DatabaseField(columnName = "birth_date", persisterClass = LocalDateTimePersister.class)
     private LocalDate birthDate;
 
     public User() {}
