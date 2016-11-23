@@ -19,34 +19,29 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.wetrack.contact.ContactView;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.utils.ConstantValues;
-import com.wetrack.utils.Tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
     private ImageButton openSidebarButton;
-    private ContactView contactView = null;
     private SidebarView sidebarView = null;
     private ImageButton addContactButton;
     private AddOptionListView addOptionListView = null;
-    private Button groupListButton;
-    private ImageButton dropListImageButton;
-    private ChatListView chatListView = null;
+    private Button chatListButton;
+    private ImageButton chatListImageButton;
 
-    private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
 
-    private Button chat_button;
+    private Button chatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +49,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
 
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
-        mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
         initSidebar();
         initAddContact();
-        initDropList();
+        initChatList();
 
         initChatButton();
     }
@@ -67,33 +61,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public void initMapInView(int viewId) {
         mMapController = MapController.getInstance(this);
         mMapController.addMapToView(getSupportFragmentManager(), viewId);
-
-//        mMapController.setmOnInfoWindowClickListener(new MyOnInfoWindowClickListener());
     }
-
-//    private class MyOnInfoWindowClickListener implements GoogleMapFragment.OnInfoWindowClickListener {
-//        @Override
-//        public void onInfoWindowClick(MarkerDataFormat markerData) {
-//            Log.d(ConstantValues.markerDebug, "marker callback: " + markerData.toString());
-//        }
-//    }
 
     private void initSidebar() {
         sidebarView = new SidebarView(this);
-        sidebarView.setLayoutParams(new RelativeLayout.LayoutParams(
-                Tools.getScreenW() * 2 / 3,
-                ViewGroup.LayoutParams.MATCH_PARENT));
 
         mainLayout.addView(sidebarView, 1);
         openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sidebarView.getVisibility() == View.GONE) {
-                    hideAllLayout(sidebarView);
-                    sidebarView.open();
-                } else {
+                if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
                     sidebarView.close();
+                } else {
+                    hideAllOtherLayout(sidebarView);
+                    sidebarView.open();
                 }
             }
         });
@@ -109,30 +91,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initAddContact() {
-        contactView = new ContactView(this);
-        mainLayout.addView(contactView, mainLayout.getChildCount());
-        contactView.setVisibility(View.GONE);
-        contactView.setLayoutParams(new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        final String[] list = {"NewGroup","AddFriend"};
+        final String[] list = {"NewGroup", "AddFriend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact, list);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.add_contact, list);
         addOptionListView.setAdapter(listAdapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addOptionListView.setVisibility(View.GONE);
                 addOptionListView.close();
                 if (list[position].equals(list[0])) {
-                    contactView.setMode(ConstantValues.CONTACT_MODE_NEW_GROUP);
-                    contactView.show();
-                } else if (list[position].equals(list[1])){
-                    contactView.setMode(ConstantValues.CONTACT_MODE_ADD_FRIEND);
-                    contactView.show();
+                    Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
+                    startActivityForResult(intent, ConstantValues.CREATE_GROUP_REQUEST_CODE);
+                    overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
+                } else if (list[position].equals(list[1])) {
+                    Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
+                    startActivityForResult(intent, ConstantValues.ADD_FRIEND_REQUEST_CODE);
+                    overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
                 }
             }
         });
@@ -142,7 +119,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             public void onClick(View v) {
                 addContactButton.setEnabled(false);
                 if (addOptionListView.getVisibility() == View.GONE) {
-                    hideAllLayout(addOptionListView);
+                    hideAllOtherLayout(addOptionListView);
                     addOptionListView.open();
                 } else {
                     addOptionListView.close();
@@ -152,51 +129,90 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
-    private void initDropList() {
-        groupListButton = (Button) findViewById(R.id.group_list_button);
-        dropListImageButton = (ImageButton) findViewById(R.id.drop_list_imagebutton);
+    private void initChatList() {
+        chatListButton = (Button) findViewById(R.id.chat_list_button);
+        chatListImageButton = (ImageButton) findViewById(R.id.chat_list_imagebutton);
 
-        groupListButton.setText(R.string.allFriend);
+        chatListButton.setText(R.string.allFriend);
 
-        chatListView = new ChatListView(this);
-        chatListView.setVisibility(View.GONE);
-        mainLayout.addView(chatListView, 1);
-
-        View.OnClickListener dropListListener = new View.OnClickListener() {
+        View.OnClickListener chatListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chatListView.getVisibility() == View.GONE) {
-                    hideAllLayout(chatListView);
-                    dropListImageButton.setImageResource(R.drawable.list_drop_up);
-                    chatListView.open();
-                } else {
-                    dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                    chatListView.close();
-                }
+                hideAllOtherLayout(null);
+                Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
+                startActivityForResult(intent, ConstantValues.CHAT_LIST_REQUEST_CODE);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
             }
         };
 
-        dropListImageButton.setOnClickListener(dropListListener);
-        groupListButton.setOnClickListener(dropListListener);
+        chatListImageButton.setOnClickListener(chatListListener);
+        chatListButton.setOnClickListener(chatListListener);
     }
 
-    private void hideAllLayout(Object object) {
-        if (!(object instanceof ChatListView)) {
-            if (chatListView.getVisibility() == View.VISIBLE) {
-                dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                chatListView.close();
+    private void initChatButton() {
+        chatButton = (Button) findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                startActivity(i);
             }
-        }
+        });
+    }
+
+    private void hideAllOtherLayout(Object object) {
         if (!(object instanceof AddOptionListView)) {
             if (addOptionListView.getVisibility() == View.VISIBLE) {
-                addOptionListView.setVisibility(View.GONE);
+                addOptionListView.close();
             }
         }
         if (!(object instanceof SidebarView)) {
-            if (sidebarView.getVisibility() == View.VISIBLE) {
+            if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
                 sidebarView.close();
             }
         }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ConstantValues.CHAT_LIST_REQUEST_CODE:
+                switch (resultCode) {
+                    case RESULT_CANCELED:
+                        Log.d(ConstantValues.debugTab, "chat list cenceled");
+                        break;
+                    case RESULT_OK:
+                        Log.d(ConstantValues.debugTab, "chat list succeed");
+                        //TODO get information from 'data' here
+                        break;
+                }
+                break;
+            case ConstantValues.CREATE_GROUP_REQUEST_CODE:
+                switch (resultCode) {
+                    case RESULT_CANCELED:
+                        Log.d(ConstantValues.debugTab, "create group cenceled");
+                        break;
+                    case RESULT_OK:
+                        Log.d(ConstantValues.debugTab, "create group succeed");
+                        //TODO get information from 'data' here
+                        break;
+                }
+                break;
+            case ConstantValues.ADD_FRIEND_REQUEST_CODE:
+                switch (requestCode) {
+                    case RESULT_CANCELED:
+                        Log.d(ConstantValues.debugTab, "add friend cenceled");
+                        break;
+                    case RESULT_OK:
+                        Log.d(ConstantValues.debugTab, "add friend success");
+                        //TODO get information from 'data' here
+                        break;
+                }
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void showMarkerDemo() {
@@ -232,8 +248,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         }).start();
     }
-
-
 
     private class MyHandler extends Handler {
         @Override
@@ -284,28 +298,22 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 //        requestForLocationService();
 //        checkGps();
 
-//        mMapController.start();
+        mMapController.start();
 
 //        showMarkerDemo();
-//        showNavigationDemo();
+        showNavigationDemo();
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        mMapController.stop();
+        mMapController.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (chatListView != null)
-            chatListView.destroy();
-        if (contactView != null)
-            contactView.destroy();
-        if (sidebarView != null)
-            sidebarView.destroy();
     }
 
     //    public boolean requestForLocationService() {
@@ -361,22 +369,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             alertDialog.show();
         } else {
             Log.d(ConstantValues.permission, "got gps");
-        }
-    }
-
-    private void initChatButton(){
-        chat_button = (Button) findViewById(R.id.chat_button);
-        chat_button.setOnClickListener(this);
-    }
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.chat_button:
-                Intent i = new Intent(getApplicationContext(), ChatActivity.class);
-                startActivity(i);
-                break;
-            default:
-                break;
         }
     }
 }

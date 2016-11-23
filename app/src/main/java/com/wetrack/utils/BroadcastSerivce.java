@@ -1,10 +1,19 @@
 package com.wetrack.utils;
 
+import android.app.Service;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import com.wetrack.BaseApplication;
 
-public class BroadcastSerivce {
+public class BroadcastSerivce extends Service{
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     static public void infoUpdateGroupList() {
         Intent intent = new Intent();

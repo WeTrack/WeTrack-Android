@@ -36,6 +36,7 @@ public class MapController {
 
     private MapController(Context context) {
         mContext = context;
+
         initBroadcastReceiver();
         mGoogleNavigationManager = GoogleNavigationManager.getInstance(mContext);
         mMapHandler = new MapHandler();
