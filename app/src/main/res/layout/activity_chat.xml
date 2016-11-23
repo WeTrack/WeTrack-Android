@@ -12,95 +12,82 @@
         style="@style/BackMyToolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        app:titleTextColor="#000000"
-        app:title="UserName" />
+        android:layout_alignParentTop="true"
+        app:title="UserName"
+        app:titleTextColor="#000000"/>
+
+    <ListView
+        android:id="@+id/message_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_below="@id/toolbar"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:listSelector="#00000000"
+        android:scrollbars="none"
+        android:transcriptMode="disabled"/>
 
     <LinearLayout
-        android:id="@+id/bar_bottom"
+        android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
+        android:background="#aaffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingBottom="2dip"
-        android:paddingTop="2dip">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#B5B5B3" />
-        <LinearLayout
-            android:id="@+id/rl_bottom"
-            android:layout_width="match_parent"
+        android:paddingTop="4dp">
+
+        <RelativeLayout
+            android:id="@+id/message_edit_layout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#aaffffff"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingTop="4dp"
-            >
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_bar_bg_normal"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="bottom">
 
-            <RelativeLayout
-                android:id="@+id/edittext_layout"
-                android:layout_width="0dp"
+            <EditText
+                android:id="@+id/message_edit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_weight="1"
-                android:background="@drawable/input_bar_bg_normal"
-                android:gravity="bottom"
-                android:focusable="true"
-                android:focusableInTouchMode="true">
+                android:background="@null"
+                android:maxLines="10"
+                android:minHeight="40dp"
+                android:onClick="editClick"
+                android:paddingBottom="3dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:paddingTop="3dp"
+                android:textColor="#FF000000"
+                android:textCursorDrawable="@null"
+                android:textSize="18sp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
 
-                <EditText
-                    android:id="@+id/et_sendmessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="35dip"
-                    android:background="@null"
-                    android:maxLines="10"
-                    android:minHeight="40dp"
-                    android:onClick="editClick"
-                    android:paddingBottom="3dp"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="1dp"
-                    android:paddingTop="3dp"
-                    android:textCursorDrawable="@null"
-                    android:textColor="#FF000000"
-                    android:textSize="18sp" />
+        </RelativeLayout>
 
-            </RelativeLayout>
-
-            <!-- @string/button_send -->
-            <Button
-                android:id="@+id/btn_send"
-                android:layout_width="70dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="4dp"
-                android:background="@drawable/chat_send_btn_selector"
-                android:onClick="onClick"
-                android:text="send"
-                android:textColor="#ffffffff"
-                android:textSize="16sp"
-                android:visibility="visible" />
-        </LinearLayout>
+        <!-- @string/button_send -->
+        <Button
+            android:id="@+id/send_btn"
+            android:layout_width="70dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="4dp"
+            android:background="@drawable/chat_send_btn_selector"
+            android:onClick="onClick"
+            android:text="Send"
+            android:textColor="#ffffffff"
+            android:textSize="16sp"
+            android:visibility="visible"/>
     </LinearLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bar_bottom"
-        android:layout_below="@id/toolbar">
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:cacheColorHint="#00000000"
-            android:divider="@null"
-            android:scrollbars="none"
-            android:listSelector="#00000000"
-            android:transcriptMode="disabled" />
 
-    </RelativeLayout>
+    <!-- Magic scroll view. Don't delete it. It's toxic, but it's effective. -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ScrollView>
+        android:layout_height="match_parent"></ScrollView>
 </RelativeLayout>
