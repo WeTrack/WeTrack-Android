@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -17,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.Tools;
 
 public class SidebarView extends RelativeLayout {
 
@@ -28,6 +30,10 @@ public class SidebarView extends RelativeLayout {
     private Button settingButton;
     private Button logoutButton;
 
+    //false means close, true means open
+    private boolean sidebarState;
+    final static public boolean CLOSE_STATE = false;
+    final static public boolean OPEN_STATE = true;
 
     public SidebarView(Context context) {
         super(context);
@@ -47,13 +53,21 @@ public class SidebarView extends RelativeLayout {
 //    }
 
     public void init() {
+        sidebarState = CLOSE_STATE;
+
         initBroadcastReceiver();
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                Tools.getScreenW() * 2 / 3,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.setMargins(-Tools.getScreenW() * 2 / 3, 0, 0, 0);
+        setLayoutParams(layoutParams);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         RelativeLayout sidebarLayout = (RelativeLayout)layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
 
-        setVisibility(GONE);
+//        setVisibility(GONE);
 
         portraitImageView = (ImageView) findViewById(R.id.portrait_imageview);
         usernameTextView = (TextView) findViewById(R.id.username_textview);
@@ -76,34 +90,41 @@ public class SidebarView extends RelativeLayout {
 //        }
     }
 
-    public void close() {
-        int width = getWidth();
+    public boolean getSidebarState() {
+        return sidebarState;
+    }
 
+    public void close() {
+        sidebarState = CLOSE_STATE;
+        int width = getWidth();
         Animation am = new TranslateAnimation(0f, -width * 1f, 0f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                setVisibility(View.GONE);
+                RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams)getLayoutParams());
+                layoutParams.setMargins(-Tools.getScreenW() * 2 / 3,0,0,0);
+                setLayoutParams(layoutParams);
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
     }
 
     public void open() {
+        sidebarState = OPEN_STATE;
+
+        RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams)getLayoutParams());
+        layoutParams.setMargins(0,0,0,0);
+        setLayoutParams(layoutParams);
+
         int width = getWidth();
-        setVisibility(View.VISIBLE);
         Animation am = new TranslateAnimation(-width * 1f, 0f, 0f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());

@@ -15,37 +15,45 @@ import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.Tools;
 
-/**
- * Created by moziliang on 16/11/20.
- */
-public class GroupListView extends RelativeLayout{
+public class GroupListView extends RelativeLayout {
     private WeTrackClient client = WeTrackClient.getInstance(ConstantValues.serverBaseUrl, ConstantValues.timeoutSeconds);
     private GroupListUpdateReceiver mGroupListUpdateReceiver = null;
     private LinearLayout groupListLinearLayout;
+
+    //false means close, true means open
+    private boolean groupListViewState;
+    final static public boolean CLOSE_STATE = false;
+    final static public boolean OPEN_STATE = true;
 
     public GroupListView(Context context) {
         super(context);
         init();
     }
+
     public GroupListView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public GroupListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     public void init() {
+        groupListViewState = CLOSE_STATE;
+
         initBroadcastReceiver();
         //set params for this view
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.BELOW, R.id.menu_bar);
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                Tools.getScreenW(), Tools.getScreenH());
+
+        layoutParams.setMargins(0, -Tools.getScreenH(), 0, 0);
         setLayoutParams(layoutParams);
         setBackgroundColor(Color.WHITE);
 
@@ -60,6 +68,10 @@ public class GroupListView extends RelativeLayout{
         scrollView.addView(groupListLinearLayout);
         addView(scrollView);
         reLoadGroupList();
+    }
+
+    public boolean getGroupListViewState() {
+        return groupListViewState;
     }
 
     private void reLoadGroupList() {
@@ -106,6 +118,8 @@ public class GroupListView extends RelativeLayout{
     }
 
     public void close() {
+        groupListViewState = CLOSE_STATE;
+
         int height = getHeight();
         Animation am = new TranslateAnimation(0f, 0f, 0f, -height * 1f);
         am.setDuration(500);
@@ -113,25 +127,30 @@ public class GroupListView extends RelativeLayout{
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
+            public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
-                setVisibility(View.GONE);
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                        Tools.getScreenW(), Tools.getScreenH());
+                layoutParams.setMargins(0, -Tools.getScreenH(), 0, 0);
+                setLayoutParams(layoutParams);
             }
-
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
     }
 
     public void open() {
+        groupListViewState = OPEN_STATE;
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                Tools.getScreenW(), ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.menu_bar);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        layoutParams.setMargins(0,0,0,0);
+        setLayoutParams(layoutParams);
+
         int height = getHeight();
-        setVisibility(View.VISIBLE);
         Animation am = new TranslateAnimation(0f, 0f, -height * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());
@@ -155,6 +174,7 @@ public class GroupListView extends RelativeLayout{
         @Override
         public void onReceive(Context context, Intent intent) {
             //reload
+
         }
     }
 }

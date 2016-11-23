@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity {
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
@@ -46,7 +46,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
 
-    private Button chat_button;
+    private Button chatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,33 +70,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public void initMapInView(int viewId) {
         mMapController = MapController.getInstance(this);
         mMapController.addMapToView(getSupportFragmentManager(), viewId);
-
-//        mMapController.setmOnInfoWindowClickListener(new MyOnInfoWindowClickListener());
     }
-
-//    private class MyOnInfoWindowClickListener implements GoogleMapFragment.OnInfoWindowClickListener {
-//        @Override
-//        public void onInfoWindowClick(MarkerDataFormat markerData) {
-//            Log.d(ConstantValues.markerDebug, "marker callback: " + markerData.toString());
-//        }
-//    }
 
     private void initSidebar() {
         sidebarView = new SidebarView(this);
-        sidebarView.setLayoutParams(new RelativeLayout.LayoutParams(
-                Tools.getScreenW() * 2 / 3,
-                ViewGroup.LayoutParams.MATCH_PARENT));
 
         mainLayout.addView(sidebarView, 1);
         openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sidebarView.getVisibility() == View.GONE) {
-                    hideAllLayout(sidebarView);
-                    sidebarView.open();
-                } else {
+                if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
                     sidebarView.close();
+                } else {
+                    hideAllOtherLayout(sidebarView);
+                    sidebarView.open();
                 }
             }
         });
@@ -118,22 +106,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         contactView.setLayoutParams(new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        final String[] list = {"NewGroup","AddFriend"};
+        final String[] list = {"NewGroup", "AddFriend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact,list);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.add_contact, list);
         addOptionListView.setAdapter(listAdapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addOptionListView.setVisibility(View.GONE);
                 addOptionListView.close();
                 if (list[position].equals(list[0])) {
                     contactView.setMode(ConstantValues.CONTACT_MODE_NEW_GROUP);
                     contactView.show();
-                } else if (list[position].equals(list[1])){
+                } else if (list[position].equals(list[1])) {
                     contactView.setMode(ConstantValues.CONTACT_MODE_ADD_FRIEND);
                     contactView.show();
                 }
@@ -145,7 +132,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             public void onClick(View v) {
                 addContactButton.setEnabled(false);
                 if (addOptionListView.getVisibility() == View.GONE) {
-                    hideAllLayout(addOptionListView);
+                    hideAllOtherLayout(addOptionListView);
                     addOptionListView.open();
                 } else {
                     addOptionListView.close();
@@ -162,14 +149,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         groupListButton.setText(R.string.allFriend);
 
         groupListView = new GroupListView(this);
-        groupListView.setVisibility(View.GONE);
         mainLayout.addView(groupListView, 1);
 
         View.OnClickListener dropListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (groupListView.getVisibility() == View.GONE) {
-                    hideAllLayout(groupListView);
+                if (groupListView.getGroupListViewState() == GroupListView.CLOSE_STATE) {
+                    hideAllOtherLayout(groupListView);
                     dropListImageButton.setImageResource(R.drawable.list_drop_up);
                     groupListView.open();
                 } else {
@@ -183,20 +169,31 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         groupListButton.setOnClickListener(dropListListener);
     }
 
-    private void hideAllLayout(Object object) {
+    private void initChatButton() {
+        chatButton = (Button) findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
+    private void hideAllOtherLayout(Object object) {
         if (!(object instanceof GroupListView)) {
-            if (groupListView.getVisibility() == View.VISIBLE) {
+            if (groupListView.getGroupListViewState() == GroupListView.OPEN_STATE) {
                 dropListImageButton.setImageResource(R.drawable.list_drop_down);
                 groupListView.close();
             }
         }
         if (!(object instanceof AddOptionListView)) {
             if (addOptionListView.getVisibility() == View.VISIBLE) {
-                addOptionListView.setVisibility(View.GONE);
+                addOptionListView.close();
             }
         }
         if (!(object instanceof SidebarView)) {
-            if (sidebarView.getVisibility() == View.VISIBLE) {
+            if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
                 sidebarView.close();
             }
         }
@@ -235,8 +232,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         }).start();
     }
-
-
 
     private class MyHandler extends Handler {
         @Override
@@ -287,17 +282,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 //        requestForLocationService();
 //        checkGps();
 
-//        mMapController.start();
+        mMapController.start();
 
 //        showMarkerDemo();
-//        showNavigationDemo();
+        showNavigationDemo();
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        mMapController.stop();
+        mMapController.stop();
     }
 
     @Override
@@ -367,22 +362,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             alertDialog.show();
         } else {
             Log.d(ConstantValues.permission, "got gps");
-        }
-    }
-
-    private void initChatButton(){
-        chat_button = (Button) findViewById(R.id.chat_button);
-        chat_button.setOnClickListener(this);
-    }
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.chat_button:
-                Intent i = new Intent(getApplicationContext(), ChatActivity.class);
-                startActivity(i);
-                break;
-            default:
-                break;
         }
     }
 }

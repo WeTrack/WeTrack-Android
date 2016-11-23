@@ -4,14 +4,15 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
-/**
- * Created by moziliang on 16/11/20.
- */
+import com.wetrack.utils.Tools;
+
 public class AddOptionListView extends ListView {
     public AddOptionListView(Context context) {
         super(context);
@@ -27,11 +28,10 @@ public class AddOptionListView extends ListView {
     }
 
     public void init() {
-
     }
 
     public void close() {
-        int width = getWidth();
+        int width = 300;
         int height = getHeight();
         Animation am = new ScaleAnimation(1f, 0f, 1f, 0f, width * 1f, 0f);
         am.setDuration(500);
@@ -39,25 +39,21 @@ public class AddOptionListView extends ListView {
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                setVisibility(View.GONE);
+                setVisibility(GONE);
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
     }
 
     public void open() {
-        setVisibility(View.VISIBLE);
-        int width = getWidth();
+        setVisibility(VISIBLE);
+        int width = 300;
         int height = getHeight();
         Animation am = new ScaleAnimation(0f, 1f, 0f, 1f, width * 1f, 0f);
         am.setDuration(500);
