@@ -1,6 +1,9 @@
 package com.wetrack.map;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,9 +17,6 @@ import com.wetrack.utils.MathUtils;
 
 import java.util.ArrayList;
 
-/**
- * Created by moziliang on 16/10/2.
- */
 public class MapController {
     private static MapController mMapController = null;
 
@@ -27,15 +27,16 @@ public class MapController {
         return mMapController;
     }
 
+    private UserPosUpdateReceiver mUserPosUpdateReceiver = null;
     private Context mContext;
     private MapHandler mMapHandler;
     private GoogleMapFragment googleMapFragment;
     private GoogleNavigationManager mGoogleNavigationManager;
     private GpsLocationManager mGpsLocationManager;
 
-
     private MapController(Context context) {
         mContext = context;
+        initBroadcastReceiver();
         mGoogleNavigationManager = GoogleNavigationManager.getInstance(mContext);
         mMapHandler = new MapHandler();
         mGpsLocationManager = GpsLocationManager.getInstance(mContext);
@@ -77,6 +78,10 @@ public class MapController {
         mGpsLocationManager.stop();
         mGoogleNavigationManager.stop();
         mMapController = null;
+        if (mUserPosUpdateReceiver != null) {
+            mContext.unregisterReceiver(mUserPosUpdateReceiver);
+            mUserPosUpdateReceiver = null;
+        }
     }
 
     //below three are for markers
@@ -147,5 +152,19 @@ public class MapController {
                 new LatLng(centerLatitude, centerLongitude),
                 latitudeRangeLength,
                 longitudeRangeLength);
+    }
+
+
+    private void initBroadcastReceiver() {
+        mUserPosUpdateReceiver = new UserPosUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_USER_POS);
+        mContext.registerReceiver(mUserPosUpdateReceiver, intentFilter);
+    }
+
+    private class UserPosUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //reload
+        }
     }
 }

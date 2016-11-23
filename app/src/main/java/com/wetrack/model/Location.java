@@ -8,8 +8,11 @@ import org.joda.time.LocalDateTime;
 
 @DatabaseTable(tableName = "locations")
 public class Location {
+    @DatabaseField(index = true)
     private String username;
+    @DatabaseField
     private double longitude;
+    @DatabaseField
     private double latitude;
     @DatabaseField(persisterClass = LocalDateTimePersister.class)
     private LocalDateTime time;
@@ -26,24 +29,31 @@ public class Location {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public double getLongitude() {
         return longitude;
     }
+
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
     public double getLatitude() {
         return latitude;
     }
+
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
+
     public LocalDateTime getTime() {
         return time;
     }
+
     public void setTime(LocalDateTime time) {
         this.time = time;
     }

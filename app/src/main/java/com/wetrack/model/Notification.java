@@ -8,6 +8,7 @@ import org.joda.time.LocalDateTime;
 public abstract class Notification {
     @DatabaseField(id = true)
     private String id;
+    @DatabaseField
     private String content;
     @DatabaseField(columnName = "send_time", persisterClass = LocalDateTimePersister.class)
     private LocalDateTime sendTime;

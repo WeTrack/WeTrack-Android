@@ -35,13 +35,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private MyHandler mHandler = new MyHandler();
 
     private ImageButton openSidebarButton;
-    private ContactView contactView;
-    private SidebarView sidebarView;
+    private ContactView contactView = null;
+    private SidebarView sidebarView = null;
     private ImageButton addContactButton;
-    private AddOptionListView addOptionListView;
+    private AddOptionListView addOptionListView = null;
     private Button groupListButton;
     private ImageButton dropListImageButton;
-    private GroupListView groupListView;
+    private ChatListView chatListView = null;
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
@@ -57,11 +57,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
-
         initSidebar();
-
         initAddContact();
-
         initDropList();
 
         initChatButton();
@@ -123,7 +120,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact,list);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact, list);
         addOptionListView.setAdapter(listAdapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -161,20 +158,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         groupListButton.setText(R.string.allFriend);
 
-        groupListView = new GroupListView(this);
-        groupListView.setVisibility(View.GONE);
-        mainLayout.addView(groupListView, 1);
+        chatListView = new ChatListView(this);
+        chatListView.setVisibility(View.GONE);
+        mainLayout.addView(chatListView, 1);
 
         View.OnClickListener dropListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (groupListView.getVisibility() == View.GONE) {
-                    hideAllLayout(groupListView);
+                if (chatListView.getVisibility() == View.GONE) {
+                    hideAllLayout(chatListView);
                     dropListImageButton.setImageResource(R.drawable.list_drop_up);
-                    groupListView.open();
+                    chatListView.open();
                 } else {
                     dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                    groupListView.close();
+                    chatListView.close();
                 }
             }
         };
@@ -184,10 +181,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void hideAllLayout(Object object) {
-        if (!(object instanceof GroupListView)) {
-            if (groupListView.getVisibility() == View.VISIBLE) {
+        if (!(object instanceof ChatListView)) {
+            if (chatListView.getVisibility() == View.VISIBLE) {
                 dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                groupListView.close();
+                chatListView.close();
             }
         }
         if (!(object instanceof AddOptionListView)) {
@@ -300,7 +297,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 //        mMapController.stop();
     }
 
-//    public boolean requestForLocationService() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (chatListView != null)
+            chatListView.destroy();
+        if (contactView != null)
+            contactView.destroy();
+        if (sidebarView != null)
+            sidebarView.destroy();
+    }
+
+    //    public boolean requestForLocationService() {
 //        int locationCheck1 = ContextCompat.checkSelfPermission(this,
 //                android.Manifest.permission.ACCESS_COARSE_LOCATION);
 //        int locationCheck2 = ContextCompat.checkSelfPermission(this,

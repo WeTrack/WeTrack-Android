@@ -34,7 +34,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getCanonicalName();
 
-    private WeTrackClient client = ConstantValues.client();
+    private WeTrackClient client = WeTrackClient.getInstance();
     private RuntimeExceptionDao<User, String> userDao;
 
     private EditText usernameInput;

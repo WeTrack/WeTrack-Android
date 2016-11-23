@@ -2,30 +2,36 @@ package com.wetrack.database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.wetrack.model.Chat;
 import com.wetrack.model.User;
 
-@DatabaseTable(tableName = "friends")
-public class Friend {
+@DatabaseTable(tableName = "user_chat")
+public class UserChat {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, columnName = "owner", index = true)
+    @DatabaseField(foreign = true, columnName = "username")
     private User owner;
 
-    @DatabaseField(foreign = true, columnName = "friend")
-    private User friend;
+    @DatabaseField(foreign = true, columnName = "chat_id")
+    private Chat chat;
 
-    public Friend() {}
+    public UserChat() {}
 
-    public Friend(User owner, User friend) {
+    public UserChat(User owner, Chat chat) {
         this.owner = owner;
-        this.friend = friend;
+        this.chat = chat;
     }
 
     public int getId() { return id; }
+
     public void setId(int id) { this.id = id; }
+
     public User getOwner() { return owner; }
+
     public void setOwner(User owner) { this.owner = owner; }
-    public User getFriend() { return friend; }
-    public void setFriend(User friend) { this.friend = friend; }
+
+    public Chat getChat() { return chat; }
+
+    public void setChat(Chat chat) { this.chat = chat; }
 }

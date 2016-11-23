@@ -1,7 +1,5 @@
 package com.wetrack.utils;
 
-import com.wetrack.client.WeTrackClient;
-
 public abstract class ConstantValues {
     //for debug
     public static String debugTab = "debug";
@@ -10,6 +8,13 @@ public abstract class ConstantValues {
     public static String permission = "permission";
     public static String touchDebug = "touch_debug";
     public static String databaseDebug = "mydatabase";
+
+    //for broadcast action name
+    public static String ACTION_UPDATE_GROUP_LIST = "com.wetrack.action.friendList";
+    public static String ACTION_UPDATE_FRIEND_LIST = "com.wetrack.action.friendList";
+    public static String ACTION_UPDATE_USER_INFO = "com.wetrack.action.userInfo";
+    public static String ACTION_UPDATE_CHAT_MSG = "com.wetrack.action.chatMsg";
+    public static String ACTION_UPDATE_USER_POS = "com.wetrack.action.userPos";
 
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;
@@ -32,11 +37,8 @@ public abstract class ConstantValues {
     //
     final static public String NAME_SEPERATE_STRING = "|";
 
-    private static WeTrackClient instance;
 
-    public static synchronized WeTrackClient client() {
-        if (instance == null)
-            instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
-        return instance;
-    }
+    //for server connection
+    final static public String serverBaseUrl = "http://www.robertshome.com.cn/";
+    final static public int timeoutSeconds = 5;
 }
