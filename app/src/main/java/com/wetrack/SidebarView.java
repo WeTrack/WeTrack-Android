@@ -33,7 +33,6 @@ public class SidebarView extends RelativeLayout {
 
     private WeTrackDatabaseHelper helper;
 
-    private UserInfoUpdateReceiver mUserInfoUpdateReceiver = null;
     private ImageView portraitImageView;
     private ImageView genderImageView;
     private TextView nicknameTextView;
@@ -64,8 +63,6 @@ public class SidebarView extends RelativeLayout {
     public void init() {
         sidebarState = CLOSE_STATE;
 
-        initBroadcastReceiver();
-
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 Tools.getScreenW() * 2 / 3,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -84,7 +81,7 @@ public class SidebarView extends RelativeLayout {
         settingButton = (Button) findViewById(R.id.setting_button);
         logoutButton = (Button) findViewById(R.id.logout_button);
 
-        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
+        String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
 
         // Load user information from local cache
         RuntimeExceptionDao<User, String> userDao =
@@ -171,27 +168,5 @@ public class SidebarView extends RelativeLayout {
 
     public void setLogoutListener(View.OnClickListener onClickListener) {
         logoutButton.setOnClickListener(onClickListener);
-    }
-
-    private void initBroadcastReceiver() {
-        mUserInfoUpdateReceiver = new UserInfoUpdateReceiver();
-        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_USER_INFO);
-        getContext().registerReceiver(mUserInfoUpdateReceiver, intentFilter);
-    }
-
-    public void destroy() {
-        if (mUserInfoUpdateReceiver != null) {
-            getContext().unregisterReceiver(mUserInfoUpdateReceiver);
-            mUserInfoUpdateReceiver = null;
-        }
-        helper = null;
-        OpenHelperManager.releaseHelper();
-    }
-
-    private class UserInfoUpdateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //reload
-        }
     }
 }

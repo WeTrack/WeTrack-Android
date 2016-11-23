@@ -36,7 +36,7 @@
             android:src="@drawable/open_sidebar" />
 
         <Button
-            android:id="@+id/group_list_button"
+            android:id="@+id/chat_list_button"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginLeft="5dp"
@@ -47,11 +47,11 @@
             android:textSize="20dp" />
 
         <ImageButton
-            android:id="@+id/drop_list_imagebutton"
+            android:id="@+id/chat_list_imagebutton"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/group_list_button"
+            android:layout_toRightOf="@id/chat_list_button"
             android:background="@color/transparent"
             android:src="@drawable/list_drop_down" />
 

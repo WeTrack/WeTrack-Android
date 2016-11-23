@@ -16,6 +16,11 @@ public abstract class ConstantValues {
     public static String ACTION_UPDATE_CHAT_MSG = "com.wetrack.action.chatMsg";
     public static String ACTION_UPDATE_USER_POS = "com.wetrack.action.userPos";
 
+    //activity transition
+    final public static int CHAT_LIST_REQUEST_CODE = 1;
+    final public static int CREATE_GROUP_REQUEST_CODE = 2;
+    final public static int ADD_FRIEND_REQUEST_CODE = 3;
+
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;
     public static final int MARKERLIST_ADD = 0xfffffffe;

@@ -4,14 +4,10 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-
-import com.wetrack.utils.Tools;
 
 public class AddOptionListView extends ListView {
 

@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     protected void onReceive(UserToken token) {
-                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME, token.getUsername());
-                        PreferenceUtils.saveStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_TOKEN, token.getToken());
+                        PreferenceUtils.saveStringValue(PreferenceUtils.KEY_USERNAME, token.getUsername());
+                        PreferenceUtils.saveStringValue(PreferenceUtils.KEY_TOKEN, token.getToken());
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         LoginActivity.this.finish();
