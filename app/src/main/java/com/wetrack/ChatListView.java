@@ -95,7 +95,7 @@ public class ChatListView extends RelativeLayout{
         final String username = PreferenceUtils.getStringValue(getContext(), PreferenceUtils.KEY_USERNAME);
         String token = PreferenceUtils.getStringValue(getContext(), PreferenceUtils.KEY_TOKEN);
 
-        WeTrackClient.getInstance().getUserChatList(username, token, new EntityCallback<List<Chat>>() {
+        WeTrackClient.singleton().getUserChatList(username, token, new EntityCallback<List<Chat>>() {
             @Override
             protected void onReceive(List<Chat> receivedChats) {
                 User userInDB = helper.getUserDao().queryForId(username);

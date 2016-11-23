@@ -43,4 +43,15 @@ public class Chat {
     public void setMemberNames(List<String> memberNames) {
         this.memberNames = memberNames;
     }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
+
+        Chat chat = (Chat) that;
+
+        return chatId != null && chatId.equals(chat.chatId);
+
+    }
 }
