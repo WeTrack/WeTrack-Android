@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wetrack.model.User;
+
 public class AddFriendItemView extends RelativeLayout {
 
     private ImageView portraitImageView;
@@ -23,10 +25,12 @@ public class AddFriendItemView extends RelativeLayout {
         super(context);
         init();
     }
+
     public AddFriendItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public AddFriendItemView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -51,11 +55,11 @@ public class AddFriendItemView extends RelativeLayout {
         });
     }
 
-    public void setContact(String friendName, String friendGender) {
-        this.friendName = friendName;
+    public void setUser(User user) {
+        this.friendName = user.getUsername();
 
-        nameTextView.setText(friendName);
-        if (friendGender.equals("male")) {
+        nameTextView.setText(user.getNickname());
+        if (user.getGender() == User.Gender.Male) {
             portraitImageView.setImageResource(R.drawable.portrait_boy);
             genderImageView.setImageResource(R.drawable.gender_male);
         } else {
@@ -64,12 +68,14 @@ public class AddFriendItemView extends RelativeLayout {
         }
     }
 
-    //below three are for add-friend Button
+    // below three are for add-friend Button
     public void setOnAddFriend(OnAddFriendListener onAddFriendListener) {
         this.onAddFriendListener = onAddFriendListener;
     }
+
     public interface OnAddFriendListener {
         void onAddFriend(String friendName);
     }
+
     private OnAddFriendListener onAddFriendListener = null;
 }

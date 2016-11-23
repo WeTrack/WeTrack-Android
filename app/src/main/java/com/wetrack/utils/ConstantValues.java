@@ -18,7 +18,7 @@ public abstract class ConstantValues {
 
     //activity transition
     final public static int CHAT_LIST_REQUEST_CODE = 1;
-    final public static int CREATE_GROUP_REQUEST_CODE = 2;
+    final public static int CREATE_CHAT_REQUEST_CODE = 2;
     final public static int ADD_FRIEND_REQUEST_CODE = 3;
 
     //marker arraylist operation code

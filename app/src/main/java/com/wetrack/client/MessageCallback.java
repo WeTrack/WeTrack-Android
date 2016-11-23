@@ -14,7 +14,7 @@ import com.wetrack.model.Message;
  * @see #onFail(String, int)
  * @see #onError(Throwable)
  */
-public class MessageCallback {
+public abstract class MessageCallback {
     private final int successfulStatusCode;
 
     /**

@@ -111,10 +111,10 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         super.createChat(token, chat, new DelegatedCreatedMessageCallback(callback) {
             @Override
             protected void onSuccess(String newEntityId, String message) {
+                callback.onSuccess(newEntityId, message);
                 Log.d(TAG, "Chat created. Saving chat information to local database.");
                 helper.getChatDao().create(chat);
                 Log.d(TAG, "Invoking original callback#onSuccess");
-                callback.onSuccess(newEntityId, message);
             }
         });
     }

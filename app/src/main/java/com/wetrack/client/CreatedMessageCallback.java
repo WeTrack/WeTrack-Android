@@ -11,7 +11,7 @@ import com.wetrack.model.Message;
  * @see #onFail(String, int)
  * @see #onError(Throwable)
  */
-public class CreatedMessageCallback {
+public abstract class CreatedMessageCallback {
 
     /**
      * Invoked when a {@code 201 Created} response is received from the server and a

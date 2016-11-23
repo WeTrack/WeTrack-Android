@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -91,7 +90,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        final String[] list = {"NewGroup", "AddFriend"};
+        final String[] list = { "New Group", "Add Friend" };
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
@@ -103,8 +102,8 @@ public class MainActivity extends FragmentActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 addOptionListView.close();
                 if (list[position].equals(list[0])) {
-                    Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
-                    startActivityForResult(intent, ConstantValues.CREATE_GROUP_REQUEST_CODE);
+                    Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
+                    startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);
                     overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
                 } else if (list[position].equals(list[1])) {
                     Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
@@ -188,7 +187,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                 }
                 break;
-            case ConstantValues.CREATE_GROUP_REQUEST_CODE:
+            case ConstantValues.CREATE_CHAT_REQUEST_CODE:
                 switch (resultCode) {
                     case RESULT_CANCELED:
                         Log.d(ConstantValues.debugTab, "create group cenceled");

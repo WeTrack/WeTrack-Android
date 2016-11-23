@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateGroupActivity">
+    tools:context=".CreateChatActivity">
 
     <RelativeLayout
         android:id="@+id/create_group_menu"
@@ -12,7 +12,7 @@
         android:background="@color/white">
 
         <ImageButton
-            android:id="@+id/create_group_back"
+            android:id="@+id/chat_create_back_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -26,13 +26,13 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/create_group_back"
+            android:layout_toRightOf="@id/chat_create_back_btn"
             android:text="NEW GROUP"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/create_group_config"
+            android:id="@+id/chat_create_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -51,7 +51,7 @@
         android:background="@color/white">
 
         <LinearLayout
-            android:id="@+id/create_group_list"
+            android:id="@+id/friend_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

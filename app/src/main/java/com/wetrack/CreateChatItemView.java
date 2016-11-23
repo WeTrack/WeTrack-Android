@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CreateGroupItemView extends RelativeLayout {
+import com.wetrack.model.User;
+
+public class CreateChatItemView extends RelativeLayout {
 
     private ImageView portraitImageView;
     private TextView nameTextView;
@@ -20,28 +22,30 @@ public class CreateGroupItemView extends RelativeLayout {
 
     private String friendName = null;
 
-    public CreateGroupItemView(Context context) {
+    public CreateChatItemView(Context context) {
         super(context);
         init();
     }
-    public CreateGroupItemView(Context context, @Nullable AttributeSet attrs) {
+
+    public CreateChatItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
-    public CreateGroupItemView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+
+    public CreateChatItemView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     public void init() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        RelativeLayout contactItemLayout = (RelativeLayout)layoutInflater.inflate(R.layout.create_group_item, null);
+        RelativeLayout contactItemLayout = (RelativeLayout)layoutInflater.inflate(R.layout.create_chat_item, null);
         addView(contactItemLayout);
 
-        portraitImageView = (ImageView) findViewById(R.id.create_group_item_portrait);
-        nameTextView = (TextView)findViewById(R.id.create_group_item_name);
-        genderImageView = (ImageView)findViewById(R.id.create_group_item_gender);
-        checkBox = (CheckBox) findViewById(R.id.create_group_item_checkbox);
+        portraitImageView = (ImageView) findViewById(R.id.portrait);
+        nameTextView = (TextView)findViewById(R.id.nickname);
+        genderImageView = (ImageView)findViewById(R.id.gender_icon);
+        checkBox = (CheckBox) findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -62,11 +66,11 @@ public class CreateGroupItemView extends RelativeLayout {
         });
     }
 
-    public void setContact(String friendName, String friendGender) {
-        this.friendName = friendName;
+    public void setUser(User user) {
+        this.friendName = user.getUsername();
 
-        nameTextView.setText(friendName);
-        if (friendGender.equals("male")) {
+        nameTextView.setText(user.getNickname());
+        if (user.getGender() == User.Gender.Male) {
             portraitImageView.setImageResource(R.drawable.portrait_boy);
             genderImageView.setImageResource(R.drawable.gender_male);
         } else {
@@ -75,13 +79,15 @@ public class CreateGroupItemView extends RelativeLayout {
         }
     }
 
-    //below three are for CheckBox
+    // below three are for CheckBox
     public void setOnMyCheckBoxChangeListener(OnMyCheckBoxChangedListener onMyCheckBoxChangedListener) {
         this.onMyCheckBoxChangedListener = onMyCheckBoxChangedListener;
     }
+
     public interface OnMyCheckBoxChangedListener {
         void addFriendToGroup(String friendName);
         void removeFriendFromGroup(String friendName);
     }
+
     private OnMyCheckBoxChangedListener onMyCheckBoxChangedListener = null;
 }
