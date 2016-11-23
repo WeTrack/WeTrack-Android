@@ -25,7 +25,7 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private RuntimeExceptionDao<Location, Integer> locationDao;
     private RuntimeExceptionDao<Chat, String> chatDao;
     private RuntimeExceptionDao<ChatMessage, Integer> chatMessageDao;
-    private RuntimeExceptionDao<Friend, Integer> friendDao;
+    private FriendDao friendDao;
     private UserChatDao userChatDao;
 
     public WeTrackDatabaseHelper(Context context) {
@@ -85,9 +85,9 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return chatMessageDao;
     }
 
-    public RuntimeExceptionDao<Friend, Integer> getFriendDao() {
+    public FriendDao getFriendDao() {
         if (friendDao == null)
-            friendDao = getRuntimeExceptionDao(Friend.class);
+            friendDao = new FriendDao(getUserDao(), getRuntimeExceptionDao(Friend.class));
         return friendDao;
     }
 

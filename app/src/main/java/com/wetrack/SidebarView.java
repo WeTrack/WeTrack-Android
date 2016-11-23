@@ -21,6 +21,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
+import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
@@ -29,7 +30,7 @@ import com.wetrack.utils.PreferenceUtils;
 public class SidebarView extends RelativeLayout {
     private static final String TAG = SidebarView.class.getCanonicalName();
 
-    private WeTrackDatabaseHelper helper;
+    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
     private UserInfoUpdateReceiver mUserInfoUpdateReceiver = null;
     private ImageView portraitImageView;
@@ -58,8 +59,6 @@ public class SidebarView extends RelativeLayout {
     public void init() {
         initBroadcastReceiver();
 
-        helper = OpenHelperManager.getHelper(getContext(), WeTrackDatabaseHelper.class);
-
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         RelativeLayout sidebarLayout = (RelativeLayout) layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
@@ -75,36 +74,10 @@ public class SidebarView extends RelativeLayout {
 
         String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
 
-        // Load user information from local cache
-        RuntimeExceptionDao<User, String> userDao =
-                OpenHelperManager.getHelper(this.getContext(), WeTrackDatabaseHelper.class).getUserDao();
-        final User user = userDao.queryForId(username);
-        OpenHelperManager.releaseHelper();
-        if (user != null) {
-            nicknameTextView.setText(user.getNickname());
-            if (user.getGender() == User.Gender.Male) {
-                portraitImageView.setImageResource(R.drawable.portrait_boy);
-                genderImageView.setImageResource(R.drawable.gender_male);
-            } else {
-                portraitImageView.setImageResource(R.drawable.portrait_girl);
-                genderImageView.setImageResource(R.drawable.gender_female);
-            }
-        } else {
-            nicknameTextView.setText("User Nickname");
-            portraitImageView.setImageResource(R.drawable.portrait_boy);
-            genderImageView.setImageResource(R.drawable.gender_male);
-        }
-
         // Fetch user's latest information from server
-        WeTrackClient.getInstance().getUserInfo(username, new EntityCallback<User>() {
+        client.getUserInfo(username, new EntityCallback<User>() {
             @Override
             protected void onReceive(User receivedUser) {
-                Log.d(TAG, "Received user `" + receivedUser.toString() + "` from server.");
-                if (receivedUser.equals(user)) {
-                    Log.d(TAG, "Received user is same as cached user. Nothing to update.");
-                }
-                // Update local cache if necessary
-                helper.getUserDao().createOrUpdate(receivedUser);
                 nicknameTextView.setText(receivedUser.getNickname());
                 if (receivedUser.getGender() == User.Gender.Male) {
                     portraitImageView.setImageResource(R.drawable.portrait_boy);
@@ -162,8 +135,6 @@ public class SidebarView extends RelativeLayout {
             getContext().unregisterReceiver(mUserInfoUpdateReceiver);
             mUserInfoUpdateReceiver = null;
         }
-        helper = null;
-        OpenHelperManager.releaseHelper();
     }
 
     private class UserInfoUpdateReceiver extends BroadcastReceiver {
