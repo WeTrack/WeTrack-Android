@@ -113,7 +113,7 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
         ChatMessage defaultMessage = new ChatMessage();
         defaultMessage.setChatId(chatTest.getChatId());
         defaultMessage.setFromUsername(user1.getUsername());
-        defaultMessage.setContent("This is a default message sent by Amy.");
+        defaultMessage.setContent("This is a default message sent by Amy. lalallalalalallalalalalalalalallallalalalallalalalalallalalalallalalalalalalalallallalalalallalalalalallalalalallalalalalalalalallallalalalallalala");
         defaultMessage.setSendTime(LocalDateTime.parse("2016-11-23"));
 
         chatMessageList = new ArrayList<ChatMessage>();

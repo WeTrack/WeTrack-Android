@@ -25,6 +25,7 @@
             android:indeterminateOnly="true"
             android:indeterminateBehavior="repeat"
             android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:visibility="visible" />
         <TextView
             android:id="@+id/right_msg"
@@ -33,7 +34,8 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:textColor="@color/black"
-            android:background="@drawable/chatto_bg"/>
+            android:maxWidth="250dp"
+            android:background="@drawable/chatto_bg_selector"/>
         <ImageView
             android:id="@+id/iv_userhead"
             android:layout_width="50dp"
@@ -61,22 +63,13 @@
             android:scaleType="fitXY" />
 
         <TextView
-            android:id="@+id/tv_userid"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_toRightOf="@id/tv_userhead"/>
-
-        <TextView
             android:id="@+id/left_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:textColor="@color/black"
-            android:background="@drawable/chatfrom_bg"/>
-
+            android:background="@drawable/chatfrom_bg_selector"/>
     </LinearLayout>
 
 
