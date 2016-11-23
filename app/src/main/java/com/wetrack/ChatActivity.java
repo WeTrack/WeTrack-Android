@@ -14,7 +14,14 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.wetrack.Adaptor.ChatMessageAdaptor;
+import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
 import com.wetrack.model.User;
+
+import org.joda.time.LocalDateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ChatActivity extends FragmentActivity implements View.OnClickListener {
@@ -23,7 +30,6 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
     private EditText mEditTextContent;
     private Button buttonSend;
     private RelativeLayout edittext_layout;
-    //private MessageAdapter adapter;
     private ChatMessageAdaptor adapter;
     private InputMethodManager manager;
     //List<String> AmyMessage;
@@ -31,6 +37,7 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
     private User me;
     private User user1;
     private User user2;
+    private List<ChatMessage> chatMessageList;
 
 
     @Override
@@ -90,16 +97,28 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         //test
-        //BobMessage = new ArrayList<String>();
-        // AmyMessage = new ArrayList<String>();
-        // String users1="Amy";
-        // String users2="Bob";
-        //int head1 =R.drawable.head1;
-        // int head2 =R.drawable.head2;
-        // AmyMessage.add("Hello, Bob");
-        // AmyMessage.add("Nice to meet you. How a nice day.");
-        //adapter = new MessageAdapter(this,0, users1, users2, AmyMessage, BobMessage, head1, head2);
 
+        Chat chatTest = new Chat();
+        User user1 = new User();
+        User user2 = new User();
+        user1.setUsername("Amy");
+        user1.setIconUrl("head1.png");
+        user2.setUsername("Bob");
+        user2.setIconUrl("head2.png");
+        chatTest.setChatId("chatId1");
+        List<String> usernames = new ArrayList<String>();
+        usernames.add(user1.getUsername());
+        usernames.add(user2.getUsername());
+        chatTest.setMemberNames(usernames);
+        ChatMessage defaultMessage = new ChatMessage();
+        defaultMessage.setChatId(chatTest.getChatId());
+        defaultMessage.setFromUsername(user1.getUsername());
+        defaultMessage.setContent("This is a default message sent by Amy.");
+        defaultMessage.setSendTime(LocalDateTime.parse("2016-11-23"));
+
+        chatMessageList = new ArrayList<ChatMessage>();
+        chatMessageList.add(defaultMessage);
+        adapter = new ChatMessageAdaptor(this, chatMessageList, chatTest, user2);
         listView.setAdapter(adapter);
         listView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -127,8 +146,12 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
 
     private void sendText(String s){
         //test
-        //BobMessage.add(s);
-        //adapter.refresh(BobMessage,1);
+        ChatMessage sendMessage = new ChatMessage();
+        sendMessage.setFromUsername("Bob");
+        sendMessage.setSendTime(LocalDateTime.parse("2016-11-23"));
+        sendMessage.setContent(s);
+        chatMessageList.add(sendMessage);
+        adapter.refresh(chatMessageList);
         listView.setSelection(listView.getCount() - 1);
         mEditTextContent.setText("");
     }
