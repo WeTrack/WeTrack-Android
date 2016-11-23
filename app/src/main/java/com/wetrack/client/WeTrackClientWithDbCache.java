@@ -18,7 +18,6 @@ import org.joda.time.LocalDateTime;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import retrofit2.Response;
@@ -34,13 +33,11 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         return instance;
     }
 
-    private final Context context;
     private final WeTrackDatabaseHelper helper;
 
-    WeTrackClientWithDbCache(String baseUrl, int timeoutSeconds) {
+    private WeTrackClientWithDbCache(String baseUrl, int timeoutSeconds) {
         super(baseUrl, timeoutSeconds);
-        context = BaseApplication.getContext();
-        helper = OpenHelperManager.getHelper(context, WeTrackDatabaseHelper.class);
+        helper = OpenHelperManager.getHelper(BaseApplication.getContext(), WeTrackDatabaseHelper.class);
     }
 
     @Override
@@ -48,7 +45,9 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         super.createUser(newUser, new DelegatedCreatedMessageCallback(callback) {
             @Override
             protected void onSuccess(String newEntityId, String message) {
+                Log.d(TAG, "User created. Saving user information to local database.");
                 helper.getUserDao().createOrUpdate(newUser);
+                Log.d(TAG, "Invoking original callback#onSuccess");
                 callback.onSuccess(newEntityId, message);
             }
         });
@@ -59,7 +58,9 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         super.updateUser(username, token, updatedUser, new DelegatedMessageCallback(callback) {
             @Override
             protected void onSuccess(String message) {
+                Log.d(TAG, "User updated. Saving updated user information to local database.");
                 helper.getUserDao().createOrUpdate(updatedUser);
+                Log.d(TAG, "Invoking original callback#onSuccess");
                 callback.onSuccess(message);
             }
         });
@@ -110,7 +111,9 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         super.createChat(token, chat, new DelegatedCreatedMessageCallback(callback) {
             @Override
             protected void onSuccess(String newEntityId, String message) {
+                Log.d(TAG, "Chat created. Saving chat information to local database.");
                 helper.getChatDao().create(chat);
+                Log.d(TAG, "Invoking original callback#onSuccess");
                 callback.onSuccess(newEntityId, message);
             }
         });
@@ -137,25 +140,37 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         final User userInDb = helper.getUserDao().queryForId(username);
         if (userInDb != null) {
             final List<Chat> cachedChats = new ArrayList<>(helper.getUserChatDao().getUserChatList(userInDb));
-            callback.onReceive(cachedChats);
+            if (!cachedChats.isEmpty()) {
+                Log.d(TAG, "Fetched cached chat list for user `" + username + "`, invoking callback#onReceive");
+                callback.onReceive(cachedChats);
+            }
             super.getUserChatList(username, token, new DelegatedEntityCallback<List<Chat>>(callback) {
                 @Override
                 protected void onReceive(List<Chat> chatsFromServer) {
                     callback.onReceive(chatsFromServer);
-                    for (Chat chat : chatsFromServer)
-                        if (!cachedChats.contains(chat))
+                    for (Chat chat : chatsFromServer) {
+                        if (!cachedChats.contains(chat)) {
+                            Log.d(TAG, "Received new chat `" + chat.getChatId() + "` from server. Saving to database." );
+                            helper.getChatDao().createOrUpdate(chat);
                             helper.getUserChatDao().create(new UserChat(userInDb, chat));
+                        }
+                    }
                 }
             });
-        } else
+        } else {
+            Log.w(TAG, "Local database does not have record for user `" + username + "`. Something's not right.");
             super.getUserChatList(username, token, callback);
+        }
     }
 
     @Override
     public void getUserInfo(String username, final EntityCallback<User> callback) {
         final User userInDb = helper.getUserDao().queryForId(username);
-        if (userInDb != null)
+        if (userInDb != null) {
+            Log.d(TAG, "Invoking callback#onReceive with cached user information of `" + username + "`");
             callback.onReceive(userInDb);
+        }
+        Log.d(TAG, "Sending network request for user information of `" + username + "`");
         super.getUserInfo(username, new DelegatedEntityCallback<User>(callback) {
             @Override
             protected void onReceive(User userFromServer) {
@@ -171,18 +186,27 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
         if (userInDb != null) {
             final List<User> cachedFriends =
                     new ArrayList<>(helper.getFriendDao().getUserFriendList(userInDb));
-            callback.onReceive(cachedFriends);
+            if (!cachedFriends.isEmpty()) {
+                Log.d(TAG, "Fetched cached friend list for user `" + username + "`. Invoking callback#onReceive");
+                callback.onReceive(cachedFriends);
+            }
             super.getUserFriendList(username, token, new DelegatedEntityCallback<List<User>>(callback) {
                 @Override
                 protected void onReceive(List<User> usersFromServer) {
                     callback.onReceive(usersFromServer);
-                    for (User user : usersFromServer)
-                        if (!cachedFriends.contains(user))
+                    for (User user : usersFromServer) {
+                        if (!cachedFriends.contains(user)) {
+                            Log.d(TAG, "Received new friend `" + user.getUsername() + "` from server. Saving to database.");
+                            helper.getUserDao().createOrUpdate(user);
                             helper.getFriendDao().create(new Friend(userInDb, user));
+                        }
+                    }
                 }
             });
-        } else
+        } else {
+            Log.w(TAG, "Local database does not have record for user `" + username + "`. Something's not right.");
             super.getUserFriendList(username, token, callback);
+        }
     }
 
     @Override
