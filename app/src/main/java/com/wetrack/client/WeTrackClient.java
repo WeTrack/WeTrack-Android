@@ -52,12 +52,12 @@ public class WeTrackClient {
     private final FriendService friendService;
     private final LocationService locationService;
 
-    static private WeTrackClient mWeTrackClient = null;
-    static public WeTrackClient getInstance(String baseUrl, int timeoutSeconds) {
-        if (mWeTrackClient == null) {
-            mWeTrackClient = new WeTrackClient(baseUrl, timeoutSeconds);
+    private static WeTrackClient instance = null;
+    public static synchronized WeTrackClient getInstance() {
+        if (instance == null) {
+            instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
         }
-        return mWeTrackClient;
+        return instance;
     }
 
     /**

@@ -18,14 +18,15 @@ import java.sql.SQLException;
 public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = WeTrackDatabaseHelper.class.getCanonicalName();
 
-    private static final String DATABASE_NAME = "WeTrack";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "wetrack.db";
+    private static final int DATABASE_VERSION = 4;
 
     private RuntimeExceptionDao<User, String> userDao;
     private RuntimeExceptionDao<Location, Integer> locationDao;
     private RuntimeExceptionDao<Chat, String> chatDao;
     private RuntimeExceptionDao<ChatMessage, Integer> chatMessageDao;
-    private RuntimeExceptionDao<Friend, String> friendDao;
+    private RuntimeExceptionDao<Friend, Integer> friendDao;
+    private UserChatDao userChatDao;
 
     public WeTrackDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,6 +38,7 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, User.class);
             TableUtils.createTable(connectionSource, Location.class);
             TableUtils.createTable(connectionSource, Chat.class);
+            TableUtils.createTable(connectionSource, UserChat.class);
             TableUtils.createTable(connectionSource, ChatMessage.class);
             TableUtils.createTable(connectionSource, Friend.class);
         } catch (SQLException e) {
@@ -52,6 +54,8 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Chat.class, true);
             TableUtils.dropTable(connectionSource, ChatMessage.class, true);
             TableUtils.dropTable(connectionSource, Friend.class, true);
+            TableUtils.dropTable(connectionSource, UserChat.class, true);
+            onCreate(database, connectionSource);
         } catch (SQLException e) {
             Log.e(TAG, "Failed to drop tables: ", e);
         }
@@ -81,9 +85,15 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return chatMessageDao;
     }
 
-    public RuntimeExceptionDao<Friend, String> getFriendDao() {
+    public RuntimeExceptionDao<Friend, Integer> getFriendDao() {
         if (friendDao == null)
             friendDao = getRuntimeExceptionDao(Friend.class);
         return friendDao;
+    }
+
+    public UserChatDao getUserChatDao() {
+        if (userChatDao == null)
+            userChatDao = UserChatDao.of(getChatDao(), getRuntimeExceptionDao(UserChat.class));
+        return userChatDao;
     }
 }

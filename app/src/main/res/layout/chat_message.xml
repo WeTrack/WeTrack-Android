@@ -5,10 +5,50 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
+    <TextView
+        android:id="@+id/timestamp"
+        style="@style/chat_text_date_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+    <LinearLayout
+        android:id="@+id/right_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right">
+
+        <ProgressBar
+            android:id="@+id/pb_sending"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:indeterminateDrawable="@drawable/small_prograssbar"
+            android:indeterminateOnly="true"
+            android:indeterminateBehavior="repeat"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/right_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:background="@drawable/chatto_bg"/>
+        <ImageView
+            android:id="@+id/iv_userhead"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="5dp"
+            android:background="@null"
+            android:scaleType="fitXY" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/left_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_gravity="left">
         <ImageView
             android:id="@+id/tv_userhead"
@@ -21,79 +61,24 @@
             android:scaleType="fitXY" />
 
         <TextView
+            android:id="@+id/tv_userid"
+            style="@style/chat_text_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/tv_userhead"/>
+
+        <TextView
             android:id="@+id/left_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:textColor="#fff"
+            android:textColor="@color/black"
             android:background="@drawable/chatfrom_bg"/>
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/right_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right">
 
-        <ImageView
-            android:id="@+id/iv_userhead"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="5dp"
-            android:background="@null"
-            android:scaleType="fitXY" />
-        <TextView
-            android:id="@+id/right_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:background="@drawable/chatto_bg"/>
-        <ImageView
-            android:id="@+id/msg_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/right_msg"
-            android:clickable="true"
-            android:src="@drawable/msg_state_failed_resend"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tv_ack"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/right_msg"
-            android:text="已读"
-            android:textSize="12sp"
-            android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/tv_delivered"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/right_msg"
-            android:text="送达"
-            android:textSize="12sp"
-            android:visibility="invisible" />
-
-        <ProgressBar
-            android:id="@+id/pb_sending"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:indeterminateDrawable="@drawable/small_prograssbar"
-            android:indeterminateOnly="true"
-            android:indeterminateBehavior="repeat"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/right_msg"
-            android:visibility="visible" />
-    </LinearLayout>
 
 </LinearLayout>

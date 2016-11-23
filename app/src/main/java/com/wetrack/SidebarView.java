@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,25 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
+import com.wetrack.database.WeTrackDatabaseHelper;
+import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.Tools;
+import com.wetrack.utils.PreferenceUtils;
 
 public class SidebarView extends RelativeLayout {
+    private static final String TAG = SidebarView.class.getCanonicalName();
+
+    private WeTrackDatabaseHelper helper;
 
     private UserInfoUpdateReceiver mUserInfoUpdateReceiver = null;
     private ImageView portraitImageView;
     private ImageView genderImageView;
-    private TextView usernameTextView;
+    private TextView nicknameTextView;
     private Button changeInfoButton;
     private Button settingButton;
     private Button logoutButton;
@@ -39,18 +50,16 @@ public class SidebarView extends RelativeLayout {
         super(context);
         init();
     }
+
     public SidebarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public SidebarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
-//    public SidebarView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-//        super(context, attrs, defStyleAttr, defStyleRes);
-//        init();
-//    }
 
     public void init() {
         sidebarState = CLOSE_STATE;
@@ -62,32 +71,61 @@ public class SidebarView extends RelativeLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(-Tools.getScreenW() * 2 / 3, 0, 0, 0);
         setLayoutParams(layoutParams);
+        helper = OpenHelperManager.getHelper(getContext(), WeTrackDatabaseHelper.class);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        RelativeLayout sidebarLayout = (RelativeLayout)layoutInflater.inflate(R.layout.sidebar, null);
+        RelativeLayout sidebarLayout = (RelativeLayout) layoutInflater.inflate(R.layout.sidebar, null);
         addView(sidebarLayout);
 
-//        setVisibility(GONE);
-
         portraitImageView = (ImageView) findViewById(R.id.portrait_imageview);
-        usernameTextView = (TextView) findViewById(R.id.username_textview);
+        nicknameTextView = (TextView) findViewById(R.id.username_textview);
         genderImageView = (ImageView) findViewById(R.id.gender_imageview);
         changeInfoButton = (Button) findViewById(R.id.changeinfo_button);
         settingButton = (Button) findViewById(R.id.setting_button);
         logoutButton = (Button) findViewById(R.id.logout_button);
 
-//        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
-        String username = "ken";
-        usernameTextView.setText(username);
+        String username = PreferenceUtils.getStringValue(BaseApplication.getContext(), PreferenceUtils.KEY_USERNAME);
 
-//        UserDataFormat userDataFormat = new UserDataFormat(username);
-//        userDataFormat.getDataByUsername();
-
-//        if (userDataFormat.getValueByName(UserDataFormat.ATTRI_GENDER).equals("male")) {
+        // Load user information from local cache
+        RuntimeExceptionDao<User, String> userDao =
+                OpenHelperManager.getHelper(this.getContext(), WeTrackDatabaseHelper.class).getUserDao();
+        final User user = userDao.queryForId(username);
+        OpenHelperManager.releaseHelper();
+        if (user != null) {
+            nicknameTextView.setText(user.getNickname());
+            if (user.getGender() == User.Gender.Male) {
+                portraitImageView.setImageResource(R.drawable.portrait_boy);
+                genderImageView.setImageResource(R.drawable.gender_male);
+            } else {
+                portraitImageView.setImageResource(R.drawable.portrait_girl);
+                genderImageView.setImageResource(R.drawable.gender_female);
+            }
+        } else {
+            nicknameTextView.setText("User Nickname");
+            portraitImageView.setImageResource(R.drawable.portrait_boy);
             genderImageView.setImageResource(R.drawable.gender_male);
-//        } else {
-//            genderImageView.setImageResource(R.drawable.gender_female);
-//        }
+        }
+
+        // Fetch user's latest information from server
+        WeTrackClient.getInstance().getUserInfo(username, new EntityCallback<User>() {
+            @Override
+            protected void onReceive(User receivedUser) {
+                Log.d(TAG, "Received user `" + receivedUser.toString() + "` from server.");
+                if (receivedUser.equals(user)) {
+                    Log.d(TAG, "Received user is same as cached user. Nothing to update.");
+                }
+                // Update local cache if necessary
+                helper.getUserDao().createOrUpdate(receivedUser);
+                nicknameTextView.setText(receivedUser.getNickname());
+                if (receivedUser.getGender() == User.Gender.Male) {
+                    portraitImageView.setImageResource(R.drawable.portrait_boy);
+                    genderImageView.setImageResource(R.drawable.gender_male);
+                } else {
+                    portraitImageView.setImageResource(R.drawable.portrait_girl);
+                    genderImageView.setImageResource(R.drawable.gender_female);
+                }
+            }
+        });
     }
 
     public boolean getSidebarState() {
@@ -146,6 +184,8 @@ public class SidebarView extends RelativeLayout {
             getContext().unregisterReceiver(mUserInfoUpdateReceiver);
             mUserInfoUpdateReceiver = null;
         }
+        helper = null;
+        OpenHelperManager.releaseHelper();
     }
 
     private class UserInfoUpdateReceiver extends BroadcastReceiver {

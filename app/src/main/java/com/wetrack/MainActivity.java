@@ -41,7 +41,7 @@ public class MainActivity extends FragmentActivity {
     private AddOptionListView addOptionListView = null;
     private Button groupListButton;
     private ImageButton dropListImageButton;
-    private GroupListView groupListView = null;
+    private ChatListView chatListView = null;
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
@@ -57,11 +57,8 @@ public class MainActivity extends FragmentActivity {
         mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
-
         initSidebar();
-
         initAddContact();
-
         initDropList();
 
         initChatButton();
@@ -148,19 +145,20 @@ public class MainActivity extends FragmentActivity {
 
         groupListButton.setText(R.string.allFriend);
 
-        groupListView = new GroupListView(this);
-        mainLayout.addView(groupListView, 1);
+        chatListView = new ChatListView(this);
+        chatListView.setVisibility(View.GONE);
+        mainLayout.addView(chatListView, 1);
 
         View.OnClickListener dropListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (groupListView.getGroupListViewState() == GroupListView.CLOSE_STATE) {
-                    hideAllOtherLayout(groupListView);
+                if (chatListView.getVisibility() == View.GONE) {
+                    hideAllOtherLayout(chatListView);
                     dropListImageButton.setImageResource(R.drawable.list_drop_up);
-                    groupListView.open();
+                    chatListView.open();
                 } else {
                     dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                    groupListView.close();
+                    chatListView.close();
                 }
             }
         };
@@ -181,10 +179,10 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void hideAllOtherLayout(Object object) {
-        if (!(object instanceof GroupListView)) {
-            if (groupListView.getGroupListViewState() == GroupListView.OPEN_STATE) {
+        if (!(object instanceof ChatListView)) {
+            if (chatListView.getVisibility() == View.VISIBLE) {
                 dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                groupListView.close();
+                chatListView.close();
             }
         }
         if (!(object instanceof AddOptionListView)) {
@@ -298,15 +296,12 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (groupListView != null) {
-            groupListView.destroy();
-        }
-        if (contactView != null) {
+        if (chatListView != null)
+            chatListView.destroy();
+        if (contactView != null)
             contactView.destroy();
-        }
-        if (sidebarView != null) {
+        if (sidebarView != null)
             sidebarView.destroy();
-        }
     }
 
     //    public boolean requestForLocationService() {

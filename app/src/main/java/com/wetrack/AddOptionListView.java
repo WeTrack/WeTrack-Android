@@ -14,25 +14,26 @@ import android.widget.RelativeLayout;
 import com.wetrack.utils.Tools;
 
 public class AddOptionListView extends ListView {
+
     public AddOptionListView(Context context) {
         super(context);
         init();
     }
+
     public AddOptionListView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public AddOptionListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public void init() {
-    }
+    public void init() {}
 
     public void close() {
-        int width = 300;
-        int height = getHeight();
+        int width = getWidth();
         Animation am = new ScaleAnimation(1f, 0f, 1f, 0f, width * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());
@@ -52,9 +53,8 @@ public class AddOptionListView extends ListView {
     }
 
     public void open() {
-        setVisibility(VISIBLE);
-        int width = 300;
-        int height = getHeight();
+        setVisibility(View.VISIBLE);
+        int width = getWidth();
         Animation am = new ScaleAnimation(0f, 1f, 0f, 1f, width * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());

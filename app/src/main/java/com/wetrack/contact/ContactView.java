@@ -30,7 +30,7 @@ import java.util.Map;
  * Created by moziliang on 16/11/18.
  */
 public class ContactView extends RelativeLayout {
-    private WeTrackClient client = WeTrackClient.getInstance(ConstantValues.serverBaseUrl, ConstantValues.timeoutSeconds);
+    private WeTrackClient client = WeTrackClient.getInstance();
     private FriendListUpdateReceiver mFriendListUpdateReceiver = null;
     private ImageButton backButton;
     private TextView titleTextView;
