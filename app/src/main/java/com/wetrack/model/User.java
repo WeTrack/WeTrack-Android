@@ -5,6 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.wetrack.database.LocalDateTimePersister;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.LocalDate;
 
 @DatabaseTable(tableName = "users")
@@ -81,5 +82,10 @@ public class User {
     @Override
     public boolean equals(Object that) {
         return EqualsBuilder.reflectionEquals(this, that, password);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

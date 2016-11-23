@@ -12,7 +12,7 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/group_name"
+        android:id="@+id/chat_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
@@ -23,12 +23,12 @@
         android:layout_alignTop="@id/group_portrait"/>
 
     <TextView
-        android:id="@+id/group_member"
+        android:id="@+id/chat_member"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/group_name"
+        android:layout_alignLeft="@id/chat_name"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/group_name"
+        android:layout_below="@id/chat_name"
         android:background="@color/transparent"
         android:textSize="10dp"
         android:textColor="@color/black"

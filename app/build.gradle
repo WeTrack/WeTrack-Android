@@ -35,6 +35,8 @@ dependencies {
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: "$retrofitVersion"
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava', version: "$retrofitVersion"
     compile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: "$okHttpVersion"
+    compile group: 'org.slf4j', name: 'slf4j-android', version: '1.7.21'
+
     compile group: 'io.reactivex', name: 'rxjava', version: '1.2.2'
     compile group: 'io.reactivex', name: 'rxandroid', version: '1.2.1'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.5'

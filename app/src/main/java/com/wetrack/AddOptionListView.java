@@ -9,30 +9,27 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ListView;
 
-/**
- * Created by moziliang on 16/11/20.
- */
 public class AddOptionListView extends ListView {
+
     public AddOptionListView(Context context) {
         super(context);
         init();
     }
+
     public AddOptionListView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public AddOptionListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public void init() {
-
-    }
+    public void init() {}
 
     public void close() {
         int width = getWidth();
-        int height = getHeight();
         Animation am = new ScaleAnimation(1f, 0f, 1f, 0f, width * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());
@@ -58,7 +55,6 @@ public class AddOptionListView extends ListView {
     public void open() {
         setVisibility(View.VISIBLE);
         int width = getWidth();
-        int height = getHeight();
         Animation am = new ScaleAnimation(0f, 1f, 0f, 1f, width * 1f, 0f);
         am.setDuration(500);
         am.setInterpolator(new AccelerateInterpolator());

@@ -19,14 +19,10 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.contact.ContactView;
-import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
-import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.Tools;
 
@@ -38,8 +34,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
 
-    private RuntimeExceptionDao<User, String> userDao;
-
     private ImageButton openSidebarButton;
     private ContactView contactView = null;
     private SidebarView sidebarView = null;
@@ -47,7 +41,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private AddOptionListView addOptionListView = null;
     private Button groupListButton;
     private ImageButton dropListImageButton;
-    private GroupListView groupListView = null;
+    private ChatListView chatListView = null;
 
     private RelativeLayout mainContain;
     private RelativeLayout mainLayout;
@@ -58,8 +52,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        userDao = OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class).getUserDao();
 
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
         mainContain = (RelativeLayout) findViewById(R.id.main_contain);
@@ -128,7 +120,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact,list);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this,R.layout.add_contact, list);
         addOptionListView.setAdapter(listAdapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -166,20 +158,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         groupListButton.setText(R.string.allFriend);
 
-        groupListView = new GroupListView(this);
-        groupListView.setVisibility(View.GONE);
-        mainLayout.addView(groupListView, 1);
+        chatListView = new ChatListView(this);
+        chatListView.setVisibility(View.GONE);
+        mainLayout.addView(chatListView, 1);
 
         View.OnClickListener dropListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (groupListView.getVisibility() == View.GONE) {
-                    hideAllLayout(groupListView);
+                if (chatListView.getVisibility() == View.GONE) {
+                    hideAllLayout(chatListView);
                     dropListImageButton.setImageResource(R.drawable.list_drop_up);
-                    groupListView.open();
+                    chatListView.open();
                 } else {
                     dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                    groupListView.close();
+                    chatListView.close();
                 }
             }
         };
@@ -189,10 +181,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void hideAllLayout(Object object) {
-        if (!(object instanceof GroupListView)) {
-            if (groupListView.getVisibility() == View.VISIBLE) {
+        if (!(object instanceof ChatListView)) {
+            if (chatListView.getVisibility() == View.VISIBLE) {
                 dropListImageButton.setImageResource(R.drawable.list_drop_down);
-                groupListView.close();
+                chatListView.close();
             }
         }
         if (!(object instanceof AddOptionListView)) {
@@ -308,17 +300,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (groupListView != null) {
-            groupListView.destroy();
-        }
-        if (contactView != null) {
+        if (chatListView != null)
+            chatListView.destroy();
+        if (contactView != null)
             contactView.destroy();
-        }
-        if (sidebarView != null) {
+        if (sidebarView != null)
             sidebarView.destroy();
-        }
-        userDao = null;
-        OpenHelperManager.releaseHelper();
     }
 
     //    public boolean requestForLocationService() {
