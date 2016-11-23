@@ -22,11 +22,11 @@ import com.wetrack.R;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
+import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
-import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
 
 import retrofit2.Response;
@@ -34,8 +34,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getCanonicalName();
 
-    private WeTrackClient client = WeTrackClient.getInstance();
-    private RuntimeExceptionDao<User, String> userDao;
+    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
     private EditText usernameInput;
     private EditText passwordInput;
@@ -53,8 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        userDao = OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class).getUserDao();
 
         usernameInput = (EditText) findViewById(R.id.input_username);
         passwordInput = (EditText) findViewById(R.id.input_password);
@@ -138,10 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected void onSuccess(String username, String message) {
                         enableAll();
-                        userDao.create(user);
                         Toast.makeText(LoginActivity.this, "You have successfully signed up. Please try to sign in again with your new username and password.", Toast.LENGTH_SHORT).show();
-                        User savedUser = userDao.queryForId(username);
-                        Log.d(TAG, "Saved User{username=" + savedUser.getUsername() + "}");
                         toggleButton.callOnClick();
                     }
 
@@ -220,13 +214,6 @@ public class LoginActivity extends AppCompatActivity {
             }
             enableAll();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        userDao = null;
-        OpenHelperManager.releaseHelper();
     }
 
     /** Enables all input controls */

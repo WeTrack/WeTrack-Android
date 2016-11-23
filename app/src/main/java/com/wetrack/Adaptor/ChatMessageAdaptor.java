@@ -63,14 +63,12 @@ public class ChatMessageAdaptor extends BaseAdapter {
         rightLayout = (LinearLayout) row.findViewById(R.id.right_layout);
         //received message
         if (chatMessageList.get(position).getFromUsername() != currentUser.getUsername()) {
-            TextView timestamp, username, content;
+            TextView timestamp, content;
             ImageView head;
             timestamp = (TextView) row.findViewById(R.id.timestamp);
-            username = (TextView) row.findViewById(R.id.tv_userid);
             content = (TextView) row.findViewById(R.id.left_msg);
             head = (ImageView)row.findViewById(R.id.tv_userhead);
             timestamp.setText(chatMessageList.get(position).getSendTime().toString());
-            username.setText(chatMessageList.get(position).getFromUsername());
             content.setText(chatMessageList.get(position).getContent());
             rightLayout.setVisibility(View.GONE);
             leftLayout.setVisibility(View.VISIBLE);

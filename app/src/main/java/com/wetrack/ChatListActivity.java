@@ -65,7 +65,7 @@ public class ChatListActivity extends AppCompatActivity {
         final String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
         String token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
 
-        WeTrackClient.getInstance().getUserChatList(username, token, new EntityCallback<List<Chat>>() {
+        WeTrackClient.singleton().getUserChatList(username, token, new EntityCallback<List<Chat>>() {
             @Override
             protected void onReceive(List<Chat> receivedChats) {
                 User userInDB = helper.getUserDao().queryForId(username);

@@ -53,7 +53,7 @@ public class WeTrackClient {
     private final LocationService locationService;
 
     private static WeTrackClient instance = null;
-    public static synchronized WeTrackClient getInstance() {
+    public static synchronized WeTrackClient singleton() {
         if (instance == null) {
             instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
         }
@@ -66,7 +66,7 @@ public class WeTrackClient {
      * @param baseUrl the given base URL.
      * @param timeoutSeconds the given timeout in seconds.
      */
-    private WeTrackClient(String baseUrl, int timeoutSeconds) {
+    WeTrackClient(String baseUrl, int timeoutSeconds) {
         this(baseUrl, timeoutSeconds, Schedulers.io(), AndroidSchedulers.mainThread());
     }
 
