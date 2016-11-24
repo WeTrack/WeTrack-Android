@@ -75,10 +75,12 @@ public class LoginActivity extends AppCompatActivity {
             final String password = passwordInput.getText().toString();
             if (username.isEmpty()) {
                 Toast.makeText(LoginActivity.this, "Username cannot be empty.", Toast.LENGTH_SHORT).show();
+                enableAll();
                 return;
             }
             if (password.isEmpty()) {
                 Toast.makeText(LoginActivity.this, "Password cannot be empty.", Toast.LENGTH_SHORT).show();
+                enableAll();
                 return;
             }
             if (isSignIn) { // Sign in
@@ -115,16 +117,19 @@ public class LoginActivity extends AppCompatActivity {
                 final String passwordConfirm = passwordConfirmInput.getText().toString();
                 if (passwordConfirm.isEmpty() || !password.equals(passwordConfirm)) {
                     Toast.makeText(LoginActivity.this, "Password confirmation is not the same as the provided password.", Toast.LENGTH_SHORT).show();
+                    enableAll();
                     return;
                 }
                 final String nickname = nicknameInput.getText().toString();
                 if (nickname.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Nickname cannot be empty.", Toast.LENGTH_SHORT).show();
+                    enableAll();
                     return;
                 }
                 int genderId = genderRadioGroup.getCheckedRadioButtonId();
                 if (genderId == -1) {
                     Toast.makeText(LoginActivity.this, "You must select your gender.", Toast.LENGTH_SHORT).show();
+                    enableAll();
                     return;
                 }
                 final String gender = ((RadioButton) findViewById(genderId)).getText().toString();

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.wetrack.BaseApplication;
@@ -32,14 +31,12 @@ public abstract class ChatServiceManager {
             @Override
             public void onServiceConnected(ComponentName className,
                                            IBinder service) {
-                Log.d(ConstantValues.debugTab, mContext.getPackageName() + " onServiceConnected");
                 ChatService.ChatBinder binder = (ChatService.ChatBinder) service;
                 mService = binder.getService();
                 connected = true;
             }
             @Override
             public void onServiceDisconnected(ComponentName arg0) {
-                Log.d(ConstantValues.debugTab, mContext.getPackageName() + "onServiceDisconnected");
                 connected = false;
             }
         };

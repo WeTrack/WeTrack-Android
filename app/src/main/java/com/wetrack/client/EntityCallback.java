@@ -16,7 +16,7 @@ import retrofit2.Response;
  *
  * @param <T> the expected type of the response entity
  */
-public class EntityCallback<T> {
+public abstract class EntityCallback<T> {
 
     /**
      * Invoked on entity successfully received from response body. This method will be invoked

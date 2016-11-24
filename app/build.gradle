@@ -41,7 +41,6 @@ dependencies {
     compile group: 'io.reactivex', name: 'rxandroid', version: '1.2.1'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.5'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-    compile group: 'org.json', name: 'json', version: '20160810'
     compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
 

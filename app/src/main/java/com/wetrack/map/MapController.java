@@ -57,6 +57,12 @@ public class MapController {
             @Override
             public void onGpsLocationReceived(Location location) {
                 myCurrentLocation = location;
+
+                googleMapFragment.setCameraLocation(
+                        new LatLng(
+                                myCurrentLocation.getLatitude(),
+                                myCurrentLocation.getLongitude()),
+                        0, 0);
             }
         });
     }

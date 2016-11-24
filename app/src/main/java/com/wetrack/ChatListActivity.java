@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
+import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.database.UserChat;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Chat;
@@ -25,7 +27,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
-    private WeTrackDatabaseHelper helper;
+    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+
     private LinearLayout chatListLinearLayout = null;
     private ImageButton chatListBackButton = null;
 
@@ -46,38 +49,12 @@ public class ChatListActivity extends AppCompatActivity {
             }
         });
 
-        helper = OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class);
-
-        dbReload();
-        networkReload();
-    }
-
-    private void dbReload() {
-        final String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
-        User userInDB = helper.getUserDao().queryForId(username);
-        if (userInDB == null) // User does not exist in the database. Wait for network response.
-            return;
-        Collection<Chat> chats = helper.getUserChatDao().getUserChatList(userInDB);
-        reloadChatList(chats);
-    }
-
-    private void networkReload() {
-        final String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
+        String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
         String token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
-
-        WeTrackClient.singleton().getUserChatList(username, token, new EntityCallback<List<Chat>>() {
+        client.getUserChatList(username, token, new EntityCallbackWithLog<List<Chat>>(ChatListActivity.this) {
             @Override
-            protected void onReceive(List<Chat> receivedChats) {
-                User userInDB = helper.getUserDao().queryForId(username);
-                if (userInDB != null) {
-                    for (Chat chat : receivedChats) {
-                        helper.getChatDao().createOrUpdate(chat);
-                        UserChat userChat = new UserChat(userInDB, chat);
-                        if (!helper.getUserChatDao().userChatExists(userChat))
-                            helper.getUserChatDao().create(userChat);
-                    }
-                }
-                reloadChatList(receivedChats);
+            protected void onReceive(List<Chat> chats) {
+                reloadChatList(chats);
             }
         });
     }
@@ -101,24 +78,13 @@ public class ChatListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // TODO put the information into intent, then get it in 'onActivityResult' in MainActivity
                     Intent intent = new Intent();
-
                     setResult(RESULT_OK, intent);
-
                     overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                     ChatListActivity.this.finish();
                 }
             });
 
             chatListLinearLayout.addView(chatItemLayout);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (helper != null) {
-            helper = null;
-            OpenHelperManager.releaseHelper();
         }
     }
 }

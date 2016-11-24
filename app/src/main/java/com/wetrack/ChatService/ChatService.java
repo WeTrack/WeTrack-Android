@@ -12,8 +12,7 @@ import com.wetrack.utils.ConstantValues;
 public class ChatService extends Service {
     private final IBinder mBinder = new ChatBinder();
 
-    public ChatService() {
-    }
+    public ChatService() {}
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -37,7 +36,7 @@ public class ChatService extends Service {
         //TODO store the received message into local database
 
         //below is to info activities to load new message from local database
-        Intent intent1 = new Intent(ConstantValues.ACTION_UPDATE_CHAT_MSG);
-        BaseApplication.getContext().sendBroadcast(intent1);
+        Intent intent = new Intent(ConstantValues.ACTION_UPDATE_CHAT_MSG);
+        BaseApplication.getContext().sendBroadcast(intent);
     }
 }

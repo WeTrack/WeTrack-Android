@@ -8,6 +8,7 @@ public abstract class ConstantValues {
     public static String permission = "permission";
     public static String touchDebug = "touch_debug";
     public static String databaseDebug = "mydatabase";
+    public static String serviceDebug = "myservice";
 
     //for broadcast action name
     public static String ACTION_UPDATE_GROUP_LIST = "com.wetrack.action.friendList";
@@ -18,7 +19,7 @@ public abstract class ConstantValues {
 
     //activity transition
     final public static int CHAT_LIST_REQUEST_CODE = 1;
-    final public static int CREATE_GROUP_REQUEST_CODE = 2;
+    final public static int CREATE_CHAT_REQUEST_CODE = 2;
     final public static int ADD_FRIEND_REQUEST_CODE = 3;
 
     //marker arraylist operation code
