@@ -16,6 +16,7 @@ public class StringListPersister extends BaseDataType {
 
     private static final String DELIMITER = ",";
 
+    /* This method must exist. */
     public static StringListPersister getSingleton() {
         return instance;
     }
