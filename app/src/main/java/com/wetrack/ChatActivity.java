@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -12,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.wetrack.adapter.ChatMessageAdapter;
 import com.wetrack.model.Chat;
@@ -57,11 +61,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        Button buttonSend = (Button) findViewById(R.id.send_btn);
+        final Button buttonSend = (Button) findViewById(R.id.send_btn);
         buttonSend.setOnClickListener(this);
+        buttonSend.setEnabled(false);
 
         messageListView = (ListView) findViewById(R.id.message_list_view);
         messageEditText = (EditText) findViewById(R.id.message_edit);
+
+        messageEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().isEmpty())
+                    buttonSend.setEnabled(false);
+                else
+                    buttonSend.setEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
 
         messageEditLayout = (RelativeLayout) findViewById(R.id.message_edit_layout);
         messageEditLayout.setBackgroundResource(R.drawable.input_bar_bg_normal);
