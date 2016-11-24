@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.wetrack.Adaptor.ChatMessageAdaptor;
+import com.wetrack.ChatService.ChatServiceManager;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.model.User;
@@ -39,6 +40,7 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
     private User user2;
     private List<ChatMessage> chatMessageList;
 
+    private ChatServiceManager mChatServiceManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,18 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_chat);
         initView();
         setUpView();
+
+        initChatServiceManager();
+    }
+
+    private void initChatServiceManager() {
+        mChatServiceManager = new ChatServiceManager(this) {
+            @Override
+            public void onReceivedMessage() {
+                //TODO if needed, load new message from local database, and upload UI
+            }
+        };
+        mChatServiceManager.start();
     }
 
     @Override
@@ -121,7 +135,6 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
         adapter = new ChatMessageAdaptor(this, chatMessageList, chatTest, user2);
         listView.setAdapter(adapter);
         listView.setOnTouchListener(new View.OnTouchListener() {
-
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 hideKeyboard();
@@ -154,5 +167,17 @@ public class ChatActivity extends FragmentActivity implements View.OnClickListen
         adapter.refresh(chatMessageList);
         listView.setSelection(listView.getCount() - 1);
         mEditTextContent.setText("");
+
+        //send message to server
+        mChatServiceManager.sendChatMessage(sendMessage);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mChatServiceManager != null) {
+            mChatServiceManager.stop();
+            mChatServiceManager = null;
+        }
     }
 }

@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wetrack.ChatService.ChatServiceManager;
 import com.wetrack.login.LoginActivity;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
@@ -29,24 +30,25 @@ import java.util.Arrays;
 
 
 public class MainActivity extends FragmentActivity {
-    private MapController mMapController;
     private MyHandler mHandler = new MyHandler();
-
+    private MapController mMapController;
     private ImageButton openSidebarButton;
     private SidebarView sidebarView = null;
     private ImageButton addContactButton;
     private AddOptionListView addOptionListView = null;
     private Button chatListButton;
     private ImageButton chatListImageButton;
-
     private RelativeLayout mainLayout;
-
     private Button chatButton;
+
+    private ChatServiceManager mChatServiceManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initChatServiceManager();
 
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
 
@@ -54,8 +56,17 @@ public class MainActivity extends FragmentActivity {
         initSidebar();
         initAddContact();
         initChatList();
-
         initChatButton();
+    }
+
+    private void initChatServiceManager() {
+        mChatServiceManager = new ChatServiceManager(this) {
+            @Override
+            public void onReceivedMessage() {
+                //TODO if needed, load new message from local database
+            }
+        };
+        mChatServiceManager.start();
     }
 
     public void initMapInView(int viewId) {
@@ -172,7 +183,6 @@ public class MainActivity extends FragmentActivity {
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -314,6 +324,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mChatServiceManager != null) {
+            mChatServiceManager.stop();
+            mChatServiceManager = null;
+        }
     }
 
     //    public boolean requestForLocationService() {

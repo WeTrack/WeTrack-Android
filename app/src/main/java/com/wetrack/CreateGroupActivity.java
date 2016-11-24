@@ -29,16 +29,15 @@ public class CreateGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_group);
 
         setResult(RESULT_CANCELED);
-        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
 
         backButton = (ImageButton) findViewById(R.id.create_group_back);
         configButton = (Button) findViewById(R.id.create_group_config);
         listLinearLayout = (LinearLayout) findViewById(R.id.create_group_list);
 
-
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 CreateGroupActivity.this.finish();
             }
         });
@@ -53,6 +52,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
                 setResult(RESULT_OK, intent);
 
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 CreateGroupActivity.this.finish();
             }
         });
@@ -89,7 +89,6 @@ public class CreateGroupActivity extends AppCompatActivity {
                 configButton.setEnabled(true);
                 configButton.setTextColor(Color.BLACK);
             }
-            Log.d(ConstantValues.debugTab, "create group size: " + allFriendNamesToCreateGroup.size());
         }
     }
 }

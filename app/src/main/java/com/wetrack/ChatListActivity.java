@@ -35,13 +35,13 @@ public class ChatListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_list);
 
         setResult(RESULT_CANCELED);
-        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
 
         chatListLinearLayout = (LinearLayout) findViewById(R.id.chat_list);
         chatListBackButton = (ImageButton) findViewById(R.id.chat_list_back_button);
         chatListBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 ChatListActivity.this.finish();
             }
         });
@@ -104,6 +104,7 @@ public class ChatListActivity extends AppCompatActivity {
 
                     setResult(RESULT_OK, intent);
 
+                    overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                     ChatListActivity.this.finish();
                 }
             });

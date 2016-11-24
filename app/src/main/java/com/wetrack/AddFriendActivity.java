@@ -21,7 +21,6 @@ public class AddFriendActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_friend);
 
         setResult(RESULT_CANCELED);
-        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
 
         backButton = (ImageButton) findViewById(R.id.add_friend_back);
         searchButton = (ImageButton) findViewById(R.id.add_friend_search_button);
@@ -31,6 +30,7 @@ public class AddFriendActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 AddFriendActivity.this.finish();
             }
         });
@@ -60,6 +60,7 @@ public class AddFriendActivity extends AppCompatActivity {
 
             setResult(RESULT_OK, intent);
 
+            overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
             AddFriendActivity.this.finish();
         }
     }

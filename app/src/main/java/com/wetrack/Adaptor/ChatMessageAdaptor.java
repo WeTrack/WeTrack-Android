@@ -17,10 +17,6 @@ import com.wetrack.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Robert on 2016/11/22.
- */
-
 public class ChatMessageAdaptor extends BaseAdapter {
     private Context context;
     private Chat chat;

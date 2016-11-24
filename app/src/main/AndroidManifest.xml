@@ -43,7 +43,12 @@
         <activity android:name=".ChatActivity" />
         <activity android:name=".ChatListActivity" />
         <activity android:name=".CreateGroupActivity" />
-        <activity android:name=".AddFriendActivity"></activity>
+        <activity android:name=".AddFriendActivity" />
+
+        <service
+            android:name=".ChatService.ChatService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
