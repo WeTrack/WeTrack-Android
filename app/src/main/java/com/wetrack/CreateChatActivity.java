@@ -46,7 +46,6 @@ public class CreateChatActivity extends AppCompatActivity {
         token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
 
         setResult(RESULT_CANCELED);
-        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
 
         backButton = (ImageButton) findViewById(R.id.chat_create_back_btn);
         createButton = (Button) findViewById(R.id.chat_create_btn);

@@ -44,7 +44,6 @@ public class ChatListActivity extends AppCompatActivity {
         chatListBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 ChatListActivity.this.finish();
             }
         });
@@ -79,7 +78,6 @@ public class ChatListActivity extends AppCompatActivity {
                     // TODO put the information into intent, then get it in 'onActivityResult' in MainActivity
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
-                    overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                     ChatListActivity.this.finish();
                 }
             });

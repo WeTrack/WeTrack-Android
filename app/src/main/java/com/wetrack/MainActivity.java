@@ -185,6 +185,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
         switch (requestCode) {
             case ConstantValues.CHAT_LIST_REQUEST_CODE:
                 switch (resultCode) {

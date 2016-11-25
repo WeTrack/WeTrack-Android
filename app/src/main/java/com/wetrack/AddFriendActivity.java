@@ -46,7 +46,6 @@ public class AddFriendActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 AddFriendActivity.this.finish();
             }
         });
@@ -96,7 +95,6 @@ public class AddFriendActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
                     AddFriendActivity.this.finish();
-                    overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 }
             });
         }
