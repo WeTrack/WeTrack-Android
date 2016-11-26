@@ -1,4 +1,4 @@
-package com.wetrack.ChatService;
+package com.wetrack.service;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -67,7 +67,8 @@ public abstract class ChatServiceManager {
     public class MyBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            onReceivedMessage();
+            if (intent.getAction().equals(ConstantValues.ACTION_UPDATE_CHAT_MSG))
+                onReceivedMessage();
         }
     }
 }

@@ -10,15 +10,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.wetrack.client.EntityCallback;
 import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.database.UserChat;
-import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Chat;
-import com.wetrack.model.User;
 import com.wetrack.utils.PreferenceUtils;
 
 import org.apache.commons.lang3.StringUtils;

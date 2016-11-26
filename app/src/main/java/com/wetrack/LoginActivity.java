@@ -1,4 +1,4 @@
-package com.wetrack.login;
+package com.wetrack;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,16 +14,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.wetrack.BaseApplication;
-import com.wetrack.MainActivity;
-import com.wetrack.R;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;

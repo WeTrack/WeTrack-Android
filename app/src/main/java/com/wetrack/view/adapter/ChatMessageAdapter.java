@@ -1,4 +1,4 @@
-package com.wetrack.adapter;
+package com.wetrack.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

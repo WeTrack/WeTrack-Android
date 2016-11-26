@@ -64,7 +64,7 @@
             android:src="@drawable/add_contact" />
     </RelativeLayout>
 
-    <com.wetrack.AddOptionListView
+    <com.wetrack.view.AddOptionListView
         android:id="@+id/add_option_listview"
         android:layout_width="150dp"
         android:layout_height="wrap_content"

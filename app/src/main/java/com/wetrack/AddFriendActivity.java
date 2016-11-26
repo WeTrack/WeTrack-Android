@@ -9,13 +9,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.wetrack.client.EntityCallback;
+import com.wetrack.view.AddFriendItemView;
 import com.wetrack.client.EntityCallbackWithLog;
-import com.wetrack.client.MessageCallback;
 import com.wetrack.client.MessageCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.utils.PreferenceUtils;
 

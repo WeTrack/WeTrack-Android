@@ -1,4 +1,4 @@
-package com.wetrack;
+package com.wetrack.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wetrack.R;
 import com.wetrack.model.User;
 
 public class AddFriendItemView extends RelativeLayout {

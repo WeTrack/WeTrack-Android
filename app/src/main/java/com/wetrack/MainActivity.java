@@ -18,8 +18,9 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.wetrack.ChatService.ChatServiceManager;
-import com.wetrack.login.LoginActivity;
+import com.wetrack.view.AddOptionListView;
+import com.wetrack.view.SidebarView;
+import com.wetrack.service.ChatServiceManager;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.utils.ConstantValues;

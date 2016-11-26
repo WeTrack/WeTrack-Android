@@ -1,4 +1,4 @@
-package com.wetrack.ChatService;
+package com.wetrack.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -26,16 +26,16 @@ public class ChatService extends Service {
     }
 
     public void sendMessage(ChatMessage chatMessage) {
-        //TODO send message to server
+        // TODO Send message to server
     }
 
-    /**
+    /*
      * after receiving message from server, call this function
-     * */
+     */
     public void onReceivedMessage(ChatMessage chatMessage) {
-        //TODO store the received message into local database
+        // TODO Store the received message into local database
 
-        //below is to info activities to load new message from local database
+        // Inform activities to load new message from database
         Intent intent = new Intent(ConstantValues.ACTION_UPDATE_CHAT_MSG);
         BaseApplication.getContext().sendBroadcast(intent);
     }

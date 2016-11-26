@@ -1,12 +1,8 @@
-package com.wetrack;
+package com.wetrack.view;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +14,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.wetrack.R;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.User;
-import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.Tools;
 import com.wetrack.utils.PreferenceUtils;
 

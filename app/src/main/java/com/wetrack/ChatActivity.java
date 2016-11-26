@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,14 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.wetrack.ChatService.ChatServiceManager;
-import com.wetrack.adapter.ChatMessageAdapter;
+import com.wetrack.R;
+import com.wetrack.service.ChatServiceManager;
+import com.wetrack.view.adapter.ChatMessageAdapter;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.model.User;
-import com.wetrack.utils.ConstantValues;
 
 import org.joda.time.LocalDateTime;
 

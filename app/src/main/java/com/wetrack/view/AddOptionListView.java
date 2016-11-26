@@ -1,4 +1,4 @@
-package com.wetrack;
+package com.wetrack.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

@@ -1,6 +1,5 @@
 package com.wetrack.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.wetrack.BaseApplication;

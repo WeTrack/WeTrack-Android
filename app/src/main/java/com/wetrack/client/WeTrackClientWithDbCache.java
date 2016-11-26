@@ -1,6 +1,5 @@
 package com.wetrack.client;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
