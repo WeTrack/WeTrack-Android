@@ -83,6 +83,7 @@
             android:text="Send"
             android:textColor="#ffffffff"
             android:textSize="16sp"
+            android:enabled="false"
             android:visibility="visible"/>
     </LinearLayout>
 

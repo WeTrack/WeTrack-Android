@@ -1,16 +1,14 @@
 package com.wetrack;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.wetrack.view.CreateChatItemView;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
@@ -18,6 +16,7 @@ import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Chat;
 import com.wetrack.model.User;
 import com.wetrack.utils.PreferenceUtils;
+import com.wetrack.view.CreateChatItemView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -128,10 +127,10 @@ public class CreateChatActivity extends AppCompatActivity {
         private void refreshCreateButton() {
             if (allFriendNamesToCreateChat.isEmpty()) {
                 createButton.setEnabled(false);
-                createButton.setTextColor(Color.LTGRAY);
+                //createButton.setTextColor(Color.LTGRAY);
             } else {
                 createButton.setEnabled(true);
-                createButton.setTextColor(Color.BLACK);
+                //createButton.setTextColor(Color.BLACK);
             }
         }
     }

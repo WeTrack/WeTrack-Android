@@ -33,14 +33,16 @@
 
         <Button
             android:id="@+id/chat_create_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:text="CREATE"
-            android:textSize="20dp"
-            android:background="@color/transparent"
-            android:textColor="@color/black" />
+            android:textSize="15dp"
+            android:enabled="false"
+            android:background="@drawable/group_create_btn_selector"
+            android:textColor="@color/white" />
     </RelativeLayout>
 
     <ScrollView
