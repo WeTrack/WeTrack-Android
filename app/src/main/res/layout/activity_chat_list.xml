@@ -9,8 +9,8 @@
     <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#DCDCDC">
+        android:layout_height="?actionBarSize"
+        android:background="@color/white">
 
         <ImageButton
             android:id="@+id/chat_list_back_button"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Chat List"
             android:textColor="@color/black"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
 
@@ -34,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_bar"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="#f6f6f6">
         <LinearLayout
             android:id="@+id/chat_list"
             android:layout_width="match_parent"

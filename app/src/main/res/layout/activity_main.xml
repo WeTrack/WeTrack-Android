@@ -24,27 +24,32 @@
     <RelativeLayout
         android:id="@+id/menu_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:background="@color/white">
 
         <ImageButton
             android:id="@+id/open_sidebar_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
             android:background="@color/transparent"
-            android:src="@drawable/open_sidebar" />
+            android:src="@drawable/open_sidebar"
+            android:layout_alignTop="@+id/add_contact_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <Button
             android:id="@+id/chat_list_button"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/open_sidebar_button"
+            android:layout_marginLeft="13dp"
             android:background="@color/transparent"
             android:maxLength="10"
             android:textColor="@color/black"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:layout_alignTop="@+id/open_sidebar_button"
+            android:layout_toRightOf="@+id/open_sidebar_button"
+            android:layout_toEndOf="@+id/open_sidebar_button"
+            android:layout_marginStart="13dp" />
 
         <ImageButton
             android:id="@+id/chat_list_imagebutton"
@@ -59,9 +64,11 @@
             android:id="@+id/add_contact_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentRight="true"
             android:background="@color/transparent"
-            android:src="@drawable/add_contact" />
+            android:src="@drawable/add_contact"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
     <com.wetrack.view.AddOptionListView

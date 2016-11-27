@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/create_group_menu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:background="@color/white">
 
         <ImageButton
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white">
+        android:background="#f6f6f6">
 
         <LinearLayout
             android:id="@+id/friend_list"

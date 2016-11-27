@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"    >
 
     <ImageView
         android:id="@+id/add_friend_item_portrait"
@@ -9,6 +9,7 @@
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_margin="5dp"
         android:background="@color/transparent"/>
 
     <TextView
@@ -19,7 +20,7 @@
         android:layout_centerVertical="true"
         android:textColor="@color/black"
         android:maxLength="8"
-        android:textSize="30sp"/>
+        android:textSize="15sp"/>
 
     <ImageView
         android:id="@+id/add_friend_item_gender"
@@ -28,6 +29,7 @@
         android:layout_toRightOf="@id/add_friend_item_name"
         android:layout_alignBottom="@id/add_friend_item_name"
         android:background="@color/transparent"
+        android:layout_margin="5dp"
         android:layout_centerVertical="true" />
 
     <Button

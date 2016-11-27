@@ -52,4 +52,6 @@
     <color name="greeny">#ff11aca6</color>
     <color name= "sent_message_bg">#2EFE64</color>
     <color name= "sent_message_pressed_bg">#04B404</color>
+
+
 </resources>

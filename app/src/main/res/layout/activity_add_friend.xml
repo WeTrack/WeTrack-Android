@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/add_friend_menu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:background="@color/white">
 
         <ImageButton
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/add_friend_menu"
-        android:background="@color/white">
+        android:background="#FFE3E3E7">
 
         <ImageButton
             android:id="@+id/add_friend_search_button"
@@ -53,6 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_margin="5dp"
             android:layout_toLeftOf="@id/add_friend_search_button"
             android:layout_centerVertical="true"
             android:hint="Search"
@@ -65,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white">
+        android:background="#f6f6f6">
 
         <LinearLayout
             android:id="@+id/add_friend_list"
