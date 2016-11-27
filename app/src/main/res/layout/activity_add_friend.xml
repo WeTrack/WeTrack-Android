@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/add_friend_menu"
-        android:background="#FFE3E3E7">
+        android:background="#f6f6f6">
 
         <ImageButton
             android:id="@+id/add_friend_search_button"

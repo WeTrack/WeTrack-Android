@@ -18,7 +18,6 @@ public class CreateChatItemView extends RelativeLayout {
 
     private ImageView portraitImageView;
     private TextView nameTextView;
-    private ImageView genderImageView;
     private CheckBox checkBox;
 
     private String friendName = null;
@@ -45,7 +44,6 @@ public class CreateChatItemView extends RelativeLayout {
 
         portraitImageView = (ImageView) findViewById(R.id.portrait);
         nameTextView = (TextView)findViewById(R.id.nickname);
-        genderImageView = (ImageView)findViewById(R.id.gender_icon);
         checkBox = (CheckBox) findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -73,10 +71,10 @@ public class CreateChatItemView extends RelativeLayout {
         nameTextView.setText(user.getNickname());
         if (user.getGender() == User.Gender.Male) {
             portraitImageView.setImageResource(R.drawable.portrait_boy);
-            genderImageView.setImageResource(R.drawable.gender_male);
+
         } else {
             portraitImageView.setImageResource(R.drawable.portrait_girl);
-            genderImageView.setImageResource(R.drawable.gender_female);
+
         }
     }
 

@@ -17,7 +17,7 @@ public class AddFriendItemView extends RelativeLayout {
 
     private ImageView portraitImageView;
     private TextView nameTextView;
-    private ImageView genderImageView;
+
     private Button addButton;
 
     private String friendName = null;
@@ -44,7 +44,7 @@ public class AddFriendItemView extends RelativeLayout {
 
         portraitImageView = (ImageView) findViewById(R.id.add_friend_item_portrait);
         nameTextView = (TextView)findViewById(R.id.add_friend_item_name);
-        genderImageView = (ImageView)findViewById(R.id.add_friend_item_gender);
+
         addButton = (Button) findViewById(R.id.add_friend_item_add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,10 +62,8 @@ public class AddFriendItemView extends RelativeLayout {
         nameTextView.setText(user.getNickname());
         if (user.getGender() == User.Gender.Male) {
             portraitImageView.setImageResource(R.drawable.portrait_boy);
-            genderImageView.setImageResource(R.drawable.gender_male);
         } else {
             portraitImageView.setImageResource(R.drawable.portrait_girl);
-            genderImageView.setImageResource(R.drawable.gender_female);
         }
     }
 

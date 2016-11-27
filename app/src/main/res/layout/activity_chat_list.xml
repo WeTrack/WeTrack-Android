@@ -29,11 +29,16 @@
             android:textSize="20sp"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
-
+    <LinearLayout
+        android:id="@+id/blank"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#f6f6f6"
+        android:layout_below="@id/top_bar"></LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/top_bar"
+        android:layout_below="@id/blank"
         android:layout_alignParentBottom="true"
         android:background="#f6f6f6">
         <LinearLayout
