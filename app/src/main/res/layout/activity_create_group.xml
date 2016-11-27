@@ -31,6 +31,25 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/eidtLayout"
+        android:layout_below="@id/create_group_menu"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="#f6f6f6">
+        <EditText
+            android:id="@+id/group_name"
+            android:layout_width="280dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="15dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:hint="please enter group name"
+            android:textColor="@color/black"
+            android:textColorHint="@color/whiteGray"
+            android:textSize="20dp"/>
         <Button
             android:id="@+id/chat_create_btn"
             android:layout_width="70dp"
@@ -43,10 +62,11 @@
             android:enabled="false"
             android:background="@drawable/group_create_btn_selector"
             android:textColor="@color/white" />
-    </RelativeLayout>
 
+
+    </RelativeLayout>
     <ScrollView
-        android:layout_below="@id/create_group_menu"
+        android:layout_below="@id/eidtLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

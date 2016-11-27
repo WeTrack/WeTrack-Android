@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wetrack.client.CreatedMessageCallback;
@@ -31,6 +32,7 @@ public class CreateChatActivity extends AppCompatActivity {
 
     private ImageButton backButton;
     private Button createButton;
+    private TextView groupName;
     private LinearLayout friendListLayout;
 
     private ArrayList<String> allFriendNamesToCreateChat = new ArrayList<>();
@@ -47,6 +49,10 @@ public class CreateChatActivity extends AppCompatActivity {
 
         backButton = (ImageButton) findViewById(R.id.chat_create_back_btn);
         createButton = (Button) findViewById(R.id.chat_create_btn);
+        groupName = (TextView) findViewById(R.id.group_name);
+
+
+
         friendListLayout = (LinearLayout) findViewById(R.id.friend_list);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -127,10 +133,8 @@ public class CreateChatActivity extends AppCompatActivity {
         private void refreshCreateButton() {
             if (allFriendNamesToCreateChat.isEmpty()) {
                 createButton.setEnabled(false);
-                //createButton.setTextColor(Color.LTGRAY);
             } else {
                 createButton.setEnabled(true);
-                //createButton.setTextColor(Color.BLACK);
             }
         }
     }
