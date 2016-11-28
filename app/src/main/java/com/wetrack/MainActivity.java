@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -20,15 +19,16 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.map.MapController;
+import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
+import com.wetrack.service.ChatServiceManager;
+import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.view.AddOptionListView;
 import com.wetrack.view.SidebarView;
-import com.wetrack.service.ChatServiceManager;
-import com.wetrack.map.MapController;
-import com.wetrack.map.MarkerDataFormat;
-import com.wetrack.utils.ConstantValues;
+import com.wetrack.view.adapter.AddContactAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,22 +112,23 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        final String[] list = { "New Chat", "Add Friend" };
+        final int[] imgs ={R.drawable.ic_chat_bubble_black_24dp,R.drawable.ic_person_add_black_24dp};
+        final String[] texts = { "New Chat", "Add Friend" };
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
+        AddContactAdapter adapter = new AddContactAdapter(this,imgs,texts);
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.add_contact, list);
-        addOptionListView.setAdapter(listAdapter);
+        addOptionListView.setAdapter(adapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 addOptionListView.close();
-                if (list[position].equals(list[0])) {
+                if (texts[position].equals(texts[0])) {
                     Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
                     startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);
                     overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
-                } else if (list[position].equals(list[1])) {
+                } else if (texts[position].equals(texts[1])) {
                     Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
                     startActivityForResult(intent, ConstantValues.ADD_FRIEND_REQUEST_CODE);
                     overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
@@ -138,16 +139,17 @@ public class MainActivity extends FragmentActivity {
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addContactButton.setEnabled(false);
+                //addContactButton.setEnabled(false);
                 if (addOptionListView.getVisibility() == View.GONE) {
                     hideAllOtherLayout(addOptionListView);
                     addOptionListView.open();
                 } else {
                     addOptionListView.close();
                 }
-                addContactButton.setEnabled(true);
+              //  addContactButton.setEnabled(true);
             }
         });
+
     }
 
     private void initChatList() {
