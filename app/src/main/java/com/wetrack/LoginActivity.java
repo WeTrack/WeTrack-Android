@@ -1,17 +1,22 @@
 package com.wetrack;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.wetrack.client.CreatedMessageCallback;
@@ -30,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
+    private RelativeLayout relativeLayout;
     private EditText usernameInput;
     private EditText passwordInput;
     private EditText passwordConfirmInput;
@@ -39,6 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     private RadioGroup genderRadioGroup;
     private EditText nicknameInput;
 
+    private InputMethodManager imeManager;
+
+
     // `true` for sign-in mode, `false` for sign-up mode
     private boolean isSignIn = true;
 
@@ -47,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        relativeLayout = (RelativeLayout) findViewById(R.id.login_view);
         usernameInput = (EditText) findViewById(R.id.input_username);
         passwordInput = (EditText) findViewById(R.id.input_password);
         passwordConfirmInput = (EditText) findViewById(R.id.input_password_confirm);
@@ -59,6 +69,17 @@ public class LoginActivity extends AppCompatActivity {
         toggleButton.setOnClickListener(new ToggleBtnOnClickListener());
 
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
+
+        imeManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard();
+                return false;
+            }
+        });
     }
 
     private class LogBtnOnClickListener implements View.OnClickListener {
@@ -235,6 +256,14 @@ public class LoginActivity extends AppCompatActivity {
         genderRadioGroup.setEnabled(false);
         logButton.setEnabled(false);
         toggleButton.setEnabled(false);
+    }
+
+    private void hideKeyboard(){
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                imeManager.hideSoftInputFromWindow(getCurrentFocus()
+                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 }
 
