@@ -1,12 +1,17 @@
 package com.wetrack;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.wetrack.view.AddFriendItemView;
@@ -29,6 +34,9 @@ public class AddFriendActivity extends AppCompatActivity {
     private EditText searchText;
     private ImageButton searchButton;
     private LinearLayout searchResultLayout;
+
+    private ScrollView scrollview;
+    private InputMethodManager imeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,20 @@ public class AddFriendActivity extends AppCompatActivity {
 
         searchText = (EditText) findViewById(R.id.add_friend_search_text);
         searchResultLayout = (LinearLayout) findViewById(R.id.add_friend_list);
+
+        scrollview = (ScrollView) findViewById(R.id.add_friend_layout);
+
+        imeManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        scrollview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard();
+                return false;
+            }
+        });
+
     }
 
     private class SearchOnClickListener implements View.OnClickListener {
@@ -95,6 +117,13 @@ public class AddFriendActivity extends AppCompatActivity {
                     AddFriendActivity.this.finish();
                 }
             });
+        }
+    }
+    private void hideKeyboard(){
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                imeManager.hideSoftInputFromWindow(getCurrentFocus()
+                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 }
