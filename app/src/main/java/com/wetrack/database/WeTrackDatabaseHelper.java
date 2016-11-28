@@ -19,12 +19,12 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = WeTrackDatabaseHelper.class.getCanonicalName();
 
     private static final String DATABASE_NAME = "wetrack.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     private RuntimeExceptionDao<User, String> userDao;
     private RuntimeExceptionDao<Location, Integer> locationDao;
     private RuntimeExceptionDao<Chat, String> chatDao;
-    private RuntimeExceptionDao<ChatMessage, Integer> chatMessageDao;
+    private ChatMessageDao chatMessageDao;
     private FriendDao friendDao;
     private UserChatDao userChatDao;
 
@@ -79,9 +79,9 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return chatDao;
     }
 
-    public RuntimeExceptionDao<ChatMessage, Integer> getChatMessageDao() {
+    public ChatMessageDao getChatMessageDao() {
         if (chatMessageDao == null)
-            chatMessageDao = getRuntimeExceptionDao(ChatMessage.class);
+            chatMessageDao = new ChatMessageDao(getRuntimeExceptionDao(ChatMessage.class));
         return chatMessageDao;
     }
 

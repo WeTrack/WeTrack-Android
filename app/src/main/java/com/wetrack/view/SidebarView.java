@@ -74,7 +74,7 @@ public class SidebarView extends RelativeLayout {
         settingButton = (Button) findViewById(R.id.setting_button);
         logoutButton = (Button) findViewById(R.id.logout_button);
 
-        String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
+        String username = PreferenceUtils.getCurrentUsername();
 
         // Fetch user's latest information from server
         client.getUserInfo(username, new EntityCallback<User>() {

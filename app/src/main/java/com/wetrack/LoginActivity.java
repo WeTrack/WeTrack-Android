@@ -86,8 +86,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     protected void onReceive(UserToken token) {
-                        PreferenceUtils.saveStringValue(PreferenceUtils.KEY_USERNAME, token.getUsername());
-                        PreferenceUtils.saveStringValue(PreferenceUtils.KEY_TOKEN, token.getToken());
+                        PreferenceUtils.setCurrentUsername(token.getUsername());
+                        PreferenceUtils.setCurrentToken(token.getToken());
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         LoginActivity.this.finish();
@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     protected void onException(Throwable ex) {
+                        enableAll();
                         Toast.makeText(LoginActivity.this, "Exception occurred during the connection: " + ex.getClass().getName(), Toast.LENGTH_SHORT).show();
                         Log.w(TAG, ex);
                     }

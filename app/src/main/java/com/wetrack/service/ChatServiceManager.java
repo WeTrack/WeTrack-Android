@@ -9,11 +9,21 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.wetrack.BaseApplication;
+import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.utils.ConstantValues;
 
+import org.joda.time.LocalDateTime;
+
 public abstract class ChatServiceManager {
+    private final Gson gson = new GsonBuilder()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+        .create();
 
     private ServiceConnection mConnection;
     private boolean connected;
@@ -25,7 +35,8 @@ public abstract class ChatServiceManager {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConstantValues.ACTION_UPDATE_CHAT_MSG);
-        BaseApplication.getContext().registerReceiver(new MyBroadcastReceiver(), filter);
+        filter.addAction(ConstantValues.ACTION_UPDATE_CHAT_MSG_STATUS);
+        BaseApplication.getContext().registerReceiver(new ChatServiceBroadcastReceiver(), filter);
 
         mConnection = new ServiceConnection() {
             @Override
@@ -62,13 +73,17 @@ public abstract class ChatServiceManager {
         }
     }
 
-    public abstract void onReceivedMessage();
+    public abstract void onReceivedMessage(ChatMessage receivedMessage);
 
-    public class MyBroadcastReceiver extends BroadcastReceiver {
+    public abstract void onReceivedMessageAck(String ackedMessageId);
+
+    public class ChatServiceBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ConstantValues.ACTION_UPDATE_CHAT_MSG))
-                onReceivedMessage();
+                onReceivedMessage(gson.fromJson(intent.getStringExtra("chat_message"), ChatMessage.class));
+            else if (intent.getAction().equals(ConstantValues.ACTION_UPDATE_CHAT_MSG_STATUS))
+                onReceivedMessageAck(intent.getStringExtra("message_id"));
         }
     }
 }

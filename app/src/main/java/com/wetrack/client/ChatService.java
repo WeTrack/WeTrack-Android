@@ -26,6 +26,10 @@ interface ChatService {
                                                  @Query("token") String token,
                                                  @Body List<String> newMemberNames);
 
+    @GET("/chats/{chatId}")
+    Observable<Response<Chat>> getChatInfo(@Path("chatId") String chatId,
+                                           @Query("token") String token);
+
     @GET("/chats/{chatId}/members")
     Observable<Response<List<User>>> getChatMembers(@Path("chatId") String chatId,
                                                     @Query("token") String token);

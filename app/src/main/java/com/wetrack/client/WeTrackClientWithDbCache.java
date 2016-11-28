@@ -180,6 +180,23 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
     }
 
     @Override
+    public void getChatInfo(String chatId, String token, final EntityCallback<Chat> callback) {
+        final Chat chatInDb = helper.getChatDao().queryForId(chatId);
+        if (chatInDb != null) {
+            Log.d(TAG, "Invoking callback#onReceive with cached chat information of `" + chatId + "`");
+            callback.onReceive(chatInDb);
+        }
+        Log.d(TAG, "Sending network request for char information of `" + chatId + "`");
+        super.getChatInfo(chatId, token, new DelegatedEntityCallback<Chat>(callback) {
+            @Override
+            protected void onReceive(Chat chatFromServer) {
+                callback.onReceive(chatFromServer);
+                helper.getChatDao().createOrUpdate(chatFromServer);
+            }
+        });
+    }
+
+    @Override
     public void getUserFriendList(String username, String token, final EntityCallback<List<User>> callback) {
         final User userInDb = helper.getUserDao().queryForId(username);
         if (userInDb != null) {

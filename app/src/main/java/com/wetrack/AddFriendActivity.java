@@ -35,8 +35,8 @@ public class AddFriendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
 
-        username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
-        token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
+        username = PreferenceUtils.getCurrentUsername();
+        token = PreferenceUtils.getCurrentToken();
 
         setResult(RESULT_CANCELED);
 

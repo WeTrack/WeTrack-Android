@@ -15,12 +15,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.wetrack.R;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.database.ChatMessageDao;
+import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.service.ChatServiceManager;
+import com.wetrack.utils.CryptoUtils;
+import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.view.adapter.ChatMessageAdapter;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
-import com.wetrack.model.User;
 
 import org.joda.time.LocalDateTime;
 
@@ -42,16 +47,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        initView();
 
+        initView();
         initChatServiceManager();
     }
 
     private void initChatServiceManager() {
         mChatServiceManager = new ChatServiceManager(this) {
             @Override
-            public void onReceivedMessage() {
-                //TODO if needed, load new message from local database, and upload UI
+            public void onReceivedMessage(ChatMessage receivedMessage) {
+                if (!receivedMessage.getChatId().equals(PreferenceUtils.getCurrentChatId()))
+                    return;
+                chatMessageList.add(receivedMessage);
+                adapter.refresh(chatMessageList);
+                messageListView.setSelection(messageListView.getCount() - 1);
+            }
+
+            @Override
+            public void onReceivedMessageAck(String ackedMessageId) {
+                for (ChatMessage message : chatMessageList) {
+                    if (message.getId().equals(ackedMessageId)) {
+                        message.setAcked(true);
+                        break;
+                    }
+                }
+                adapter.refresh(chatMessageList);
             }
         };
         mChatServiceManager.start();
@@ -66,13 +86,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+        WeTrackClientWithDbCache.singleton().getChatInfo(
+                PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
+                new EntityCallback<Chat>() {
+                    @Override
+                    protected void onReceive(Chat value) {
+                        toolbar.setTitle(value.getName());
+                    }
+                }
+        );
 
         final Button buttonSend = (Button) findViewById(R.id.send_btn);
         buttonSend.setOnClickListener(this);
@@ -115,26 +144,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imeManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        Chat chatTest = new Chat();
-        User user1 = new User();
-        User user2 = new User();
-        user1.setUsername("Amy");
-        user1.setIconUrl("head1.png");
-        user2.setUsername("Bob");
-        user2.setIconUrl("head2.png");
-        chatTest.setChatId("chatId1");
-        List<String> usernames = new ArrayList<>();
-        usernames.add(user1.getUsername());
-        usernames.add(user2.getUsername());
-        chatTest.setMemberNames(usernames);
-        ChatMessage defaultMessage = new ChatMessage();
-        defaultMessage.setChatId(chatTest.getChatId());
-        defaultMessage.setFromUsername(user1.getUsername());
-        defaultMessage.setContent("This is a default message sent by Amy.");
-        defaultMessage.setSendTime(LocalDateTime.parse("2016-11-23"));
-
         chatMessageList = new ArrayList<>();
-        adapter = new ChatMessageAdapter(this, chatMessageList, chatTest, user2);
+        adapter = new ChatMessageAdapter(this, chatMessageList, PreferenceUtils.getCurrentUsername());
         messageListView.setAdapter(adapter);
         messageListView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -145,9 +156,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-
-        // Test on receive message
-        onReceiveMessage(defaultMessage);
     }
 
     public void editClick(View v) {
@@ -162,23 +170,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void onReceiveMessage(ChatMessage message) {
-        chatMessageList.add(message);
-        adapter.refresh(chatMessageList);
-        messageListView.setSelection(messageListView.getCount() - 1);
-    }
-
     private void sendMessage(String message){
         ChatMessage sendMessage = new ChatMessage();
-        sendMessage.setFromUsername("Bob");
+        sendMessage.setFromUsername(PreferenceUtils.getCurrentUsername());
+        sendMessage.setChatId(PreferenceUtils.getCurrentChatId());
         sendMessage.setSendTime(LocalDateTime.now());
         sendMessage.setContent(message);
+        sendMessage.setId(CryptoUtils.md5Digest(String.format("%s:%s", sendMessage.getSendTime().toString(), message)));
         chatMessageList.add(sendMessage);
         adapter.refresh(chatMessageList);
         messageListView.setSelection(adapter.getCount() - 1);
         messageEditText.setText("");
 
-        //send message to server
+        // Send message to server
         mChatServiceManager.sendChatMessage(sendMessage);
     }
 

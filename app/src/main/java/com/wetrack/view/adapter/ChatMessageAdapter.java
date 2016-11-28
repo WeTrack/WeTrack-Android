@@ -24,16 +24,13 @@ public class ChatMessageAdapter extends BaseAdapter {
 
     private Context context;
 
-    private User currentUser;
-    private Chat chat;
     private List<ChatMessage> chatMessageList;
+    private final String currentUsername;
 
-    public ChatMessageAdapter(Context context, List<ChatMessage> chatMessageList,
-                              Chat chat, User currentUser){
+    public ChatMessageAdapter(Context context, List<ChatMessage> chatMessageList, String currentUsername) {
         this.context = context;
-        this.chat = chat;
-        this.currentUser = currentUser;
         this.chatMessageList = chatMessageList;
+        this.currentUsername = currentUsername;
     }
 
     public void refresh(List<ChatMessage> chatMessageList) {
@@ -63,26 +60,20 @@ public class ChatMessageAdapter extends BaseAdapter {
 
         LinearLayout leftLayout = (LinearLayout) row.findViewById(R.id.left_layout);
         LinearLayout rightLayout = (LinearLayout) row.findViewById(R.id.right_layout);
+        ChatMessage message = chatMessageList.get(position);
         // Received message
-        if (!chatMessageList.get(position).getFromUsername().equals(currentUser.getUsername())) {
+        if (!message.getFromUsername().equals(currentUsername)) {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.left_msg);
             ImageView portrait = (ImageView) row.findViewById(R.id.tv_userhead);
 
-            timestamp.setText(chatMessageList.get(position).getSendTime().toString(formatter));
-            content.setText(chatMessageList.get(position).getContent());
+            timestamp.setText(message.getSendTime().toString(formatter));
+            content.setText(message.getContent());
             rightLayout.setVisibility(View.GONE);
             leftLayout.setVisibility(View.VISIBLE);
 
 
-            List<String> chatUsers = chat.getMemberNames();
-            for(int i = 0; i < chatUsers.size(); i++ ){
-                if(chatMessageList.get(position).getFromUsername() == chatUsers.get(i)) {
-                    //从本地数据库查找username为message.getFromUsername()的User fromUser
-                    //以用fromUser.getIconUrl()获得fromUser的头像
-                    break;
-                }
-            }
+            // TODO Set the portrait for user
             //这里直接使用drawable的head1.png头像
             portrait.setBackgroundResource(R.drawable.head1);
             return row;
@@ -92,8 +83,10 @@ public class ChatMessageAdapter extends BaseAdapter {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.right_msg);
             ImageView portrait = (ImageView) row.findViewById(R.id.iv_userhead);
-            timestamp.setText(chatMessageList.get(position).getSendTime().toString(formatter));
-            content.setText(chatMessageList.get(position).getContent());
+            timestamp.setText(message.getSendTime().toString(formatter));
+            content.setText(message.getContent());
+            if (message.isAcked())
+                row.findViewById(R.id.pb_sending).setVisibility(View.GONE);
             leftLayout.setVisibility(View.GONE);
             rightLayout.setVisibility(View.VISIBLE);
 
