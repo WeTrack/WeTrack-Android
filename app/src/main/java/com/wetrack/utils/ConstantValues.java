@@ -26,6 +26,8 @@ public abstract class ConstantValues {
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;
     public static final int MARKERLIST_ADD = 0xfffffffe;
+    public static final int MARKERLIST_ALL_LATLNG = 0xfffffffd;
+    public static final int MARKERLIST_SIZE = 0xfffffffc;
 
     //for handler
     public static final int MARKER_DEMO_TAG = 0xffffffef;

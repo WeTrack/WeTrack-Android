@@ -43,7 +43,7 @@ public class MapHandler extends Handler {
 //                    Log.d(ConstantValues.debugTab, "(" + position.latitude + ", " + position.longitude + ")");
 //                }
 
-//                mMapController.drawPathOnMap(resultPath);
+                mMapController.drawPathOnMap(resultPath);
 
 
                 break;

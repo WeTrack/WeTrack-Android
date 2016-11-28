@@ -3,11 +3,7 @@ package com.wetrack;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,11 +14,15 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.map.GoogleMapFragment;
 import com.wetrack.map.MapController;
 import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
+import com.wetrack.model.Location;
+import com.wetrack.model.Message;
 import com.wetrack.service.ChatServiceManager;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
@@ -30,12 +30,14 @@ import com.wetrack.view.AddOptionListView;
 import com.wetrack.view.SidebarView;
 import com.wetrack.view.adapter.AddContactAdapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Response;
 
 public class MainActivity extends FragmentActivity {
-    private MyHandler mHandler = new MyHandler();
     private MapController mMapController = null;
     private ImageButton openSidebarButton;
     private SidebarView sidebarView = null;
@@ -47,6 +49,7 @@ public class MainActivity extends FragmentActivity {
     private Button chatButton;
 
     private ChatServiceManager mChatServiceManager = null;
+    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,8 @@ public class MainActivity extends FragmentActivity {
 
             // Message will not be sent or ACKed on this activity.
             @Override
-            public void onReceivedMessageAck(String ackedMessageId) {}
+            public void onReceivedMessageAck(String ackedMessageId) {
+            }
         };
         mChatServiceManager.start();
     }
@@ -82,6 +86,67 @@ public class MainActivity extends FragmentActivity {
         mMapController = MapController.getInstance(this);
         mMapController.addMapToView(getSupportFragmentManager(), viewId);
         mMapController.start();
+
+        mMapController.setmOnInfoWindowClickListener(new GoogleMapFragment.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(final MarkerDataFormat markerData) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(markerData.getUsername());
+//              builder.setMessage("Last Updated: " + markerData.getInformation());
+
+                if (!markerData.getUsername().equals(PreferenceUtils.getCurrentUsername())) {
+                    builder.setPositiveButton("navigation", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mMapController.planNavigation(markerData.getLatLng());
+                            dialog.dismiss();
+                        }
+                    });
+                }
+                builder.setNegativeButton("history", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.getUserLocationsSince(markerData.getUsername(),
+                                LocalDateTime.now().minusHours(5), new EntityCallback<List<Location>>() {
+                                    @Override
+                                    protected void onReceive(List<Location> value) {
+                                        super.onReceive(value);
+                                        ArrayList<LatLng> newList = new ArrayList<>();
+                                        newList.add(new LatLng(value.get(0).getLatitude(), value.get(0).getLongitude()));
+                                        for (int i = 1; i < value.size(); i++) {
+                                            Location location1 = value.get(i);
+                                            Location location2 = value.get(i - 1);
+                                            if (Math.abs(location1.getLongitude() - location2.getLongitude()) > 1e-9 ||
+                                                    Math.abs(location1.getLatitude() - location2.getLatitude()) > 1e-9) {
+                                                newList.add(new LatLng(location1.getLatitude(), location1.getLongitude()));
+                                            }
+                                        }
+                                        mMapController.drawPathOnMap(newList);
+                                    }
+
+                                    @Override
+                                    protected void onResponse(Response<List<Location>> response) {
+                                        super.onResponse(response);
+                                    }
+
+                                    @Override
+                                    protected void onException(Throwable ex) {
+                                        super.onException(ex);
+                                    }
+
+                                    @Override
+                                    protected void onErrorMessage(Message response) {
+                                        super.onErrorMessage(response);
+                                    }
+                                });
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+
+            }
+        });
     }
 
     private void initSidebar() {
@@ -112,12 +177,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        final int[] imgs ={R.drawable.ic_chat_bubble_black_24dp,R.drawable.ic_person_add_black_24dp};
-        final String[] texts = { "New Chat", "Add Friend" };
+        final int[] imgs = {R.drawable.ic_chat_bubble_black_24dp, R.drawable.ic_person_add_black_24dp};
+        final String[] texts = {"New Chat", "Add Friend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
-        AddContactAdapter adapter = new AddContactAdapter(this,imgs,texts);
+        AddContactAdapter adapter = new AddContactAdapter(this, imgs, texts);
 
         addOptionListView.setAdapter(adapter);
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -146,7 +211,7 @@ public class MainActivity extends FragmentActivity {
                 } else {
                     addOptionListView.close();
                 }
-              //  addContactButton.setEnabled(true);
+                //  addContactButton.setEnabled(true);
             }
         });
 
@@ -216,6 +281,7 @@ public class MainActivity extends FragmentActivity {
                         Log.d(ConstantValues.debugTab, "chat list succeed");
                         String chatName = data.getStringExtra(ChatListActivity.KEY_CHAT_NAME);
                         chatListButton.setText(chatName);
+                        mMapController.clearAllSymbols();
                         break;
                 }
                 break;
@@ -246,92 +312,9 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void showMarkerDemo() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-
-                    Message message = new Message();
-                    message.what = ConstantValues.MARKER_DEMO_TAG;
-                    mHandler.sendMessage(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private void showNavigationDemo() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-
-                    Message message = new Message();
-                    message.what = ConstantValues.NAVIGATION_DEMO_TAG;
-                    mHandler.sendMessage(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private class MyHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case ConstantValues.MARKER_DEMO_TAG:
-
-                    Log.d(ConstantValues.debugTab, "marker demo started");
-
-//                    ArrayList<MarkerDataFormat> markers =
-//                            new ArrayList<>(Arrays.asList(
-//                                    new MarkerDataFormat("Title1", new LatLng(30, 30), "info1"),
-//                                    new MarkerDataFormat("Title2", new LatLng(35, 30), "info2"),
-//                                    new MarkerDataFormat("Title3", new LatLng(40, 30), "info3"),
-//                                    new MarkerDataFormat("Title4", new LatLng(30, 35), "info4"),
-//                                    new MarkerDataFormat("Title5", new LatLng(35, 35), "info5"),
-//                                    new MarkerDataFormat("Title6", new LatLng(40, 35), "info6"),
-//                                    new MarkerDataFormat("Title7", new LatLng(30, 40), "info7"),
-//                                    new MarkerDataFormat("Title8", new LatLng(35, 40), "info8"),
-//                                    new MarkerDataFormat("Title9", new LatLng(40, 40), "info9")
-//                            ));
-//                    mMapController.clearMarkers();
-//                    mMapController.updateMarkers(markers, true);
-                    Log.d(ConstantValues.debugTab, "marker demo finished");
-
-                    break;
-
-                case ConstantValues.NAVIGATION_DEMO_TAG:
-                    mMapController.planNavigation(new LatLng(22.3353712, 114.2636767), new LatLng(22.3363712, 114.2736767));
-
-                    break;
-
-                case ConstantValues.CHECK_GPS:
-                    checkGps();
-                    break;
-
-                default:
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
-//        mMapController.resume();
-//        requestForLocationService();
-//        checkGps();
-
-
-//        showMarkerDemo();
-//        showNavigationDemo();
     }
 
     @Override
@@ -351,59 +334,4 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    //    public boolean requestForLocationService() {
-//        int locationCheck1 = ContextCompat.checkSelfPermission(this,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION);
-//        int locationCheck2 = ContextCompat.checkSelfPermission(this,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION);
-//        if (locationCheck1 != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    ConstantValues.PERMISSION_ACCESS_FINE_LOCATION);
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
-
-    private void checkGps() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.d(ConstantValues.permission, "not getting gps");
-
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
-            // Setting Dialog Title
-            alertDialog.setTitle("GPS is settings");
-
-            // Setting Dialog Message
-            alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
-            // Setting Icon to Dialog
-            //alertDialog.setIcon(R.drawable.delete);
-
-            // On pressing Settings button
-            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
-                }
-            });
-
-            // on pressing cancel button
-            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            // Showing Alert Message
-            alertDialog.show();
-        } else {
-            Log.d(ConstantValues.permission, "got gps");
-        }
-    }
 }

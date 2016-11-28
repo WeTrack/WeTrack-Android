@@ -20,10 +20,8 @@ import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MapController {
     private static MapController mMapController = null;
@@ -61,10 +59,10 @@ public class MapController {
                 MarkerDataFormat marker = new MarkerDataFormat(
                         location.getUsername(),
                         new LatLng(location.getLatitude(), location.getLongitude()), location.getTime().toString());
-                updateMarkers(marker, true);
+                addMarker(marker);
             }
         };
-        usernameAndMarker.set(new HashMap<String, MarkerDataFormat>());
+//        usernameAndMarker.set(new HashMap<String, MarkerDataFormat>());
     }
 
     public void addMapToView(FragmentManager fragmentManager, int viewId) {
@@ -79,12 +77,6 @@ public class MapController {
             @Override
             public void onGpsLocationReceived(Location location) {
                 myCurrentLocation = location;
-
-//                googleMapFragment.setCameraLocation(
-//                        new LatLng(
-//                                myCurrentLocation.getLatitude(),
-//                                myCurrentLocation.getLongitude()),
-//                        0, 0);
 
                 if (mLocationServiceManager != null) {
                     com.wetrack.model.Location loc = new com.wetrack.model.Location(
@@ -113,11 +105,6 @@ public class MapController {
         mLocationServiceManager.start();
     }
 
-    public void resume() {
-        usernameAndMarker.get().clear();
-        clearMarkers();
-    }
-
     public void stop() {
         mGpsLocationManager.stop();
         mGoogleNavigationManager.stop();
@@ -127,36 +114,13 @@ public class MapController {
     }
 
     //below three are for markers
-    private AtomicReference<Map<String, MarkerDataFormat>> usernameAndMarker = new AtomicReference<>();
-    public void clearMarkers() {
-        googleMapFragment.clearMarkers();
+//    private AtomicReference<Map<String, MarkerDataFormat>> usernameAndMarker = new AtomicReference<>();
+    public void clearAllSymbols() {
+        googleMapFragment.clearAllSymbols();
     }
 
-    public void updateMarkers(MarkerDataFormat markerData, boolean resetCamera) {
-        usernameAndMarker.get().put(markerData.getTitle(), markerData);
-        googleMapFragment.clearMarkers();
-
-        ArrayList<LatLng> allLatLng = new ArrayList<>();
-        for (Map.Entry<String, MarkerDataFormat> entry : usernameAndMarker.get().entrySet()) {
-            MarkerDataFormat aMarkerData = entry.getValue();
-            googleMapFragment.addMarker(aMarkerData.getTitle(), aMarkerData.getLatLng(), aMarkerData.getInformation());
-            if (resetCamera) {
-                allLatLng.add(aMarkerData.getLatLng());
-            }
-        }
-
-        if (resetCamera) {
-            double[]result = MathUtils.getCenterAndLengthRange(allLatLng);
-            double centerLatitude = result[0];
-            double centerLongitude = result[1];
-            double latitudeRangeLength = result[2];
-            double longitudeRangeLength = result[3];
-
-            googleMapFragment.setCameraLocation(
-                    new LatLng(centerLatitude, centerLongitude),
-                    latitudeRangeLength,
-                    longitudeRangeLength);
-        }
+    public void addMarker(MarkerDataFormat markerData) {
+        googleMapFragment.addMarker(markerData.getUsername(), markerData.getLatLng(), markerData.getInformation());
     }
 
     public void setmOnInfoWindowClickListener(GoogleMapFragment.OnInfoWindowClickListener mOnInfoWindowClickListener) {
@@ -173,6 +137,13 @@ public class MapController {
         googleNavigationData.destination = toPosition;
 
         mGoogleNavigationManager.getResultFromGoogle(googleNavigationData);
+    }
+
+    public void planNavigation(LatLng toPosition) {
+        LatLng myLatLng = getMyLocation();
+        if (myLatLng != null) {
+            planNavigation(myLatLng, toPosition);
+        }
     }
 
     /**
