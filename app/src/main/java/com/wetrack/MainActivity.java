@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
@@ -44,9 +45,11 @@ public class MainActivity extends FragmentActivity {
     private Button chatListButton;
     private ImageButton chatListImageButton;
     private RelativeLayout mainLayout;
-    private Button chatButton;
+    private RelativeLayout buttonLayout;
 
     private ChatServiceManager mChatServiceManager = null;
+    private TextView unreadmessage;
+    private int unread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class MainActivity extends FragmentActivity {
         initAddContact();
         initChatList();
         initChatButton();
+        initUnreadMessage();
     }
 
     private void initChatServiceManager() {
@@ -179,8 +183,11 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initChatButton() {
-        chatButton = (Button) findViewById(R.id.chat_button);
-        chatButton.setOnClickListener(new View.OnClickListener() {
+        //chatButton = (Button) findViewById(R.id.chat_button);
+        //chatButton.setOnClickListener(new View.OnClickListener() {
+        buttonLayout = (RelativeLayout) findViewById(R.id.button_layout);
+        unreadmessage = (TextView) findViewById(R.id.unread_msg_number);
+        buttonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ChatActivity.class);
@@ -188,6 +195,26 @@ public class MainActivity extends FragmentActivity {
             }
         });
     }
+
+    private void initUnreadMessage() {
+        unread = 0;
+        mChatServiceManager = new ChatServiceManager(this) {
+            @Override
+            public void onReceivedMessage(ChatMessage receivedMessage) {
+                if (!receivedMessage.getChatId().equals(PreferenceUtils.getCurrentChatId()))
+                    return;
+                unread++;
+                unreadmessage.setText(String.valueOf(unread));
+                unreadmessage.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onReceivedMessageAck(String ackedMessageId) {
+
+            }
+        };
+    }
+
 
     private void hideAllOtherLayout(Object object) {
         if (!(object instanceof AddOptionListView)) {
