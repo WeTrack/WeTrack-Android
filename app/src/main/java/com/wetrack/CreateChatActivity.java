@@ -1,12 +1,17 @@
 package com.wetrack;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +40,8 @@ public class CreateChatActivity extends AppCompatActivity {
     private TextView groupName;
     private LinearLayout friendListLayout;
 
+    private ScrollView scrollview;
+    private InputMethodManager imeManager;
     private ArrayList<String> allFriendNamesToCreateChat = new ArrayList<>();
 
     @Override
@@ -51,10 +58,12 @@ public class CreateChatActivity extends AppCompatActivity {
         createButton = (Button) findViewById(R.id.chat_create_btn);
         groupName = (TextView) findViewById(R.id.group_name);
 
-
+        scrollview = (ScrollView) findViewById(R.id.create_group_view);
 
         friendListLayout = (LinearLayout) findViewById(R.id.friend_list);
 
+        imeManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,6 +125,14 @@ public class CreateChatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        scrollview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard();
+                return false;
+            }
+        });
     }
 
     private class ItemCheckedChangedListener implements CreateChatItemView.OnMyCheckBoxChangedListener {
@@ -141,6 +158,14 @@ public class CreateChatActivity extends AppCompatActivity {
             } else {
                 createButton.setEnabled(true);
             }
+            hideKeyboard();
+        }
+    }
+    private void hideKeyboard(){
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                imeManager.hideSoftInputFromWindow(getCurrentFocus()
+                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 }

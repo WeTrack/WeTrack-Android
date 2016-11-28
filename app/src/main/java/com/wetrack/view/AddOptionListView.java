@@ -31,7 +31,7 @@ public class AddOptionListView extends ListView {
     public void close() {
         int width = getWidth();
         Animation am = new ScaleAnimation(1f, 0f, 1f, 0f, width * 1f, 0f);
-        am.setDuration(500);
+        am.setDuration(300);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
@@ -52,7 +52,7 @@ public class AddOptionListView extends ListView {
         setVisibility(View.VISIBLE);
         int width = getWidth();
         Animation am = new ScaleAnimation(0f, 1f, 0f, 1f, width * 1f, 0f);
-        am.setDuration(500);
+        am.setDuration(300);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
     }
