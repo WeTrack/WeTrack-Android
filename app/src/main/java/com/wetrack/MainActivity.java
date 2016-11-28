@@ -18,6 +18,11 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
+import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.view.AddOptionListView;
 import com.wetrack.view.SidebarView;
 import com.wetrack.service.ChatServiceManager;
@@ -62,9 +67,13 @@ public class MainActivity extends FragmentActivity {
     private void initChatServiceManager() {
         mChatServiceManager = new ChatServiceManager(this) {
             @Override
-            public void onReceivedMessage() {
-                //TODO if needed, load new message from local database
+            public void onReceivedMessage(ChatMessage receivedMessage) {
+                // TODO Implement this
             }
+
+            // Message will not be sent or ACKed on this activity.
+            @Override
+            public void onReceivedMessageAck(String ackedMessageId) {}
         };
         mChatServiceManager.start();
     }
@@ -102,7 +111,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        final String[] list = { "New Group", "Add Friend" };
+        final String[] list = { "New Chat", "Add Friend" };
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
@@ -143,8 +152,15 @@ public class MainActivity extends FragmentActivity {
     private void initChatList() {
         chatListButton = (Button) findViewById(R.id.chat_list_button);
         chatListImageButton = (ImageButton) findViewById(R.id.chat_list_imagebutton);
-
-        chatListButton.setText(R.string.allFriend);
+        WeTrackClientWithDbCache.singleton().getChatInfo(
+                PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
+                new EntityCallback<Chat>() {
+                    @Override
+                    protected void onReceive(Chat chat) {
+                        chatListButton.setText(chat.getName());
+                    }
+                }
+        );
 
         View.OnClickListener chatListListener = new View.OnClickListener() {
             @Override
@@ -191,11 +207,12 @@ public class MainActivity extends FragmentActivity {
             case ConstantValues.CHAT_LIST_REQUEST_CODE:
                 switch (resultCode) {
                     case RESULT_CANCELED:
-                        Log.d(ConstantValues.debugTab, "chat list cenceled");
+                        Log.d(ConstantValues.debugTab, "chat list canceled");
                         break;
                     case RESULT_OK:
                         Log.d(ConstantValues.debugTab, "chat list succeed");
-                        //TODO get information from 'data' here
+                        String chatName = data.getStringExtra(ChatListActivity.KEY_CHAT_NAME);
+                        chatListButton.setText(chatName);
                         break;
                 }
                 break;

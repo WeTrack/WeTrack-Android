@@ -10,6 +10,7 @@ import java.util.List;
 
 @DatabaseTable(tableName = "chats")
 public class Chat {
+    @SerializedName("id")
     @DatabaseField(columnName = "id", id = true)
     private String chatId;
     @DatabaseField

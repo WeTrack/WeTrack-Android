@@ -42,8 +42,8 @@ public class CreateChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
-        username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
-        token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
+        username = PreferenceUtils.getCurrentUsername();
+        token = PreferenceUtils.getCurrentToken();
 
         setResult(RESULT_CANCELED);
 
@@ -71,8 +71,13 @@ public class CreateChatActivity extends AppCompatActivity {
                     createButton.setEnabled(true);
                     return;
                 }
+                if (groupName.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(CreateChatActivity.this, "Chat name cannot be empty.", Toast.LENGTH_SHORT).show();
+                    createButton.setEnabled(true);
+                    return;
+                }
                 final Chat chat = new Chat();
-                chat.setName("A chat"); // TODO Set chat name by user
+                chat.setName(groupName.getText().toString());
                 chat.setMemberNames(Collections.unmodifiableList(allFriendNamesToCreateChat));
                 client.createChat(token, chat, new CreatedMessageCallback() {
                     @Override

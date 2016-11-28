@@ -12,6 +12,7 @@ import com.wetrack.model.Location;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
+import com.wetrack.utils.CryptoUtils;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -44,6 +45,9 @@ import rx.schedulers.Schedulers;
 public class WeTrackClient {
     private final Gson gson;
 
+    private final String baseUrl;
+    private final OkHttpClient client;
+
     private final Scheduler subscribeScheduler;
     private final Scheduler observeScheduler;
 
@@ -75,8 +79,10 @@ public class WeTrackClient {
         this.subscribeScheduler = subscribeScheduler;
         this.observeScheduler = observeScheduler;
 
-        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        httpClientBuilder.connectTimeout(timeoutSeconds, TimeUnit.SECONDS);
+        this.baseUrl = baseUrl;
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.connectTimeout(timeoutSeconds, TimeUnit.SECONDS);
+        client = clientBuilder.build();
 
         this.gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -85,7 +91,7 @@ public class WeTrackClient {
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .client(httpClientBuilder.build())
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(baseUrl)
@@ -433,6 +439,25 @@ public class WeTrackClient {
                 .subscribeOn(subscribeScheduler)
                 .observeOn(observeScheduler)
                 .subscribe(observer(callback));
+    }
+
+    public void getChatInfo(String chatId, String token, final EntityCallback<Chat> callback) {
+        chatService.getChatInfo(chatId, token)
+                .subscribeOn(subscribeScheduler)
+                .observeOn(observeScheduler)
+                .subscribe(observer(callback));
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+
+    public OkHttpClient getClient() {
+        return client;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     private Observer<Response<CreatedMessage>> observer(final CreatedMessageCallback callback) {

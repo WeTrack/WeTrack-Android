@@ -3,6 +3,7 @@ package com.wetrack;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,10 +23,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
+    private static final String TAG = ChatListActivity.class.getCanonicalName();
+
     private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
     private LinearLayout chatListLinearLayout = null;
     private ImageButton chatListBackButton = null;
+
+    public static final String KEY_CHAT_NAME = "chat_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +48,8 @@ public class ChatListActivity extends AppCompatActivity {
             }
         });
 
-        String username = PreferenceUtils.getStringValue(PreferenceUtils.KEY_USERNAME);
-        String token = PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN);
+        String username = PreferenceUtils.getCurrentUsername();
+        String token = PreferenceUtils.getCurrentToken();
         client.getUserChatList(username, token, new EntityCallbackWithLog<List<Chat>>(ChatListActivity.this) {
             @Override
             protected void onReceive(List<Chat> chats) {
@@ -58,7 +63,8 @@ public class ChatListActivity extends AppCompatActivity {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
 
         // Show chat items in linearLayout
-        for (Chat chat : chats) {
+        for (final Chat chat : chats) {
+            Log.d(TAG, "Fetched chat {id=`" + chat.getChatId() + "`, name=`" + chat.getName() + "`");
             RelativeLayout chatItemLayout = (RelativeLayout) layoutInflater.inflate(R.layout.chat_list_item, null);
 
             TextView chatNameView = (TextView) chatItemLayout.findViewById(R.id.chat_name);
@@ -70,8 +76,10 @@ public class ChatListActivity extends AppCompatActivity {
             chatItemLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO put the information into intent, then get it in 'onActivityResult' in MainActivity
+                    Log.d(TAG, "Selected chat `" + chat.getChatId() + "`");
+                    PreferenceUtils.setCurrentChatId(chat.getChatId());
                     Intent intent = new Intent();
+                    intent.putExtra(KEY_CHAT_NAME, chat.getName());
                     setResult(RESULT_OK, intent);
                     ChatListActivity.this.finish();
                 }

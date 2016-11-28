@@ -1,7 +1,7 @@
 package com.wetrack.utils;
 
 public abstract class ConstantValues {
-    //for debug
+    // For debug
     public static String debugTab = "debug";
     public static String gpsDebug = "gps_debug";
     public static String markerDebug = "marker";
@@ -10,11 +10,12 @@ public abstract class ConstantValues {
     public static String databaseDebug = "mydatabase";
     public static String serviceDebug = "myservice";
 
-    //for broadcast action name
+    // For broadcast action name
     public static String ACTION_UPDATE_GROUP_LIST = "com.wetrack.action.friendList";
     public static String ACTION_UPDATE_FRIEND_LIST = "com.wetrack.action.friendList";
     public static String ACTION_UPDATE_USER_INFO = "com.wetrack.action.userInfo";
     public static String ACTION_UPDATE_CHAT_MSG = "com.wetrack.action.chatMsg";
+    public static String ACTION_UPDATE_CHAT_MSG_STATUS = "com.wetrack.action.chatMsg.status";
     public static String ACTION_UPDATE_USER_POS = "com.wetrack.action.userPos";
 
     //activity transition
