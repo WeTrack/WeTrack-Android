@@ -10,10 +10,6 @@ import android.widget.TextView;
 
 import com.wetrack.R;
 
-/**
- * Created by Robert on 2016/11/28.
- */
-
 public class AddContactAdapter extends BaseAdapter {
 
     private Context context;
