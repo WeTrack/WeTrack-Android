@@ -12,17 +12,20 @@ import com.wetrack.model.Chat;
 import com.wetrack.model.Location;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
+import com.wetrack.utils.Tags;
 
 import org.joda.time.LocalDateTime;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Response;
 
 public class WeTrackClientWithDbCache extends WeTrackClient {
-    private static final String TAG = WeTrackClientWithDbCache.class.getCanonicalName();
+    private static final String TAG = Tags.Client.DB_CACHE;
 
     private static WeTrackClientWithDbCache instance = null;
 
@@ -66,18 +69,10 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
     }
 
     @Override
-    public void getUserLocationsSince(String username, LocalDateTime sinceTime, EntityCallback<List<Location>> callback) {
-        try {
-            PreparedQuery<Location> query =
-                    helper.getLocationDao().queryBuilder()
-                            .where().gt("time", sinceTime)
-                            .prepare();
-            List<Location> fetchedLocations = helper.getLocationDao().query(query);
-            if (fetchedLocations != null && !fetchedLocations.isEmpty())
-                callback.onReceive(fetchedLocations);
-        } catch (SQLException ex) {
-            Log.e(TAG, "Failed to query for cached locations from local database: ", ex);
-        }
+    public void getUserLocationsSince(String username, LocalDateTime sinceTime, final EntityCallback<List<Location>> callback) {
+        final List<Location> fetchedLocations = helper.getLocationDao().getUserLocationsSince(username, sinceTime);
+        if (fetchedLocations != null && !fetchedLocations.isEmpty())
+            callback.onReceive(fetchedLocations);
         super.getUserLocationsSince(username, sinceTime, callback);
     }
 
@@ -92,10 +87,8 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
     public void getUserLatestLocation(String username, EntityCallback<Location> callback) {
         try {
             PreparedQuery<Location> query =
-                    helper.getLocationDao().queryBuilder()
-                            .orderBy("time", false)
-                            .where().eq("username", username)
-                            .prepare();
+                    helper.getLocationDao().queryBuilder().orderBy("time", false)
+                            .where().eq("username", username).prepare();
             Location fetchedLocation = helper.getLocationDao().queryForFirst(query);
             if (fetchedLocation != null)
                 callback.onReceive(fetchedLocation);
@@ -247,8 +240,26 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
     }
 
     @Override
-    public void getChatMembers(String chatId, String token, EntityCallback<List<User>> callback) {
-        super.getChatMembers(chatId, token, callback);
+    public void getChatMembers(String chatId, String token, final EntityCallback<List<User>> callback) {
+        Chat chat = helper.getChatDao().queryForId(chatId);
+        if (chat != null && chat.getMemberNames() != null && !chat.getMemberNames().isEmpty()) {
+            List<User> members = new ArrayList<>(chat.getMemberNames().size());
+            User userInDB;
+            for (String memberName : chat.getMemberNames()) {
+                userInDB = helper.getUserDao().queryForId(memberName);
+                if (userInDB != null)
+                    members.add(userInDB);
+            }
+            callback.onReceive(members);
+        }
+        super.getChatMembers(chatId, token, new DelegatedEntityCallback<List<User>>(callback) {
+            @Override
+            protected void onReceive(List<User> membersFromServer) {
+                callback.onReceive(membersFromServer);
+                for (User user : membersFromServer)
+                    helper.getUserDao().createOrUpdate(user);
+            }
+        });
     }
 
     private static abstract class DelegatedEntityCallback<T> extends EntityCallback<T> {

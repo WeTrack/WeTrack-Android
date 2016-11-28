@@ -114,6 +114,7 @@ public class GoogleMapFragment extends SupportMapFragment {
 
     public void clearMarkers() {
         markersArrayListOperation(ConstantValues.MARKERLIST_CLEAR, null);
+        mMap.clear();
     }
 
     //the below 4 are for marker OnInfoWindowClickListener
