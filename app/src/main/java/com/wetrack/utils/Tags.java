@@ -13,4 +13,8 @@ public abstract class Tags {
         public static final String WS_MANAGER_WORKER = "Chat Ws Manager Worker";
     }
 
+    public static abstract class Location{
+        public static final String SERVICE = "LocationService";
+    }
+
 }

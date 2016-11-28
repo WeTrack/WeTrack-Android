@@ -1,21 +1,29 @@
 package com.wetrack.map;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Location;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationFormat;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationManager;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationResultListener;
+import com.wetrack.service.LocationServiceManager;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.MathUtils;
+import com.wetrack.utils.PreferenceUtils;
+import com.wetrack.utils.Tags;
+
+import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MapController {
     private static MapController mMapController = null;
@@ -27,22 +35,36 @@ public class MapController {
         return mMapController;
     }
 
-    private UserPosUpdateReceiver mUserPosUpdateReceiver = null;
     private Context mContext;
     private MapHandler mMapHandler;
     private GoogleMapFragment googleMapFragment;
     private GoogleNavigationManager mGoogleNavigationManager;
     private GpsLocationManager mGpsLocationManager;
+    private LocationServiceManager mLocationServiceManager = null;
 
     private MapController(Context context) {
         mContext = context;
 
-        initBroadcastReceiver();
         mGoogleNavigationManager = GoogleNavigationManager.getInstance(mContext);
         mMapHandler = new MapHandler();
         mGpsLocationManager = GpsLocationManager.getInstance(mContext);
 
         mGoogleNavigationManager.setmGoogleNavigationResultListener(new MyGoogleNavigationResultListener());
+
+        mLocationServiceManager = new LocationServiceManager(mContext) {
+            @Override
+            public void onReceivedLocation(com.wetrack.model.Location location) {
+                Log.d(Tags.Location.SERVICE, "MapController receives location: (" + location.getUsername() + ", "
+                + location.getLatitude() + ", " + location.getLongitude() + ", "
+                        + location.getTime());
+
+                MarkerDataFormat marker = new MarkerDataFormat(
+                        location.getUsername(),
+                        new LatLng(location.getLatitude(), location.getLongitude()), location.getTime().toString());
+                updateMarkers(marker, true);
+            }
+        };
+        usernameAndMarker.set(new HashMap<String, MarkerDataFormat>());
     }
 
     public void addMapToView(FragmentManager fragmentManager, int viewId) {
@@ -58,11 +80,20 @@ public class MapController {
             public void onGpsLocationReceived(Location location) {
                 myCurrentLocation = location;
 
-                googleMapFragment.setCameraLocation(
-                        new LatLng(
-                                myCurrentLocation.getLatitude(),
-                                myCurrentLocation.getLongitude()),
-                        0, 0);
+//                googleMapFragment.setCameraLocation(
+//                        new LatLng(
+//                                myCurrentLocation.getLatitude(),
+//                                myCurrentLocation.getLongitude()),
+//                        0, 0);
+
+                if (mLocationServiceManager != null) {
+                    com.wetrack.model.Location loc = new com.wetrack.model.Location(
+                            PreferenceUtils.getCurrentUsername(),
+                            location.getLongitude(), location.getLatitude(), LocalDateTime.now());
+                    List<com.wetrack.model.Location>locationList =
+                            new ArrayList<>(Arrays.asList(loc));
+                    mLocationServiceManager.sendLocation(locationList);
+                }
             }
         });
     }
@@ -79,34 +110,42 @@ public class MapController {
 
     public void start() {
         mGpsLocationManager.start();
+        mLocationServiceManager.start();
+    }
+
+    public void resume() {
+        usernameAndMarker.get().clear();
+        clearMarkers();
     }
 
     public void stop() {
         mGpsLocationManager.stop();
         mGoogleNavigationManager.stop();
         mMapController = null;
-        if (mUserPosUpdateReceiver != null) {
-            mContext.unregisterReceiver(mUserPosUpdateReceiver);
-            mUserPosUpdateReceiver = null;
-        }
+        mLocationServiceManager.stop();
+        mLocationServiceManager = null;
     }
 
     //below three are for markers
+    private AtomicReference<Map<String, MarkerDataFormat>> usernameAndMarker = new AtomicReference<>();
     public void clearMarkers() {
         googleMapFragment.clearMarkers();
     }
 
-    public void addMarkers(ArrayList<MarkerDataFormat> markerData, boolean resetCamera) {
-        for (MarkerDataFormat aMarkerData : markerData) {
-            googleMapFragment.addMarker(aMarkerData.title, aMarkerData.latLng, aMarkerData.information);
+    public void updateMarkers(MarkerDataFormat markerData, boolean resetCamera) {
+        usernameAndMarker.get().put(markerData.getTitle(), markerData);
+        googleMapFragment.clearMarkers();
+
+        ArrayList<LatLng> allLatLng = new ArrayList<>();
+        for (Map.Entry<String, MarkerDataFormat> entry : usernameAndMarker.get().entrySet()) {
+            MarkerDataFormat aMarkerData = entry.getValue();
+            googleMapFragment.addMarker(aMarkerData.getTitle(), aMarkerData.getLatLng(), aMarkerData.getInformation());
+            if (resetCamera) {
+                allLatLng.add(aMarkerData.getLatLng());
+            }
         }
 
         if (resetCamera) {
-
-            ArrayList<LatLng> allLatLng = new ArrayList<>();
-            for (MarkerDataFormat aMarkerData : markerData) {
-                allLatLng.add(aMarkerData.getLatLng());
-            }
             double[]result = MathUtils.getCenterAndLengthRange(allLatLng);
             double centerLatitude = result[0];
             double centerLongitude = result[1];
@@ -161,17 +200,4 @@ public class MapController {
                 longitudeRangeLength);
     }
 
-
-    private void initBroadcastReceiver() {
-        mUserPosUpdateReceiver = new UserPosUpdateReceiver();
-        IntentFilter intentFilter = new IntentFilter(ConstantValues.ACTION_UPDATE_USER_POS);
-        mContext.registerReceiver(mUserPosUpdateReceiver, intentFilter);
-    }
-
-    private class UserPosUpdateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //reload
-        }
-    }
 }

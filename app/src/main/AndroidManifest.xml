@@ -36,11 +36,13 @@
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatActivity"
-                  android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ChatActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ChatListActivity" />
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".CreateChatActivity" />
@@ -49,6 +51,10 @@
             android:name=".service.ChatService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".service.LocationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

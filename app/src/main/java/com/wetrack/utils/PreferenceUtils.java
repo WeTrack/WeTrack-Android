@@ -42,6 +42,8 @@ public class PreferenceUtils {
 		return getStringValue(KEY_CHAT_ID);
 	}
 
+
+
 	public static String getStringValue(String key) {
 		if(preferences == null)
 			initPreference();

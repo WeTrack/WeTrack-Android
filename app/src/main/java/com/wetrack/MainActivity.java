@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 public class MainActivity extends FragmentActivity {
     private MyHandler mHandler = new MyHandler();
-    private MapController mMapController;
+    private MapController mMapController = null;
     private ImageButton openSidebarButton;
     private SidebarView sidebarView = null;
     private ImageButton addContactButton;
@@ -81,6 +81,7 @@ public class MainActivity extends FragmentActivity {
     public void initMapInView(int viewId) {
         mMapController = MapController.getInstance(this);
         mMapController.addMapToView(getSupportFragmentManager(), viewId);
+        mMapController.start();
     }
 
     private void initSidebar() {
@@ -285,20 +286,20 @@ public class MainActivity extends FragmentActivity {
 
                     Log.d(ConstantValues.debugTab, "marker demo started");
 
-                    ArrayList<MarkerDataFormat> markers =
-                            new ArrayList<>(Arrays.asList(
-                                    new MarkerDataFormat("Title1", new LatLng(30, 30), "info1"),
-                                    new MarkerDataFormat("Title2", new LatLng(35, 30), "info2"),
-                                    new MarkerDataFormat("Title3", new LatLng(40, 30), "info3"),
-                                    new MarkerDataFormat("Title4", new LatLng(30, 35), "info4"),
-                                    new MarkerDataFormat("Title5", new LatLng(35, 35), "info5"),
-                                    new MarkerDataFormat("Title6", new LatLng(40, 35), "info6"),
-                                    new MarkerDataFormat("Title7", new LatLng(30, 40), "info7"),
-                                    new MarkerDataFormat("Title8", new LatLng(35, 40), "info8"),
-                                    new MarkerDataFormat("Title9", new LatLng(40, 40), "info9")
-                            ));
-                    mMapController.clearMarkers();
-                    mMapController.addMarkers(markers, true);
+//                    ArrayList<MarkerDataFormat> markers =
+//                            new ArrayList<>(Arrays.asList(
+//                                    new MarkerDataFormat("Title1", new LatLng(30, 30), "info1"),
+//                                    new MarkerDataFormat("Title2", new LatLng(35, 30), "info2"),
+//                                    new MarkerDataFormat("Title3", new LatLng(40, 30), "info3"),
+//                                    new MarkerDataFormat("Title4", new LatLng(30, 35), "info4"),
+//                                    new MarkerDataFormat("Title5", new LatLng(35, 35), "info5"),
+//                                    new MarkerDataFormat("Title6", new LatLng(40, 35), "info6"),
+//                                    new MarkerDataFormat("Title7", new LatLng(30, 40), "info7"),
+//                                    new MarkerDataFormat("Title8", new LatLng(35, 40), "info8"),
+//                                    new MarkerDataFormat("Title9", new LatLng(40, 40), "info9")
+//                            ));
+//                    mMapController.clearMarkers();
+//                    mMapController.updateMarkers(markers, true);
                     Log.d(ConstantValues.debugTab, "marker demo finished");
 
                     break;
@@ -322,11 +323,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+//        mMapController.resume();
 //        requestForLocationService();
 //        checkGps();
 
-        mMapController.start();
 
 //        showMarkerDemo();
 //        showNavigationDemo();
@@ -335,7 +335,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mMapController.stop();
     }
 
     @Override
@@ -344,6 +343,9 @@ public class MainActivity extends FragmentActivity {
         if (mChatServiceManager != null) {
             mChatServiceManager.stop();
             mChatServiceManager = null;
+        }
+        if (mMapController != null) {
+            mMapController.stop();
         }
     }
 

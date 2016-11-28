@@ -78,6 +78,7 @@ public class ChatListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Log.d(TAG, "Selected chat `" + chat.getChatId() + "`");
                     PreferenceUtils.setCurrentChatId(chat.getChatId());
+
                     Intent intent = new Intent();
                     intent.putExtra(KEY_CHAT_NAME, chat.getName());
                     setResult(RESULT_OK, intent);

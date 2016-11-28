@@ -16,7 +16,7 @@ public abstract class ConstantValues {
     public static String ACTION_UPDATE_USER_INFO = "com.wetrack.action.userInfo";
     public static String ACTION_UPDATE_CHAT_MSG = "com.wetrack.action.chatMsg";
     public static String ACTION_UPDATE_CHAT_MSG_STATUS = "com.wetrack.action.chatMsg.status";
-    public static String ACTION_UPDATE_USER_POS = "com.wetrack.action.userPos";
+    public static String ACTION_UPDATE_LOCATION = "com.wetrack.action.location";
 
     //activity transition
     final public static int CHAT_LIST_REQUEST_CODE = 1;

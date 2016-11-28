@@ -6,8 +6,9 @@ import com.google.android.gms.maps.model.LatLng;
  * Created by moziliang on 16/10/2.
  */
 public class MarkerDataFormat {
-    public MarkerDataFormat() {
-    }
+    private String title;
+    private LatLng latLng;
+    private String information;
 
     public MarkerDataFormat(String title, LatLng latLng, String information) {
         this.title = title;
@@ -23,8 +24,6 @@ public class MarkerDataFormat {
         this.title = title;
     }
 
-    public String title;
-
     public LatLng getLatLng() {
         return latLng;
     }
@@ -33,8 +32,6 @@ public class MarkerDataFormat {
         this.latLng = latLng;
     }
 
-    public LatLng latLng;
-
     public String getInformation() {
         return information;
     }
@@ -42,8 +39,6 @@ public class MarkerDataFormat {
     public void setInformation(String information) {
         this.information = information;
     }
-
-    public String information;
 
     @Override
     public String toString() {
