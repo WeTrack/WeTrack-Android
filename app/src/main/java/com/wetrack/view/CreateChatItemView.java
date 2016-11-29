@@ -69,13 +69,20 @@ public class CreateChatItemView extends RelativeLayout {
         this.friendName = user.getUsername();
 
         nameTextView.setText(user.getNickname());
-        if (user.getGender() == User.Gender.Male) {
+        if(user.getUsername().equals("ken"))
             portraitImageView.setImageResource(R.drawable.portrait_boy);
+        else if(user.getUsername().equals("robert.peng"))
+            portraitImageView.setImageResource(R.drawable.dai);
+        else if(user.getUsername().equals("CCWindy"))
+            portraitImageView.setImageResource(R.drawable.windy);
+        else
+            portraitImageView.setImageResource(R.drawable.head2);
+       // if (user.getGender() == User.Gender.Male) {
+       //     portraitImageView.setImageResource(R.drawable.portrait_boy);
 
-        } else {
-            portraitImageView.setImageResource(R.drawable.portrait_girl);
-
-        }
+      //  } else {
+      //     portraitImageView.setImageResource(R.drawable.portrait_girl);
+     //   }
     }
 
     // below three are for CheckBox

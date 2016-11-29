@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 final OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build()
 final Request establishRequest = new Request.Builder().url("http://${args[0]}").build()
 
-final Wrapper<WebSocket> wsWrapper = new Wrapper<>();
+final Wrapper<WebSocket> wsWrapper = new Wrapper<>()
 final AtomicBoolean opened = new AtomicBoolean(false)
 final WebSocketListener listener = new MyWsListener(wsWrapper, opened)
 println '> Start to establish connection...'

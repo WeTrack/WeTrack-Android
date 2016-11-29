@@ -80,7 +80,12 @@ public class ChatService extends Service {
     }
 
     public void onReceivedMessageAck(ChatMessageAck messageAck) {
-        // TODO Update the corresponding database record
+        // Update the respective database record
+        ChatMessage messageInDB = chatMessageDao.queryForId(messageAck.getMessageId());
+        if (messageInDB != null) {
+            messageInDB.setSendTime(messageAck.getActualSendTime());
+            chatMessageDao.update(messageInDB);
+        }
 
         // Inform registered listeners
         Intent intent = new Intent(ConstantValues.ACTION_UPDATE_CHAT_MSG_STATUS);

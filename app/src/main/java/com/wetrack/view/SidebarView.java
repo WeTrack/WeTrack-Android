@@ -82,12 +82,18 @@ public class SidebarView extends RelativeLayout {
             protected void onReceive(User receivedUser) {
                 nicknameTextView.setText(receivedUser.getNickname());
                 if (receivedUser.getGender() == User.Gender.Male) {
-                    portraitImageView.setImageResource(R.drawable.portrait_boy);
                     genderImageView.setImageResource(R.drawable.gender_male);
                 } else {
-                    portraitImageView.setImageResource(R.drawable.portrait_girl);
                     genderImageView.setImageResource(R.drawable.gender_female);
                 }
+                if(receivedUser.getNickname().equals("ken"))
+                    portraitImageView.setImageResource(R.drawable.portrait_boy);
+                else if(receivedUser.getNickname().equals("robert.peng"))
+                    portraitImageView.setImageResource(R.drawable.dai);
+                else if(receivedUser.getNickname().equals("CCWindy"))
+                    portraitImageView.setImageResource(R.drawable.windy);
+                else
+                    portraitImageView.setImageResource(R.drawable.head2);
             }
         });
     }

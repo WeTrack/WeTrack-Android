@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
@@ -46,10 +47,13 @@ public class MainActivity extends FragmentActivity {
     private Button chatListButton;
     private ImageButton chatListImageButton;
     private RelativeLayout mainLayout;
-    private Button chatButton;
+    private RelativeLayout buttonLayout;
 
     private ChatServiceManager mChatServiceManager = null;
+    private TextView unreadMessage;
+    private int unread;
     private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class MainActivity extends FragmentActivity {
         initAddContact();
         initChatList();
         initChatButton();
+        initUnreadMessage();
     }
 
     private void initChatServiceManager() {
@@ -178,7 +183,7 @@ public class MainActivity extends FragmentActivity {
 
     private void initAddContact() {
         final int[] imgs = {R.drawable.ic_chat_bubble_black_24dp, R.drawable.ic_person_add_black_24dp};
-        final String[] texts = {"New Chat", "Add Friend"};
+        final String[] texts = {"New Group", "Add Friend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
@@ -188,7 +193,8 @@ public class MainActivity extends FragmentActivity {
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addOptionListView.close();
+                //addOptionListView.close();
+                addOptionListView.setVisibility(View.GONE);
                 if (texts[position].equals(texts[0])) {
                     Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
                     startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);
@@ -245,8 +251,11 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initChatButton() {
-        chatButton = (Button) findViewById(R.id.chat_button);
-        chatButton.setOnClickListener(new View.OnClickListener() {
+        //chatButton = (Button) findViewById(R.id.chat_button);
+        //chatButton.setOnClickListener(new View.OnClickListener() {
+        buttonLayout = (RelativeLayout) findViewById(R.id.button_layout);
+        unreadMessage = (TextView) findViewById(R.id.unread_msg_number);
+        buttonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ChatActivity.class);
@@ -254,6 +263,26 @@ public class MainActivity extends FragmentActivity {
             }
         });
     }
+
+    private void initUnreadMessage() {
+        unread = 0;
+        mChatServiceManager = new ChatServiceManager(this) {
+            @Override
+            public void onReceivedMessage(ChatMessage receivedMessage) {
+                if (!receivedMessage.getChatId().equals(PreferenceUtils.getCurrentChatId()))
+                    return;
+                unread++;
+                unreadMessage.setText(String.valueOf(unread));
+                unreadMessage.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onReceivedMessageAck(String ackedMessageId) {
+
+            }
+        };
+    }
+
 
     private void hideAllOtherLayout(Object object) {
         if (!(object instanceof AddOptionListView)) {

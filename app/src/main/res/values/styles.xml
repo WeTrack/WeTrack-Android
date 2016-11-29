@@ -9,16 +9,15 @@
     </style>
     <style name="BackMyToolbar">
         <item name="theme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="navigationIcon">@drawable/ic_arrow_back_black_24dp</item>
+        <item name="navigationIcon">@drawable/back</item>
         <item name="android:background">#ffffff</item>
         <item name="android:elevation" tools:targetApi="lollipop">4dp</item>
     </style>
     <style name="chat_text_date_style">
-        <item name="android:padding">2dp</item>
-        <item name="android:paddingTop">2dip</item>
-        <item name="android:paddingBottom">2dip</item>
-        <item name="android:paddingLeft">20dip</item>
-        <item name="android:paddingRight">20dip</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
         <item name="android:textColor">@color/gray</item>
         <item name="android:textSize">12sp</item>
         <item name="android:background">@drawable/timestamp_bg</item>
