@@ -9,17 +9,20 @@
     <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="50dp"
         android:background="@color/white">
 
         <ImageButton
             android:id="@+id/chat_list_back_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
             android:src="@drawable/back"
             android:background="@color/transparent"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
         <TextView
             android:layout_toRightOf="@id/chat_list_back_button"
             android:layout_width="wrap_content"

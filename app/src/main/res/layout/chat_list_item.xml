@@ -9,7 +9,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        android:src="@drawable/group_portrait"
+        android:src="@drawable/group"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
 
@@ -20,7 +20,6 @@
         android:background="@color/transparent"
         android:textColor="@color/black"
         android:textSize="18dp"
-        android:maxLength="10"
         android:layout_toRightOf="@id/group_portrait"
         android:layout_alignTop="@id/group_portrait"/>
 

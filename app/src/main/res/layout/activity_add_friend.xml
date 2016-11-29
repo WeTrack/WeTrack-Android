@@ -8,17 +8,20 @@
     <RelativeLayout
         android:id="@+id/add_friend_menu"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="50dp"
         android:background="@color/white">
 
         <ImageButton
             android:id="@+id/add_friend_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@color/transparent"
-            android:src="@drawable/back" />
+            android:src="@drawable/back"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/add_friend_title"
@@ -42,11 +45,14 @@
         <ImageButton
             android:id="@+id/add_friend_search_button"
             android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
             android:layout_centerVertical="true"
             android:background="@color/transparent"
-            android:src="@drawable/search" />
+            android:src="@drawable/search"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <EditText
             android:id="@+id/add_friend_search_text"

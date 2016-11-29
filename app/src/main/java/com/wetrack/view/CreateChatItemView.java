@@ -75,8 +75,10 @@ public class CreateChatItemView extends RelativeLayout {
             portraitImageView.setImageResource(R.drawable.dai);
         else if(user.getUsername().equals("CCWindy"))
             portraitImageView.setImageResource(R.drawable.windy);
+        else if (user.getGender() == User.Gender.Male)
+            portraitImageView.setImageResource(R.drawable.portrait_boy);
         else
-            portraitImageView.setImageResource(R.drawable.head2);
+            portraitImageView.setImageResource(R.drawable.portrait_girl);
        // if (user.getGender() == User.Gender.Male) {
        //     portraitImageView.setImageResource(R.drawable.portrait_boy);
 

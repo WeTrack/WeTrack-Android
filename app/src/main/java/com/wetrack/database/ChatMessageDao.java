@@ -40,7 +40,7 @@ public class ChatMessageDao extends RuntimeExceptionDao<ChatMessage, String> {
     public List<ChatMessage> getMessageBefore(String chatId, LocalDateTime beforeTime, Long limit) {
         PreparedQuery<ChatMessage> query;
         try {
-            query = queryBuilder().orderBy("send_time", false).limit(limit)
+            query = queryBuilder().orderBy("send_time", true).limit(limit)
                     .where().eq("chat_id", chatId).and().lt("send_time", beforeTime).prepare();
         } catch (SQLException ex) {
             Log.e(TAG, "Failed to create PreparedQuery for chat message: ", ex);

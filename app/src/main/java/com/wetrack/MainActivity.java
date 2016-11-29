@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,7 +39,7 @@ import java.util.List;
 
 import retrofit2.Response;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
     private MapController mMapController = null;
     private ImageButton openSidebarButton;
     private SidebarView sidebarView = null;
@@ -173,6 +174,8 @@ public class MainActivity extends FragmentActivity {
         sidebarView.setLogoutListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PreferenceUtils.setCurrentToken("");
+                PreferenceUtils.saveStringValue(PreferenceUtils.KEY_TOKEN_EXPIRE_TIME, "");
                 Intent intent = new Intent(MainActivity.this,
                         LoginActivity.class);
                 startActivity(intent);
@@ -182,7 +185,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initAddContact() {
-        final int[] imgs = {R.drawable.ic_chat_bubble_black_24dp, R.drawable.ic_person_add_black_24dp};
+        final int[] imgs = {R.drawable.chat, R.drawable.add_friend};
         final String[] texts = {"New Group", "Add Friend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
@@ -198,11 +201,9 @@ public class MainActivity extends FragmentActivity {
                 if (texts[position].equals(texts[0])) {
                     Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
                     startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);
-                    overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
                 } else if (texts[position].equals(texts[1])) {
                     Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
                     startActivityForResult(intent, ConstantValues.ADD_FRIEND_REQUEST_CODE);
-                    overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
                 }
             }
         });
@@ -259,7 +260,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ChatActivity.class);
-                startActivity(i);
+                startActivityForResult(i, ConstantValues.CHAT_REQUEST_CODE);
             }
         });
     }
@@ -299,9 +300,9 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
         switch (requestCode) {
             case ConstantValues.CHAT_LIST_REQUEST_CODE:
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_up);
                 switch (resultCode) {
                     case RESULT_CANCELED:
                         Log.d(ConstantValues.debugTab, "chat list canceled");
@@ -326,7 +327,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case ConstantValues.ADD_FRIEND_REQUEST_CODE:
-                switch (requestCode) {
+                switch (resultCode) {
                     case RESULT_CANCELED:
                         Log.d(ConstantValues.debugTab, "add friend cenceled");
                         break;
@@ -335,6 +336,10 @@ public class MainActivity extends FragmentActivity {
                         //TODO get information from 'data' here
                         break;
                 }
+                break;
+            case ConstantValues.CHAT_REQUEST_CODE:
+                unread = 0;
+                unreadMessage.setVisibility(View.GONE);
                 break;
         }
 
