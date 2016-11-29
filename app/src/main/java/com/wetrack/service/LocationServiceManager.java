@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wetrack.BaseApplication;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
-import com.wetrack.model.ChatMessage;
 import com.wetrack.model.Location;
 import com.wetrack.utils.ConstantValues;
 
