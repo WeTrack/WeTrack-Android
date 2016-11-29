@@ -183,7 +183,7 @@ public class MainActivity extends FragmentActivity {
 
     private void initAddContact() {
         final int[] imgs = {R.drawable.ic_chat_bubble_black_24dp, R.drawable.ic_person_add_black_24dp};
-        final String[] texts = {"New Chat", "Add Friend"};
+        final String[] texts = {"New Group", "Add Friend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
         addOptionListView.setVisibility(View.GONE);
