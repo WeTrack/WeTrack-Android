@@ -9,7 +9,6 @@ import android.util.Log;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.BaseApplication;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.MessageCallback;
@@ -25,7 +24,6 @@ import com.wetrack.utils.Tags;
 
 import org.joda.time.LocalDateTime;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,18 +92,12 @@ public class LocationService extends Service {
     }
 
     public void onReceivedLocation(Location location) {
-//        receivedLocations.get().put(location.getUsername(), location);
         String locationString = gson.toJson(location);
         Log.d(Tags.Location.SERVICE, "on received location: " + locationString);
         Intent intent = new Intent(ConstantValues.ACTION_UPDATE_LOCATION);
         intent.putExtra("received location", locationString);
-//        intent.putExtra("receivedLocations", new ArrayList<Location>(receivedLocations.get().values()));
         BaseApplication.getContext().sendBroadcast(intent);
     }
-
-//    public void update() {
-//        receivedLocations.get().clear();
-//    }
 
     private final BlockingDeque<LocTask> taskQueue = new LinkedBlockingDeque<>();
 

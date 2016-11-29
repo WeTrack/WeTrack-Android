@@ -6,22 +6,22 @@ import com.google.android.gms.maps.model.LatLng;
  * Created by moziliang on 16/10/2.
  */
 public class MarkerDataFormat {
-    private String title;
+    private String username;
     private LatLng latLng;
     private String information;
 
-    public MarkerDataFormat(String title, LatLng latLng, String information) {
-        this.title = title;
+    public MarkerDataFormat(String username, LatLng latLng, String information) {
+        this.username = username;
         this.latLng = latLng;
         this.information = information;
     }
 
-    public String getTitle() {
-        return title;
+    public String getUsername() {
+        return username;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LatLng getLatLng() {
@@ -43,7 +43,7 @@ public class MarkerDataFormat {
     @Override
     public String toString() {
         return "MarkerDataFormat{" +
-                "title='" + title + '\'' +
+                "username='" + username + '\'' +
                 ", latLng=" + latLng +
                 ", information='" + information + '\'' +
                 '}';

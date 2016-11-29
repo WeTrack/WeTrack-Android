@@ -22,6 +22,8 @@ import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.MathUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GoogleMapFragment extends SupportMapFragment {
 
@@ -63,10 +65,22 @@ public class GoogleMapFragment extends SupportMapFragment {
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+
                     return false;
                 }
             });
 
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+                    return null;
+                }
+            });
             mMap.setOnInfoWindowClickListener(new MyOnInfoWindowClickListener());
 
         }
@@ -89,30 +103,59 @@ public class GoogleMapFragment extends SupportMapFragment {
     }
 
     //the below 4 functions are for marker operation
-    private ArrayList<Marker> allMarkers = new ArrayList<>();
+    private Map<String, Marker> allMarkers = new HashMap<>();
 
-    synchronized public void markersArrayListOperation(int operationCode, Marker marker) {
+    synchronized public Object markersArrayListOperation(int operationCode, Marker marker) {
         switch (operationCode) {
             case ConstantValues.MARKERLIST_CLEAR:
                 allMarkers.clear();
-                break;
+                return null;
             case ConstantValues.MARKERLIST_ADD:
-                allMarkers.add(marker);
-                break;
+                allMarkers.put(marker.getTitle(), marker);
+                return null;
+            case ConstantValues.MARKERLIST_ALL_LATLNG:
+                ArrayList<LatLng> locations = new ArrayList<>();
+                for (Marker mk : allMarkers.values()) {
+                    locations.add(mk.getPosition());
+                }
+                return locations;
+            case ConstantValues.MARKERLIST_SIZE:
+                return allMarkers.size();
             default:
-                break;
+                return null;
         }
     }
 
     public void addMarker(String title, LatLng latLng, String information) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng).title(title).snippet(information).alpha(0.8f);
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(R.drawable.));
-        Marker currentMarker = mMap.addMarker(markerOptions);
-        markersArrayListOperation(ConstantValues.MARKERLIST_ADD, currentMarker);
+        if (allMarkers.keySet().contains(title)) {
+            Marker marker = allMarkers.get(title);
+            marker.setPosition(latLng);
+            marker.setSnippet(information);
+        } else {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng).title(title).snippet(information).alpha(0.8f);
+//          markerOptions.icon(BitmapDescriptorFactory.fromBitmap(R.drawable.));
+            Marker currentMarker = mMap.addMarker(markerOptions);
+            markersArrayListOperation(ConstantValues.MARKERLIST_ADD, currentMarker);
+            // check if it is the first time show location
+            if ((int)(markersArrayListOperation(ConstantValues.MARKERLIST_SIZE, null)) == 1) {
+                ArrayList<LatLng> latLngs = (ArrayList<LatLng>) markersArrayListOperation(
+                        ConstantValues.MARKERLIST_ALL_LATLNG, null);
+                double[] result = MathUtils.getCenterAndLengthRange(latLngs);
+                double centerLatitude = result[0];
+                double centerLongitude = result[1];
+                double latitudeRangeLength = result[2];
+                double longitudeRangeLength = result[3];
+
+                setCameraLocation(
+                        new LatLng(centerLatitude, centerLongitude),
+                        latitudeRangeLength,
+                        longitudeRangeLength);
+            }
+        }
     }
 
-    public void clearMarkers() {
+    public void clearAllSymbols() {
         markersArrayListOperation(ConstantValues.MARKERLIST_CLEAR, null);
         mMap.clear();
     }
@@ -121,7 +164,7 @@ public class GoogleMapFragment extends SupportMapFragment {
     private class MyOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
         @Override
         public void onInfoWindowClick(Marker marker) {
-            if (mOnInfoWindowClickListener != null) {;
+            if (mOnInfoWindowClickListener != null) {
                 mOnInfoWindowClickListener.onInfoWindowClick(
                         new MarkerDataFormat(marker.getTitle(), marker.getPosition(), marker.getSnippet()));
             }
@@ -135,17 +178,22 @@ public class GoogleMapFragment extends SupportMapFragment {
     }
 
     public interface OnInfoWindowClickListener {
-        public void onInfoWindowClick(MarkerDataFormat markerData);
+        void onInfoWindowClick(MarkerDataFormat markerData);
     }
 
     //the below is for navigation
-    public void drawPathOnMap(ArrayList<LatLng>positions) {
+    Polyline currentPolyline = null;
+
+    public void drawPathOnMap(ArrayList<LatLng> positions) {
+        if (currentPolyline != null) {
+            currentPolyline.remove();
+        }
         PolylineOptions polylineOptions = new PolylineOptions();
         for (LatLng position : positions) {
             polylineOptions.add(position);
         }
         polylineOptions.color(Color.BLUE).width(10);
-        Polyline polyline = mMap.addPolyline(polylineOptions);
+        currentPolyline = mMap.addPolyline(polylineOptions);
     }
 
     @Override
