@@ -9,7 +9,7 @@
     </style>
     <style name="BackMyToolbar">
         <item name="theme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="navigationIcon">@drawable/ic_arrow_back_black_24dp</item>
+        <item name="navigationIcon">@drawable/back</item>
         <item name="android:background">#ffffff</item>
         <item name="android:elevation" tools:targetApi="lollipop">4dp</item>
     </style>
