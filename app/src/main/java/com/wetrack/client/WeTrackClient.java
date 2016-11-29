@@ -7,6 +7,7 @@ import com.wetrack.client.json.ChatSerializer;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.client.json.LocalDateTypeAdapter;
 import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
 import com.wetrack.model.CreatedMessage;
 import com.wetrack.model.Location;
 import com.wetrack.model.Message;
@@ -446,6 +447,26 @@ public class WeTrackClient {
                 .subscribeOn(subscribeScheduler)
                 .observeOn(observeScheduler)
                 .subscribe(observer(callback));
+    }
+
+    public void getChatMessagesBefore(String chatId, String token, LocalDateTime before, int limit,
+                                      final EntityCallback<List<ChatMessage>> callback) {
+        chatService.getMessagesBefore(chatId, token, before.toString(), limit)
+                .subscribeOn(subscribeScheduler)
+                .observeOn(observeScheduler)
+                .subscribe(observer(callback));
+    }
+
+    public void getChatMessagesSince(String chatId, String token, LocalDateTime since, LocalDateTime before,
+                                     final EntityCallback<List<ChatMessage>> callback) {
+        chatService.getMessagesSince(chatId, token, since.toString(), before == null ? null : before.toString())
+                .subscribeOn(subscribeScheduler)
+                .observeOn(observeScheduler)
+                .subscribe(observer(callback));
+    }
+
+    public void getNewChatMessages(String chatId, String token, final EntityCallback<List<ChatMessage>> callback) {
+        throw new UnsupportedOperationException();
     }
 
     public Gson getGson() {

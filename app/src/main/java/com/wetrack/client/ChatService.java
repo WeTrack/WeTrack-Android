@@ -1,6 +1,7 @@
 package com.wetrack.client;
 
 import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
 import com.wetrack.model.CreatedMessage;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
@@ -29,6 +30,22 @@ interface ChatService {
     @GET("/chats/{chatId}")
     Observable<Response<Chat>> getChatInfo(@Path("chatId") String chatId,
                                            @Query("token") String token);
+
+    @GET("/chats/{chatId}/messages")
+    Observable<Response<List<ChatMessage>>> getMessagesBefore(
+            @Path("chatId") String chatId,
+            @Query("token") String token,
+            @Query("before") String beforeTime,
+            @Query("limit") int limit
+    );
+
+    @GET("/chats/{chatId}/messages")
+    Observable<Response<List<ChatMessage>>> getMessagesSince(
+            @Path("chatId") String chatId,
+            @Query("token") String token,
+            @Query("since") String sinceTime,
+            @Query("before") String beforeTime
+    );
 
     @GET("/chats/{chatId}/members")
     Observable<Response<List<User>>> getChatMembers(@Path("chatId") String chatId,

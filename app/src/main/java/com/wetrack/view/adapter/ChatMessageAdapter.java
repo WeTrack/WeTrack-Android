@@ -12,13 +12,17 @@ import android.widget.TextView;
 import com.wetrack.R;
 import com.wetrack.model.ChatMessage;
 
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.List;
 
 public class ChatMessageAdapter extends BaseAdapter {
-    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm");
+    private static final DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm");
+    private static final DateTimeFormatter monthDayTimeFormatter = DateTimeFormat.forPattern("MM-dd HH:mm");
+    private static final DateTimeFormatter yearMonthDayTimeFormatter =
+            DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
 
     private Context context;
 
@@ -59,13 +63,22 @@ public class ChatMessageAdapter extends BaseAdapter {
         LinearLayout leftLayout = (LinearLayout) row.findViewById(R.id.left_layout);
         LinearLayout rightLayout = (LinearLayout) row.findViewById(R.id.right_layout);
         ChatMessage message = chatMessageList.get(position);
+        ChatMessage lastMessage = position == 0 ? null : chatMessageList.get(position - 1);
         // Received message
         if (!message.getFromUsername().equals(currentUsername)) {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.left_msg);
             ImageView portrait = (ImageView) row.findViewById(R.id.tv_userhead);
 
-            timestamp.setText(message.getSendTime().toString(formatter));
+            if (lastMessage != null && lastMessage.getSendTime().plusMinutes(3).isAfter(message.getSendTime()))
+                timestamp.setVisibility(View.GONE);
+            else if (message.getSendTime().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
+                timestamp.setText(message.getSendTime().toString(timeFormatter));
+            else if (message.getSendTime().getYear() == LocalDateTime.now().getYear())
+                timestamp.setText(message.getSendTime().toString(monthDayTimeFormatter));
+            else
+                timestamp.setText(message.getSendTime().toString(yearMonthDayTimeFormatter));
+
             content.setText(message.getContent());
             rightLayout.setVisibility(View.GONE);
             leftLayout.setVisibility(View.VISIBLE);
@@ -90,7 +103,16 @@ public class ChatMessageAdapter extends BaseAdapter {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.right_msg);
             ImageView portrait = (ImageView) row.findViewById(R.id.iv_userhead);
-            timestamp.setText(message.getSendTime().toString(formatter));
+
+            if (lastMessage != null && lastMessage.getSendTime().plusMinutes(3).isAfter(message.getSendTime()))
+                timestamp.setVisibility(View.GONE);
+            else if (message.getSendTime().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
+                timestamp.setText(message.getSendTime().toString(timeFormatter));
+            else if (message.getSendTime().getYear() == LocalDateTime.now().getYear())
+                timestamp.setText(message.getSendTime().toString(monthDayTimeFormatter));
+            else
+                timestamp.setText(message.getSendTime().toString(yearMonthDayTimeFormatter));
+
             content.setText(message.getContent());
             if (message.isAcked())
                 row.findViewById(R.id.pb_sending).setVisibility(View.GONE);
