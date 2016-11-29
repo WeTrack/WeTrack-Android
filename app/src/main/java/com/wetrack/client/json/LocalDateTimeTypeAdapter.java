@@ -8,11 +8,16 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.lang.reflect.Type;
 
 public class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
+    private final DateTimeFormatter offsetDateTimeFormatter = ISODateTimeFormat.dateTime();
+
     @Override
     public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
@@ -20,7 +25,7 @@ public class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, 
         if (jsonStr == null || jsonStr.trim().isEmpty())
             return null;
         try {
-            return LocalDateTime.parse(jsonStr);
+            return offsetDateTimeFormatter.parseDateTime(jsonStr).withZone(DateTimeZone.getDefault()).toLocalDateTime();
         } catch (Throwable ex) {
             throw new JsonParseException("Received illegal date time field: `" + jsonStr + "`", ex);
         }
@@ -28,6 +33,6 @@ public class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, 
 
     @Override
     public JsonElement serialize(LocalDateTime src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toString());
+        return new JsonPrimitive(src.toDateTime(DateTimeZone.getDefault()).toString(offsetDateTimeFormatter));
     }
 }

@@ -7,6 +7,8 @@ Android client project for WeTrack, our HKUST CSIT 5510 course project.
 - [x] Update the format of JSON objects used by Android client and back end server.
 - [x] Implement WebSocket real-time communication.
 - [x] Implement user location periodically uploading.
+- [ ] Implement WebSocket session keep-alive.
+- [ ] Fetch unread messages from server after WebSocket session reconnect.
 - [ ] Integrate `WeTrackClient` and `WeTrackClientWithDbCache`.
 - [ ] Refactor the whole project.
 - [ ] Update UI for better user experience.

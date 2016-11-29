@@ -18,7 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ChatMessageAdapter extends BaseAdapter {
-    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm");
+    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
 
     private Context context;
 
