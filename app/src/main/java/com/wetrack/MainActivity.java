@@ -50,7 +50,7 @@ public class MainActivity extends FragmentActivity {
     private RelativeLayout buttonLayout;
 
     private ChatServiceManager mChatServiceManager = null;
-    private TextView unreadmessage;
+    private TextView unreadMessage;
     private int unread;
     private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
@@ -253,7 +253,7 @@ public class MainActivity extends FragmentActivity {
         //chatButton = (Button) findViewById(R.id.chat_button);
         //chatButton.setOnClickListener(new View.OnClickListener() {
         buttonLayout = (RelativeLayout) findViewById(R.id.button_layout);
-        unreadmessage = (TextView) findViewById(R.id.unread_msg_number);
+        unreadMessage = (TextView) findViewById(R.id.unread_msg_number);
         buttonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,8 +271,8 @@ public class MainActivity extends FragmentActivity {
                 if (!receivedMessage.getChatId().equals(PreferenceUtils.getCurrentChatId()))
                     return;
                 unread++;
-                unreadmessage.setText(String.valueOf(unread));
-                unreadmessage.setVisibility(View.VISIBLE);
+                unreadMessage.setText(String.valueOf(unread));
+                unreadMessage.setVisibility(View.VISIBLE);
             }
 
             @Override

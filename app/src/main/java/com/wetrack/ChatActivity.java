@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.database.ChatMessageDao;
 import com.wetrack.database.WeTrackDatabaseHelper;
@@ -30,10 +31,21 @@ import com.wetrack.model.ChatMessage;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final Comparator<ChatMessage> messageCmp = new Comparator<ChatMessage>() {
+        @Override
+        public int compare(ChatMessage m1, ChatMessage m2) {
+            return m1.getSendTime().compareTo(m2.getSendTime());
+        }
+    };
+
+    private final WeTrackClient client = WeTrackClientWithDbCache.singleton();
+
     private ListView messageListView;
     private EditText messageEditText;
     private RelativeLayout messageEditLayout;
@@ -145,6 +157,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         chatMessageList = new ArrayList<>();
+        chatMessageList.addAll(OpenHelperManager.getHelper(this, WeTrackDatabaseHelper.class)
+                .getChatMessageDao().getMessageBefore(PreferenceUtils.getCurrentChatId(), LocalDateTime.now(), null));
         adapter = new ChatMessageAdapter(this, chatMessageList, PreferenceUtils.getCurrentUsername());
         messageListView.setAdapter(adapter);
         messageListView.setOnTouchListener(new View.OnTouchListener() {
@@ -156,6 +170,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        messageListView.setSelection(messageListView.getCount() - 1);
+
+        client.getNewChatMessages(PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
+                new EntityCallback<List<ChatMessage>>() {
+                    @Override
+                    protected void onReceive(List<ChatMessage> receivedMessages) {
+                        chatMessageList.addAll(receivedMessages);
+                        Collections.sort(chatMessageList, messageCmp);
+                        adapter.refresh(chatMessageList);
+                    }
+                }
+        );
     }
 
     public void editClick(View v) {

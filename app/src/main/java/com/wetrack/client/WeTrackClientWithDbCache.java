@@ -9,6 +9,7 @@ import com.wetrack.database.Friend;
 import com.wetrack.database.UserChat;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
 import com.wetrack.model.Location;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
@@ -40,6 +41,57 @@ public class WeTrackClientWithDbCache extends WeTrackClient {
     private WeTrackClientWithDbCache(String baseUrl, int timeoutSeconds) {
         super(baseUrl, timeoutSeconds);
         helper = OpenHelperManager.getHelper(BaseApplication.getContext(), WeTrackDatabaseHelper.class);
+    }
+
+    @Override
+    public void getChatMessagesBefore(String chatId, String token, LocalDateTime before, int limit,
+                                      final EntityCallback<List<ChatMessage>> callback) {
+        List<ChatMessage> messagesInDB = helper.getChatMessageDao().getMessageBefore(chatId, before, (long) limit);
+        if (messagesInDB != null && !messagesInDB.isEmpty())
+            callback.onReceive(messagesInDB);
+        super.getChatMessagesBefore(chatId, token, before, limit, callback);
+        // TODO Update cache database with the received messages
+    }
+
+    @Override
+    public void getChatMessagesSince(String chatId, String token, LocalDateTime since, LocalDateTime before,
+                                     final EntityCallback<List<ChatMessage>> callback) {
+        List<ChatMessage> messagesInDB = helper.getChatMessageDao().getMessageSince(chatId, since, before);
+        if (messagesInDB != null && !messagesInDB.isEmpty())
+            callback.onReceive(messagesInDB);
+        super.getChatMessagesSince(chatId, token, since, before, callback);
+        // TODO Update cache database with the received messages
+    }
+
+    @Override
+    public void getNewChatMessages(String chatId, String token,
+                                   final EntityCallback<List<ChatMessage>> callback) {
+        LocalDateTime latestReceivedTime = helper.getChatMessageDao().getLatestReceivedMessageTime();
+        if (latestReceivedTime == null) { // No message in local database
+            Log.d(TAG, "Latest receiving time cannot be fetched. Querying for the latest 20 messages from server...");
+            getChatMessagesBefore(chatId, token, LocalDateTime.now(), 20,
+                    new DelegatedEntityCallback<List<ChatMessage>>(callback) {
+                        @Override
+                        protected void onReceive(List<ChatMessage> messagesFromServer) {
+                            callback.onReceive(messagesFromServer);
+                            for (ChatMessage message : messagesFromServer)
+                                helper.getChatMessageDao().create(message);
+                        }
+                    }
+            );
+        } else {
+            Log.d(TAG, "Fetched latest receiving time " + latestReceivedTime.toString());
+            getChatMessagesSince(chatId, token, latestReceivedTime.plusMillis(1), null,
+                    new DelegatedEntityCallback<List<ChatMessage>>(callback) {
+                        @Override
+                        protected void onReceive(List<ChatMessage> messagesFromServer) {
+                            callback.onReceive(messagesFromServer);
+                            for (ChatMessage message : messagesFromServer)
+                                helper.getChatMessageDao().create(message);
+                        }
+                    }
+            );
+        }
     }
 
     @Override
