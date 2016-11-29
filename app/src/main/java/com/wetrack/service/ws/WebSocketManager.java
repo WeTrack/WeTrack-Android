@@ -40,7 +40,8 @@ public class WebSocketManager {
 
     public WebSocketManager(OkHttpClient client, String endpointPath,
                             WebSocketListener delegateListener,
-                            String authenMessage) {
+                            String authenMessage
+    ) {
         this.client = client;
         this.delegateListener = delegateListener;
         this.authenMessage = authenMessage;
@@ -184,10 +185,19 @@ public class WebSocketManager {
                     Log.d(Tags.Chat.WS_MANAGER_WORKER, "Worker thread waiting for new task...");
                     synchronized (taskQueue) {
                         try {
-                            taskQueue.wait();
+                            taskQueue.wait(10000); // Wait for 10 seconds
                         } catch (InterruptedException ex) {}
                     }
-                    Log.d(Tags.Chat.WS_MANAGER_WORKER, "Worker thread awake.");
+                    try {
+                        wsWrapper.get().sendPing(null);
+                    } catch (IOException ex) {
+                        Log.e(Tags.Chat.WS_MANAGER_TASK, "Exception occurred when trying to send ping message: ", ex);
+                        if (ex instanceof SocketException &&
+                                ex.getMessage().equalsIgnoreCase("Socket closed")) {
+                            opened.set(false);
+                            connect();
+                        }
+                    }
                 } else {
                     Log.d(Tags.Chat.WS_MANAGER_WORKER, "New task received.");
                     WsTask next = taskQueue.poll();
