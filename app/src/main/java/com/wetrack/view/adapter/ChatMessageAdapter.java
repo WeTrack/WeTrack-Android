@@ -10,9 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wetrack.R;
-import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
-import com.wetrack.model.User;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -75,7 +73,16 @@ public class ChatMessageAdapter extends BaseAdapter {
 
             // TODO Set the portrait for user
             //这里直接使用drawable的head1.png头像
-            portrait.setBackgroundResource(R.drawable.head1);
+
+            if(message.getFromUsername().equals("ken"))
+                portrait.setBackgroundResource(R.drawable.portrait_boy);
+            else if(message.getFromUsername().equals("robert.peng"))
+                portrait.setBackgroundResource(R.drawable.dai);
+            else if(message.getFromUsername().equals("CCWindy"))
+                portrait.setBackgroundResource(R.drawable.windy);
+            else
+                portrait.setBackgroundResource(R.drawable.head1);
+
             return row;
         }
         // Sent message
@@ -92,7 +99,15 @@ public class ChatMessageAdapter extends BaseAdapter {
 
             // 用currentUser.getIconUrl()currentUser头像
             // 这里直接使用head2.png
-            portrait.setBackgroundResource(R.drawable.head2);
+
+            if(currentUsername.equals("ken"))
+                portrait.setBackgroundResource(R.drawable.portrait_boy);
+            else if(currentUsername.equals("robert.peng"))
+                portrait.setBackgroundResource(R.drawable.dai);
+            else if(currentUsername.equals("CCWindy"))
+                portrait.setBackgroundResource(R.drawable.windy);
+            else
+                portrait.setBackgroundResource(R.drawable.head2);
             return row;
         }
     }

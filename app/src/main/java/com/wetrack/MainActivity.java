@@ -193,7 +193,8 @@ public class MainActivity extends FragmentActivity {
         addOptionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addOptionListView.close();
+                //addOptionListView.close();
+                addOptionListView.setVisibility(View.GONE);
                 if (texts[position].equals(texts[0])) {
                     Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
                     startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);

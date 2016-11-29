@@ -41,12 +41,12 @@
         android:background="#f6f6f6">
         <EditText
             android:id="@+id/group_name"
-            android:layout_width="280dp"
-            android:layout_height="45dp"
+            android:layout_width="248dp"
+            android:layout_height="48dp"
             android:layout_marginLeft="15dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:hint="please enter group name"
+            android:hint="Please enter group name"
             android:textColor="@color/black"
             android:textColorHint="@color/whiteGray"
             android:textSize="20dp"/>
