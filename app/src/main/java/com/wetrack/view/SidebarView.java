@@ -58,9 +58,11 @@ public class SidebarView extends RelativeLayout {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 Tools.getScreenW() * 2 / 3,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
         layoutParams.setMargins(-Tools.getScreenW() * 2 / 3, 0, 0, 0);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.menu_bar);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         setLayoutParams(layoutParams);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());

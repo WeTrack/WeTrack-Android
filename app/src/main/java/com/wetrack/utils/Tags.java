@@ -29,4 +29,7 @@ public abstract class Tags {
         public static final String SERVICE = "LocationService";
     }
 
+    public static abstract class Map{
+        public static final String MARKER = "MapMarker";
+    }
 }

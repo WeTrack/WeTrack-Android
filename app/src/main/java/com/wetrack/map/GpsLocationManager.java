@@ -16,9 +16,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.wetrack.utils.ConstantValues;
 
-/**
- * Created by moziliang on 16/10/2.
- */
 public class GpsLocationManager {
     private static GpsLocationManager mGpsLocationManager = null;
 

@@ -1,6 +1,9 @@
 package com.wetrack.map.GoogleNavigation;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -16,9 +19,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * Created by moziliang on 16/10/15.
- */
 public class GoogleNavigationManager {
     private static GoogleNavigationManager mGoogleNavigationManager = null;
     public static GoogleNavigationManager getInstance(Context context) {
@@ -29,7 +29,7 @@ public class GoogleNavigationManager {
     }
 
     //true means on work, false means this class should not work any more
-    static boolean state;
+    static boolean started;
 
     public void setmGoogleNavigationResultListener(GoogleNavigationResultListener mGoogleNavigationResultListener) {
         this.mGoogleNavigationResultListener = mGoogleNavigationResultListener;
@@ -41,13 +41,13 @@ public class GoogleNavigationManager {
 
     private GoogleNavigationManager(Context context) {
         mContext = context;
-        state = true;
+        started = true;
     }
 
     public void getResultFromGoogle(GoogleNavigationFormat googleNavigationData) {
         String url = encodeGoogleNavigationFormatToUrl(googleNavigationData);
 
-        if (state) {
+        if (started) {
             (new GetResultFromGoogleThread(url)).start();
         }
     }
@@ -164,8 +164,12 @@ public class GoogleNavigationManager {
 
                 ArrayList<LatLng> result = decodeGoogleNavigationResult(resultString);
 
-                if (state == true && mGoogleNavigationResultListener != null && result != null) {
-                    mGoogleNavigationResultListener.onReceiveResult(result);
+                if (started && result != null) {
+                    Message message = new Message();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("NavigationResult", result);
+                    message.setData(bundle);
+                    handler.sendMessage(message);
                 }
 
             } catch (Exception e) {
@@ -175,8 +179,20 @@ public class GoogleNavigationManager {
     }
 
     public void stop() {
-        state = false;
+        started = false;
         mGoogleNavigationManager = null;
         mGoogleNavigationResultListener = null;
     }
+
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            ArrayList<LatLng> navigationResults =
+                    (ArrayList<LatLng>)msg.getData().getSerializable("NavigationResult");
+            if (mGoogleNavigationResultListener != null) {
+                mGoogleNavigationResultListener.onReceiveResult(navigationResults);
+            }
+            return false;
+        }
+    });
 }

@@ -7,24 +7,10 @@
     tools:context="com.wetrack.MainActivity">
 
     <RelativeLayout
-        android:id="@+id/main_contain"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/map_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
-    </RelativeLayout>
-
-    <!-- sidebar and groupList will insert here -->
-
-    <RelativeLayout
         android:id="@+id/menu_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:background="@color/white">
 
         <ImageButton
@@ -87,6 +73,20 @@
         android:layout_centerHorizontal="true"
         android:background="#e0ffffff" />
 
+    <RelativeLayout
+        android:id="@+id/main_contain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menu_bar"
+        android:layout_alignParentBottom="true">
+
+        <FrameLayout
+            android:id="@+id/map_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/button_layout"

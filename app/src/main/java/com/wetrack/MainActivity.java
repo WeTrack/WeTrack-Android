@@ -1,10 +1,7 @@
 package com.wetrack;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,30 +11,18 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
-import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.map.GoogleMapFragment;
 import com.wetrack.map.MapController;
-import com.wetrack.map.MarkerDataFormat;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
-import com.wetrack.model.Location;
-import com.wetrack.model.Message;
 import com.wetrack.service.ChatServiceManager;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
+import com.wetrack.utils.Tools;
 import com.wetrack.view.AddOptionListView;
 import com.wetrack.view.SidebarView;
 import com.wetrack.view.adapter.AddContactAdapter;
-
-import org.joda.time.LocalDateTime;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private MapController mMapController = null;
@@ -53,13 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private ChatServiceManager mChatServiceManager = null;
     private TextView unreadMessage;
     private int unread;
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Tools.setMainContext(this);
 
         initChatServiceManager();
 
@@ -89,76 +73,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initMapInView(int viewId) {
-        mMapController = MapController.getInstance(this);
-        mMapController.addMapToView(getSupportFragmentManager(), viewId);
+        mMapController = MapController.getInstance();
+        mMapController.createFragmentInContainer(getSupportFragmentManager(), viewId);
         mMapController.start();
-
-        mMapController.setmOnInfoWindowClickListener(new GoogleMapFragment.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(final MarkerDataFormat markerData) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(markerData.getUsername());
-//              builder.setMessage("Last Updated: " + markerData.getInformation());
-
-                if (!markerData.getUsername().equals(PreferenceUtils.getCurrentUsername())) {
-                    builder.setPositiveButton("navigation", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mMapController.planNavigation(markerData.getLatLng());
-                            dialog.dismiss();
-                        }
-                    });
-                }
-                builder.setNegativeButton("history", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        client.getUserLocationsSince(markerData.getUsername(),
-                                LocalDateTime.now().minusHours(5), new EntityCallback<List<Location>>() {
-                                    @Override
-                                    protected void onReceive(List<Location> value) {
-                                        super.onReceive(value);
-                                        ArrayList<LatLng> newList = new ArrayList<>();
-                                        newList.add(new LatLng(value.get(0).getLatitude(), value.get(0).getLongitude()));
-                                        for (int i = 1; i < value.size(); i++) {
-                                            Location location1 = value.get(i);
-                                            Location location2 = value.get(i - 1);
-                                            if (Math.abs(location1.getLongitude() - location2.getLongitude()) > 1e-9 ||
-                                                    Math.abs(location1.getLatitude() - location2.getLatitude()) > 1e-9) {
-                                                newList.add(new LatLng(location1.getLatitude(), location1.getLongitude()));
-                                            }
-                                        }
-                                        mMapController.drawPathOnMap(newList);
-                                    }
-
-                                    @Override
-                                    protected void onResponse(Response<List<Location>> response) {
-                                        super.onResponse(response);
-                                    }
-
-                                    @Override
-                                    protected void onException(Throwable ex) {
-                                        super.onException(ex);
-                                    }
-
-                                    @Override
-                                    protected void onErrorMessage(Message response) {
-                                        super.onErrorMessage(response);
-                                    }
-                                });
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
-
-            }
-        });
     }
 
     private void initSidebar() {
         sidebarView = new SidebarView(this);
 
-        mainLayout.addView(sidebarView, 1);
+        RelativeLayout mainContain = (RelativeLayout) findViewById(R.id.main_contain);
+        mainLayout.addView(sidebarView, mainLayout.indexOfChild(mainContain) + 1);
         openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
             @Override
