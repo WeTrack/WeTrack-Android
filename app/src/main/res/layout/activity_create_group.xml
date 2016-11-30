@@ -8,17 +8,20 @@
     <RelativeLayout
         android:id="@+id/create_group_menu"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="50dp"
         android:background="@color/white">
 
         <ImageButton
             android:id="@+id/chat_create_back_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@color/transparent"
-            android:src="@drawable/back" />
+            android:src="@drawable/back"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/create_group_title"
@@ -37,19 +40,19 @@
         android:id="@+id/eidtLayout"
         android:layout_below="@id/create_group_menu"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="50dp"
         android:background="#f6f6f6">
         <EditText
             android:id="@+id/group_name"
             android:layout_width="248dp"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="15dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:hint="Please enter group name"
             android:textColor="@color/black"
             android:textColorHint="@color/whiteGray"
-            android:textSize="20dp"/>
+            android:textSize="17sp"/>
         <Button
             android:id="@+id/chat_create_btn"
             android:layout_width="70dp"
@@ -58,7 +61,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:text="CREATE"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:enabled="false"
             android:background="@drawable/group_create_btn_selector"
             android:textColor="@color/white" />

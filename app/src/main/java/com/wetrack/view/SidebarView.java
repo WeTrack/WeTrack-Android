@@ -23,7 +23,6 @@ import com.wetrack.utils.Tools;
 import com.wetrack.utils.PreferenceUtils;
 
 public class SidebarView extends RelativeLayout {
-    private static final String TAG = SidebarView.class.getCanonicalName();
 
     private WeTrackClient client = WeTrackClientWithDbCache.singleton();
 
@@ -59,7 +58,8 @@ public class SidebarView extends RelativeLayout {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 Tools.getScreenW() * 2 / 3,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
         layoutParams.setMargins(-Tools.getScreenW() * 2 / 3, 0, 0, 0);
         setLayoutParams(layoutParams);
 
@@ -86,14 +86,16 @@ public class SidebarView extends RelativeLayout {
                 } else {
                     genderImageView.setImageResource(R.drawable.gender_female);
                 }
-                if(receivedUser.getNickname().equals("ken"))
+                if (receivedUser.getUsername().equals("ken"))
                     portraitImageView.setImageResource(R.drawable.portrait_boy);
-                else if(receivedUser.getNickname().equals("robert.peng"))
+                else if (receivedUser.getUsername().equals("robert.peng"))
                     portraitImageView.setImageResource(R.drawable.dai);
-                else if(receivedUser.getNickname().equals("CCWindy"))
+                else if (receivedUser.getUsername().equals("CCWindy"))
                     portraitImageView.setImageResource(R.drawable.windy);
+                else if (receivedUser.getGender() == User.Gender.Male)
+                    portraitImageView.setImageResource(R.drawable.portrait_boy);
                 else
-                    portraitImageView.setImageResource(R.drawable.head2);
+                    portraitImageView.setImageResource(R.drawable.portrait_girl);
             }
         });
     }
@@ -106,7 +108,7 @@ public class SidebarView extends RelativeLayout {
         sidebarState = CLOSE_STATE;
         int width = getWidth();
         Animation am = new TranslateAnimation(0f, -width * 1f, 0f, 0f);
-        am.setDuration(500);
+        am.setDuration(200);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
         am.setAnimationListener(new Animation.AnimationListener() {
@@ -115,8 +117,8 @@ public class SidebarView extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams)getLayoutParams());
-                layoutParams.setMargins(-Tools.getScreenW() * 2 / 3,0,0,0);
+                RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams) getLayoutParams());
+                layoutParams.setMargins(-Tools.getScreenW() * 2 / 3, 0, 0, 0);
                 setLayoutParams(layoutParams);
             }
 
@@ -128,13 +130,13 @@ public class SidebarView extends RelativeLayout {
     public void open() {
         sidebarState = OPEN_STATE;
 
-        RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams)getLayoutParams());
-        layoutParams.setMargins(0,0,0,0);
+        RelativeLayout.LayoutParams layoutParams = ((RelativeLayout.LayoutParams) getLayoutParams());
+        layoutParams.setMargins(0, 0, 0, 0);
         setLayoutParams(layoutParams);
 
         int width = getWidth();
         Animation am = new TranslateAnimation(-width * 1f, 0f, 0f, 0f);
-        am.setDuration(500);
+        am.setDuration(200);
         am.setInterpolator(new AccelerateInterpolator());
         startAnimation(am);
     }

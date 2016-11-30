@@ -28,6 +28,8 @@ import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
 import com.wetrack.utils.PreferenceUtils;
 
+import org.joda.time.LocalDateTime;
+
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
@@ -54,6 +56,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (PreferenceUtils.getCurrentToken() != null &&
+                PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN_EXPIRE_TIME) != null &&
+                !PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN_EXPIRE_TIME).isEmpty() &&
+                LocalDateTime.parse(PreferenceUtils.getStringValue(PreferenceUtils.KEY_TOKEN_EXPIRE_TIME)).isAfter(LocalDateTime.now())) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         setContentView(R.layout.activity_login);
 
         relativeLayout = (RelativeLayout) findViewById(R.id.login_view);
@@ -109,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                     protected void onReceive(UserToken token) {
                         PreferenceUtils.setCurrentUsername(token.getUsername());
                         PreferenceUtils.setCurrentToken(token.getToken());
+                        PreferenceUtils.saveStringValue(PreferenceUtils.KEY_TOKEN_EXPIRE_TIME, token.getExpireTime().toString());
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         LoginActivity.this.finish();
@@ -259,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
         toggleButton.setEnabled(false);
     }
 
-    private void hideKeyboard(){
+    private void hideKeyboard() {
         if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
             if (getCurrentFocus() != null)
                 imeManager.hideSoftInputFromWindow(getCurrentFocus()

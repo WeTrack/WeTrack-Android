@@ -24,18 +24,21 @@
     <RelativeLayout
         android:id="@+id/menu_bar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="50dp"
         android:background="@color/white">
 
         <ImageButton
             android:id="@+id/open_sidebar_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
             android:background="@color/transparent"
             android:src="@drawable/open_sidebar"
             android:layout_alignTop="@+id/add_contact_button"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <Button
             android:id="@+id/chat_list_button"
@@ -43,7 +46,7 @@
             android:layout_height="40dp"
             android:layout_marginLeft="13dp"
             android:background="@color/transparent"
-            android:maxLength="10"
+            android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:layout_alignTop="@+id/open_sidebar_button"
@@ -53,22 +56,26 @@
 
         <ImageButton
             android:id="@+id/chat_list_imagebutton"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/chat_list_button"
             android:background="@color/transparent"
-            android:src="@drawable/list_drop_down" />
+            android:src="@drawable/list_drop_down"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <ImageButton
             android:id="@+id/add_contact_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@color/transparent"
-            android:src="@drawable/add_contact"
+            android:src="@drawable/more"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
     </RelativeLayout>
 
     <com.wetrack.view.AddOptionListView

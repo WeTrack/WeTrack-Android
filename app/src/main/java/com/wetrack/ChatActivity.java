@@ -12,8 +12,10 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
@@ -98,19 +100,21 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        ImageButton backButton = (ImageButton) findViewById(R.id.back_btn);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 onBackPressed();
             }
         });
+
+        final TextView chatNameView = (TextView) findViewById(R.id.title);
         WeTrackClientWithDbCache.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
                     @Override
-                    protected void onReceive(Chat value) {
-                        toolbar.setTitle(value.getName());
+                    protected void onReceive(Chat chat) {
+                        chatNameView.setText(chat.getName());
                     }
                 }
         );

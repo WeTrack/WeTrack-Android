@@ -8,6 +8,7 @@ public class PreferenceUtils {
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_TOKEN = "token";
 	private static final String KEY_CHAT_ID = "chat_id";
+	public static final String KEY_TOKEN_EXPIRE_TIME = "token_expire_time";
 
 	public static final String PREFERENCE_NAME = "setting";
 	

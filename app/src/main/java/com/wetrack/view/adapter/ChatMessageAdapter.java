@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.wetrack.R;
 import com.wetrack.model.ChatMessage;
+import com.wetrack.model.User;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -94,7 +95,7 @@ public class ChatMessageAdapter extends BaseAdapter {
             else if(message.getFromUsername().equals("CCWindy"))
                 portrait.setBackgroundResource(R.drawable.windy);
             else
-                portrait.setBackgroundResource(R.drawable.head1);
+                portrait.setImageResource(R.drawable.portrait_boy);
 
             return row;
         }
@@ -129,7 +130,7 @@ public class ChatMessageAdapter extends BaseAdapter {
             else if(currentUsername.equals("CCWindy"))
                 portrait.setBackgroundResource(R.drawable.windy);
             else
-                portrait.setBackgroundResource(R.drawable.head2);
+                portrait.setBackgroundResource(R.drawable.portrait_boy);
             return row;
         }
     }
