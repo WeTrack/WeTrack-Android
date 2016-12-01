@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView unreadMessage;
     private int unread;
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
