@@ -109,8 +109,9 @@ public class GoogleMapFragment extends SupportMapFragment {
 
     //the below 4 functions are for marker operation
     private Map<String, Marker> allMarkers = new HashMap<>();
+    private Object allMarkersSynObject = new Object();
     public void addMarker(String title, LatLng latLng) {
-        synchronized (allMarkers) {
+        synchronized (allMarkersSynObject) {
             if (allMarkers.containsKey(title)) {
                 Marker marker = allMarkers.get(title);
                 marker.setPosition(latLng);
@@ -125,17 +126,17 @@ public class GoogleMapFragment extends SupportMapFragment {
                 Tools.getMarkerFromBitmap(BitmapFactory.decodeResource(
                         mContext.getResources(), R.drawable.portrait_boy))));
         asynGetLocationInfo(title, latLng);
-        synchronized (allMarkers) {
+        synchronized (allMarkersSynObject) {
             allMarkers.put(currentMarker.getTitle(), currentMarker);
         }
         // check if it is the first time show location
         int mapSize;
-        synchronized (allMarkers) {
+        synchronized (allMarkersSynObject) {
             mapSize = allMarkers.size();
         }
         if (mapSize == 1) {
             List<Marker> allValues;
-            synchronized (allMarkers) {
+            synchronized (allMarkersSynObject) {
                 allValues = new ArrayList<>(allMarkers.values());
             }
             ArrayList<LatLng> locations = new ArrayList<>();
@@ -157,7 +158,7 @@ public class GoogleMapFragment extends SupportMapFragment {
     }
 
     public void clearAllSymbols() {
-        synchronized (allMarkers) {
+        synchronized (allMarkersSynObject) {
             allMarkers.clear();
         }
         mMap.clear();
@@ -212,7 +213,7 @@ public class GoogleMapFragment extends SupportMapFragment {
             Bundle bundle = msg.getData();
             String title = bundle.getString("title");
             String snippet = bundle.getString("snippet");
-            synchronized (allMarkers) {
+            synchronized (allMarkersSynObject) {
                 if (allMarkers.containsKey(title)) {
                     allMarkers.get(title).setSnippet(snippet);
                 }
