@@ -31,6 +31,16 @@
             android:textSize="20dp"
             android:textColor="@color/black"
             android:layout_toRightOf="@id/back_btn" />
+        <ImageButton
+            android:id="@+id/group_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:layout_alignParentRight="true"
+            android:background="@color/transparent"
+            android:src="@drawable/group"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
     </RelativeLayout>
 
     <ListView
