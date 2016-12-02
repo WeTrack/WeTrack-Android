@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
@@ -45,7 +44,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private final WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private final WeTrackClient client = WeTrackClient.singleton();
 
     private ListView messageListView;
     private EditText messageEditText;
@@ -117,7 +116,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         final TextView chatNameView = (TextView) findViewById(R.id.title);
-        WeTrackClientWithDbCache.singleton().getChatInfo(
+        WeTrackClient.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
                     @Override

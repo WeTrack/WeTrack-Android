@@ -9,12 +9,17 @@ Android client project for WeTrack, our HKUST CSIT 5510 course project.
 - [x] Implement user location periodically uploading.
 - [x] Implement WebSocket session keep-alive.
 - [x] Implement auto-login.
+- [x] Refactor `WeTrackClient` and `WeTrackClientWithDbCache`.
+- [x] Implement user portrait uploading.
+
+The following tasks will start after the course is over:
+
+- [ ] Add `BaseActivity`.
+- [ ] Update the `Chat` model to provide full member details.
+- [ ] Refactor the whole project and add detailed documentation.
 - [ ] Migrate the WebSocket service from custom JSON text message to STOMP protocol.
 - [ ] Implement WebSocket session re-establishment after change of network state.
 - [ ] Fetch unread messages from server after WebSocket session reconnect.
-- [ ] Integrate `WeTrackClient` and `WeTrackClientWithDbCache`.
-- [ ] Refactor the whole project.
 - [ ] Update UI for better user experience.
-- [ ] Implement user portrait uploading.
 - [ ] Implement user configuration synchronization.
 

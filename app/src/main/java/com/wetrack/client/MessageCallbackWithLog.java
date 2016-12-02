@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.wetrack.utils.Tags;
+
 public abstract class MessageCallbackWithLog extends MessageCallback {
-    private static final String TAG = MessageCallbackWithLog.class.getCanonicalName();
+    private static final String TAG = Tags.Client.CALLBACK;
 
     private Context context;
 

@@ -3,7 +3,7 @@ package com.wetrack.client;
 import com.wetrack.model.Message;
 
 /**
- * Asynchronous callback object for methods in {@code WeTrackClient} which returns {@link Message}
+ * Asynchronous callback object for methods in {@code NetworkClient} which returns {@link Message}
  * when succeeds.
  * <p>
  * A {@code successfulStatusCode} can be assigned to a {@code MessageCallback} via constructor,

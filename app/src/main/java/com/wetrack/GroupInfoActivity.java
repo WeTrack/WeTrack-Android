@@ -7,27 +7,21 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.wetrack.client.EntityCallback;
-import com.wetrack.client.MessageCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Chat;
 import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.view.adapter.GroupMemberAdapter;
 
 import java.util.List;
 
-/**
- * Created by Robert on 2016/12/1.
- */
-
-public class GroupInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class GroupInfoActivity extends AppCompatActivity {
     private GroupMemberAdapter adapter;
     private GridView gridView;
     private TextView chatNameView;
-    private  TextView EidtchatNameView;
+    private  TextView eidtchatNameView;
     private Button exitGroupButton;
+
 
 
     @Override
@@ -46,41 +40,24 @@ public class GroupInfoActivity extends AppCompatActivity implements View.OnClick
             }
         });
         chatNameView = (TextView) findViewById(R.id.title);
-        EidtchatNameView = (TextView) findViewById(R.id.txt_groupname);
+        eidtchatNameView = (TextView) findViewById(R.id.txt_groupname);
         gridView = (GridView)  findViewById(R.id.gridview);
 
-        exitGroupButton = (Button) findViewById(R.id.btn_exit_grp);
-        exitGroupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WeTrackClient.singleton().exitChat(PreferenceUtils.getCurrentUsername(),PreferenceUtils.getCurrentToken(),
-                        PreferenceUtils.getCurrentChatId(), new MessageCallback(){
-                        });
-            }
-        });
 
-        WeTrackClientWithDbCache.singleton().getChatInfo(
+        exitGroupButton = (Button) findViewById(R.id.btn_exit_grp);
+
+        WeTrackClient.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
                     @Override
                     protected void onReceive(Chat chat) {
-                        load(chat);
-                       // chatNameView.setText(chat.getName());
-                       // EidtchatNameView.setText(chat.getName());
+                        chatNameView.setText(chat.getName());
+                        eidtchatNameView.setText(chat.getName());
+                        List<String> usernames = chat.getMemberNames();
+                        adapter = new GroupMemberAdapter(GroupInfoActivity.this, usernames);
+                        gridView.setAdapter(adapter);
                     }
                 }
         );
-    }
-    private void load(Chat chat){
-        chatNameView.setText(chat.getName());
-        EidtchatNameView.setText(chat.getName());
-        List<String> usernames = chat.getMemberNames();
-        adapter = new GroupMemberAdapter(this, usernames);
-        gridView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 }

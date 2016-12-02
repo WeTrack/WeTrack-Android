@@ -44,8 +44,8 @@ dependencies {
     compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
-    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
     testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: "$okHttpVersion"
     testCompile 'junit:junit:4.12'
 }

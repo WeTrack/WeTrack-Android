@@ -12,6 +12,7 @@ import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.model.Location;
 import com.wetrack.model.User;
+import com.wetrack.model.UserPortrait;
 
 import java.sql.SQLException;
 
@@ -19,10 +20,11 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = WeTrackDatabaseHelper.class.getCanonicalName();
 
     private static final String DATABASE_NAME = "wetrack.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private RuntimeExceptionDao<User, String> userDao;
     private RuntimeExceptionDao<Chat, String> chatDao;
+    private RuntimeExceptionDao<UserPortrait, String> portraitDao;
     private ChatMessageDao chatMessageDao;
     private LocationDao locationDao;
     private FriendDao friendDao;
@@ -41,6 +43,7 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, UserChat.class);
             TableUtils.createTable(connectionSource, ChatMessage.class);
             TableUtils.createTable(connectionSource, Friend.class);
+            TableUtils.createTable(connectionSource, UserPortrait.class);
         } catch (SQLException e) {
             Log.e(TAG, "Failed to create tables: ", e);
         }
@@ -55,6 +58,7 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, ChatMessage.class, true);
             TableUtils.dropTable(connectionSource, Friend.class, true);
             TableUtils.dropTable(connectionSource, UserChat.class, true);
+            TableUtils.dropTable(connectionSource, UserPortrait.class, true);
             onCreate(database, connectionSource);
         } catch (SQLException e) {
             Log.e(TAG, "Failed to drop tables: ", e);
@@ -95,5 +99,11 @@ public class WeTrackDatabaseHelper extends OrmLiteSqliteOpenHelper {
         if (userChatDao == null)
             userChatDao = UserChatDao.of(getChatDao(), getRuntimeExceptionDao(UserChat.class));
         return userChatDao;
+    }
+
+    public RuntimeExceptionDao<UserPortrait, String> getPortraitDao() {
+        if (portraitDao == null)
+            portraitDao = getRuntimeExceptionDao(UserPortrait.class);
+        return portraitDao;
     }
 }

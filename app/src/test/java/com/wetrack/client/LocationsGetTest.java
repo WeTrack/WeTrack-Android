@@ -1,7 +1,7 @@
-package com.wetrack.client.location;
+package com.wetrack.client;
 
 import com.google.gson.reflect.TypeToken;
-import com.wetrack.client.EntityResponseHelper;
+import com.wetrack.client.test.EntityResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.Location;
 

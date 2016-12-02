@@ -1,8 +1,8 @@
-package com.wetrack.client.location;
+package com.wetrack.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.wetrack.client.MessageResponseHelper;
+import com.wetrack.client.test.MessageResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.Location;
 

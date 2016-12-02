@@ -4,7 +4,7 @@ import com.wetrack.model.CreatedMessage;
 import com.wetrack.model.Message;
 
 /**
- * Asynchronous callback object for methods in {@code WeTrackClient} which creates a given entity
+ * Asynchronous callback object for methods in {@code NetworkClient} which creates a given entity
  * on the server and returns {@link CreatedMessage} when succeeds.
  *
  * @see #onSuccess(String, String)

@@ -1,8 +1,8 @@
-package com.wetrack.client.user;
+package com.wetrack.client;
 
 import com.google.gson.JsonObject;
 import com.wetrack.utils.CryptoUtils;
-import com.wetrack.client.EntityResponseHelper;
+import com.wetrack.client.test.EntityResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.UserToken;
 

@@ -1,6 +1,7 @@
 package com.wetrack.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.wetrack.R;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.model.User;
 
 public class CreateChatItemView extends RelativeLayout {
@@ -69,22 +72,14 @@ public class CreateChatItemView extends RelativeLayout {
         this.friendName = user.getUsername();
 
         nameTextView.setText(user.getNickname());
-        if(user.getUsername().equals("ken"))
-            portraitImageView.setImageResource(R.drawable.portrait_boy);
-        else if(user.getUsername().equals("robert.peng"))
-            portraitImageView.setImageResource(R.drawable.dai);
-        else if(user.getUsername().equals("CCWindy"))
-            portraitImageView.setImageResource(R.drawable.windy);
-        else if (user.getGender() == User.Gender.Male)
-            portraitImageView.setImageResource(R.drawable.portrait_boy);
-        else
-            portraitImageView.setImageResource(R.drawable.portrait_girl);
-       // if (user.getGender() == User.Gender.Male) {
-       //     portraitImageView.setImageResource(R.drawable.portrait_boy);
 
-      //  } else {
-      //     portraitImageView.setImageResource(R.drawable.portrait_girl);
-     //   }
+        portraitImageView.setImageResource(R.drawable.portrait_boy);
+        WeTrackClient.singleton().getUserPortrait(user.getUsername(), true, new EntityCallback<Bitmap>() {
+            @Override
+            protected void onReceive(Bitmap value) {
+                portraitImageView.setImageBitmap(value);
+            }
+        });
     }
 
     // below three are for CheckBox

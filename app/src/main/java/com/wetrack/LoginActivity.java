@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
@@ -35,7 +34,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getCanonicalName();
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     private RelativeLayout relativeLayout;
     private EditText usernameInput;

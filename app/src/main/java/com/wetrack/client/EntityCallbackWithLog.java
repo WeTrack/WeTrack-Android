@@ -5,9 +5,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.wetrack.model.Message;
+import com.wetrack.utils.Tags;
 
 public abstract class EntityCallbackWithLog<T> extends EntityCallback<T> {
-    private static final String TAG = EntityCallbackWithLog.class.getCanonicalName();
+    private static final String TAG = Tags.Client.CALLBACK;
 
     private Context context;
 

@@ -1,6 +1,6 @@
-package com.wetrack.client.location;
+package com.wetrack.client;
 
-import com.wetrack.client.EntityResponseHelper;
+import com.wetrack.client.test.EntityResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.Location;
 

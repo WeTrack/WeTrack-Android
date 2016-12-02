@@ -1,6 +1,7 @@
 package com.wetrack.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wetrack.R;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.WeTrackClient;
 
 import java.util.List;
-
-/**
- * Created by Robert on 2016/12/1.
- */
 
 public class GroupMemberAdapter extends BaseAdapter {
     private Context context;
@@ -45,17 +44,17 @@ public class GroupMemberAdapter extends BaseAdapter {
         View row = inflater.inflate(R.layout.group_member, parent, false);
         String user = users.get(position);
         TextView username = (TextView) row.findViewById(R.id.tv_username);
-        ImageView portrait = (ImageView) row.findViewById(R.id.iv_avatar);
+        final ImageView portrait = (ImageView) row.findViewById(R.id.iv_avatar);
 
         username.setText(user);
-        if(user.equals("ken"))
-            portrait.setBackgroundResource(R.drawable.portrait_boy);
-        else if(user.equals("robert.peng"))
-            portrait.setBackgroundResource(R.drawable.dai);
-        else if(user.equals("CCWindy"))
-            portrait.setBackgroundResource(R.drawable.windy);
-        else
-            portrait.setImageResource(R.drawable.portrait_boy);
+        portrait.setImageResource(R.drawable.portrait_boy);
+        WeTrackClient.singleton().getUserPortrait(user, false, new EntityCallback<Bitmap>() {
+            @Override
+            protected void onReceive(Bitmap value) {
+                portrait.setImageBitmap(value);
+            }
+        });
+
         return row;
     }
 }
