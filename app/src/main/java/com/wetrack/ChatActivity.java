@@ -1,6 +1,7 @@
 package com.wetrack;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -20,12 +21,12 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.database.WeTrackDatabaseHelper;
+import com.wetrack.model.Chat;
+import com.wetrack.model.ChatMessage;
 import com.wetrack.service.ChatServiceManager;
 import com.wetrack.utils.CryptoUtils;
 import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.view.adapter.ChatMessageAdapter;
-import com.wetrack.model.Chat;
-import com.wetrack.model.ChatMessage;
 
 import org.joda.time.LocalDateTime;
 
@@ -102,6 +103,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        ImageButton groupButton = (ImageButton) findViewById(R.id.group_btn);
+        groupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ChatActivity.this, GroupInfoActivity.class);
+                startActivity(i);
             }
         });
 

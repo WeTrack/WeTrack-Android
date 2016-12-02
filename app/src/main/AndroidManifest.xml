@@ -46,6 +46,7 @@
         <activity android:name=".ChatListActivity" />
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".CreateChatActivity" />
+        <activity android:name=".GroupInfoActivity" />
 
         <service
             android:name=".service.ChatService"
