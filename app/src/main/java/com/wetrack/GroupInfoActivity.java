@@ -3,11 +3,14 @@ package com.wetrack;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.MessageCallback;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Chat;
 import com.wetrack.utils.PreferenceUtils;
@@ -24,6 +27,7 @@ public class GroupInfoActivity extends AppCompatActivity implements View.OnClick
     private GridView gridView;
     private TextView chatNameView;
     private  TextView EidtchatNameView;
+    private Button exitGroupButton;
 
 
     @Override
@@ -45,6 +49,16 @@ public class GroupInfoActivity extends AppCompatActivity implements View.OnClick
         EidtchatNameView = (TextView) findViewById(R.id.txt_groupname);
         gridView = (GridView)  findViewById(R.id.gridview);
 
+        exitGroupButton = (Button) findViewById(R.id.btn_exit_grp);
+        exitGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WeTrackClient.singleton().exitChat(PreferenceUtils.getCurrentUsername(),PreferenceUtils.getCurrentToken(),
+                        PreferenceUtils.getCurrentChatId(), new MessageCallback(){
+                        });
+            }
+        });
+
         WeTrackClientWithDbCache.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
@@ -64,6 +78,7 @@ public class GroupInfoActivity extends AppCompatActivity implements View.OnClick
         adapter = new GroupMemberAdapter(this, usernames);
         gridView.setAdapter(adapter);
     }
+
     @Override
     public void onClick(View v) {
 

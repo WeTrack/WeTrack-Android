@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="群名称"
+            android:text="Group Name"
             android:textColor="#353535"
             android:textSize="16sp"
             android:typeface="serif" />
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="清空聊天记录"
+                android:text="Clear Chat History"
                 android:textColor="#353535"
                 android:textSize="16sp"
                 android:typeface="serif" />
