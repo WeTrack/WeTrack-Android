@@ -12,14 +12,13 @@ import com.google.gson.GsonBuilder;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wetrack.BaseApplication;
-import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.service.ws.ChatMessageAck;
 import com.wetrack.service.ws.WebSocketManager;
 import com.wetrack.service.ws.WsMessage;
-import com.wetrack.service.ws.WsResponse;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
 import com.wetrack.utils.Tags;
@@ -154,7 +153,7 @@ public class ChatService extends Service {
 
     private final WebSocketManager wsManager = new WebSocketManager(
             new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build(),
-            WeTrackClientWithDbCache.singleton().getBaseUrl() + "ws/notifications",
+            WeTrackClient.singleton().getBaseUrl() + "ws/notifications",
             listener, "Token:" + PreferenceUtils.getCurrentToken()
     );
 }

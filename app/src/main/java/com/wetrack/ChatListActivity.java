@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Chat;
 import com.wetrack.utils.PreferenceUtils;
 
@@ -25,7 +24,7 @@ import java.util.List;
 public class ChatListActivity extends AppCompatActivity {
     private static final String TAG = ChatListActivity.class.getCanonicalName();
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     private LinearLayout chatListLinearLayout = null;
     private ImageButton chatListBackButton = null;

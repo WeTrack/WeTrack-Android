@@ -5,14 +5,19 @@ import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.model.UserToken;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HEAD;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -46,6 +51,20 @@ interface UserService {
     @PUT("/users/{username}/password")
     Observable<Response<Message>> updateUserPassword(@Path("username") String username,
                                                      @Body PasswordUpdateRequest request);
+
+    @Multipart
+    @POST("/users/{username}/portrait")
+    Observable<Response<CreatedMessage>> uploadUserPortrait(
+            @Path("username") String username,
+            @Query("token") String token,
+            @Part("data") MultipartBody.Part portrait
+    );
+
+    @GET("/users/{username}/portrait")
+    Observable<Response<ResponseBody>> getUserPortrait(
+            @Path("username") String username,
+            @Header("If-Modified-Since") String lastUpdateTime
+    );
 
     class UserLoginRequest {
         private String username;

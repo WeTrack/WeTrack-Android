@@ -5,10 +5,10 @@ import com.wetrack.model.Message;
 import retrofit2.Response;
 
 /**
- * Asynchronous callback object for methods in {@link WeTrackClient}, with four callback methods and its
+ * Asynchronous callback object for methods in {@link NetworkClient}, with four callback methods and its
  * default implementations (which do nothing at all).
  *
- * @see WeTrackClient
+ * @see NetworkClient
  * @see #onReceive(Object)
  * @see #onResponse(Response)
  * @see #onException(Throwable)

@@ -1,15 +1,44 @@
-package com.wetrack.client;
+package com.wetrack.client.test;
 
-public class MessageResponseHelper {
-    private final int successfulStatusCode;
+import com.wetrack.client.CreatedMessageCallback;
+
+public class CreatedResponseHelper {
 
     private boolean successful;
     private int receivedStatusCode;
+    private String receivedNewEntityId;
     private String receivedMessage;
     private Throwable receivedException;
 
-    public MessageResponseHelper(int successfulStatusCode) {
-        this.successfulStatusCode = successfulStatusCode;
+    public CreatedMessageCallback callback() {
+        return new CreatedMessageCallback() {
+            @Override
+            protected void onSuccess(String newEntityId, String message) {
+                successful = true;
+                receivedStatusCode = 201;
+                receivedNewEntityId = newEntityId;
+                receivedMessage = message;
+                receivedException = null;
+            }
+
+            @Override
+            protected void onFail(String message, int failedStatusCode) {
+                successful = false;
+                receivedStatusCode = failedStatusCode;
+                receivedNewEntityId = null;
+                receivedMessage = message;
+                receivedException = null;
+            }
+
+            @Override
+            protected void onError(Throwable ex) {
+                successful = false;
+                receivedStatusCode = -1;
+                receivedNewEntityId = null;
+                receivedMessage = null;
+                receivedException = ex;
+            }
+        };
     }
 
     public void assertReceivedSuccessfulMessage() {
@@ -23,6 +52,22 @@ public class MessageResponseHelper {
             else
                 throw new AssertionError("Expected to be successful, but failed.");
         }
+        assertReceivedMessage();
+    }
+
+    public void assertReceivedSuccessfulMessage(String expectedNewEntityId) {
+        if (!successful) {
+            if (receivedMessage != null)
+                throw new AssertionError("Expected to be successful, but failed with status code `"
+                        + receivedStatusCode + "` and message `" + receivedMessage + "`.");
+            else if (receivedException != null)
+                throw new AssertionError("Expected to be successful, but failed with exception `" +
+                        receivedException.getClass().getName() + ": " + receivedException.getMessage(), receivedException);
+            else
+                throw new AssertionError("Expected to be successful, but failed.");
+        } else if (!receivedNewEntityId.equals(expectedNewEntityId))
+            throw new AssertionError("Expected to receive new entity id `" + expectedNewEntityId
+                    + "`, but received `" + receivedNewEntityId + "`.");
         assertReceivedMessage();
     }
 
@@ -47,40 +92,16 @@ public class MessageResponseHelper {
         }
     }
 
-    public MessageCallback callback() {
-        return new MessageCallback(successfulStatusCode) {
-            @Override
-            protected void onSuccess(String message) {
-                successful = true;
-                receivedStatusCode = successfulStatusCode;
-                receivedMessage = message;
-                receivedException = null;
-            }
-
-            @Override
-            protected void onFail(String message, int failedStatusCode) {
-                successful = false;
-                receivedStatusCode = failedStatusCode;
-                receivedMessage = message;
-                receivedException = null;
-            }
-
-            @Override
-            protected void onError(Throwable ex) {
-                successful = false;
-                receivedStatusCode = -1;
-                receivedMessage = null;
-                receivedException = ex;
-            }
-        };
-    }
-
     public boolean isSuccessful() {
         return successful;
     }
 
     public int getReceivedStatusCode() {
         return receivedStatusCode;
+    }
+
+    public String getReceivedNewEntityId() {
+        return receivedNewEntityId;
     }
 
     public String getReceivedMessage() {

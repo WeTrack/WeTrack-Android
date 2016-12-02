@@ -1,4 +1,6 @@
-package com.wetrack.client;
+package com.wetrack.client.test;
+
+import com.wetrack.client.ResultCallback;
 
 public class ResultResponseHelper {
 

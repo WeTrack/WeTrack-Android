@@ -13,7 +13,6 @@ import com.wetrack.BaseApplication;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.MessageCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.model.Location;
 import com.wetrack.model.Message;
@@ -35,7 +34,7 @@ import retrofit2.Response;
 
 public class LocationService extends Service {
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
     private final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())

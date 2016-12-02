@@ -3,7 +3,6 @@ package com.wetrack;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
@@ -20,8 +19,6 @@ import android.widget.TextView;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
-import com.wetrack.database.ChatMessageDao;
 import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.service.ChatServiceManager;
 import com.wetrack.utils.CryptoUtils;
@@ -46,7 +43,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private final WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private final WeTrackClient client = WeTrackClient.singleton();
 
     private ListView messageListView;
     private EditText messageEditText;
@@ -109,7 +106,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         final TextView chatNameView = (TextView) findViewById(R.id.title);
-        WeTrackClientWithDbCache.singleton().getChatInfo(
+        WeTrackClient.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
                     @Override

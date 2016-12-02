@@ -18,7 +18,6 @@ import com.wetrack.view.AddFriendItemView;
 import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.MessageCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.User;
 import com.wetrack.utils.PreferenceUtils;
 
@@ -26,7 +25,7 @@ import retrofit2.Response;
 
 public class AddFriendActivity extends AppCompatActivity {
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     private String username;
     private String token;

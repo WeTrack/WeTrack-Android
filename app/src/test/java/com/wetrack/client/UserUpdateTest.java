@@ -1,7 +1,7 @@
-package com.wetrack.client.user;
+package com.wetrack.client;
 
 import com.google.gson.JsonObject;
-import com.wetrack.client.MessageResponseHelper;
+import com.wetrack.client.test.MessageResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.User;
 

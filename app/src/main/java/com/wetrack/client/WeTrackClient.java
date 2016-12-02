@@ -1,597 +1,452 @@
 package com.wetrack.client;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.wetrack.client.json.ChatSerializer;
-import com.wetrack.client.json.LocalDateTimeTypeAdapter;
-import com.wetrack.client.json.LocalDateTypeAdapter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.wetrack.BaseApplication;
+import com.wetrack.database.Friend;
+import com.wetrack.database.UserChat;
+import com.wetrack.database.WeTrackDatabaseHelper;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
-import com.wetrack.model.CreatedMessage;
 import com.wetrack.model.Location;
 import com.wetrack.model.Message;
 import com.wetrack.model.User;
+import com.wetrack.model.UserPortrait;
 import com.wetrack.model.UserToken;
-import com.wetrack.utils.CryptoUtils;
+import com.wetrack.utils.Tags;
 
-import org.joda.time.LocalDate;
+import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observer;
-import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Client classes for Android client of WeTrack, with all the necessary methods for network connection.
- * <p>
- * All methods of this class executes asynchronous network request and handle the response
- * with the given callback object in the Android main thread. Essentially, the class subscribes
- * on {@link Schedulers#io()} and observes on {@link AndroidSchedulers#mainThread()}.
- */
 public class WeTrackClient {
-    private final Gson gson;
-
-    private final String baseUrl;
-    private final OkHttpClient client;
-
-    private final Scheduler subscribeScheduler;
-    private final Scheduler observeScheduler;
-
-    private final UserService userService;
-    private final ChatService chatService;
-    private final FriendService friendService;
-    private final LocationService locationService;
+    private static final String TAG = Tags.Client.CACHED;
 
     private static WeTrackClient instance = null;
+
     public static synchronized WeTrackClient singleton() {
-        if (instance == null) {
+        if (instance == null)
             instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
-        }
         return instance;
     }
 
-    /**
-     * Creates a {@code WeTrackClient} connected to the given base URL with given timeout in seconds.
-     *
-     * @param baseUrl the given base URL.
-     * @param timeoutSeconds the given timeout in seconds.
-     */
-    WeTrackClient(String baseUrl, int timeoutSeconds) {
-        this(baseUrl, timeoutSeconds, Schedulers.io(), AndroidSchedulers.mainThread());
+    private static final String PORTRAIT_FOLDER = "portrait";
+
+    private final NetworkClient client;
+    private final WeTrackDatabaseHelper helper;
+
+    private WeTrackClient(String baseUrl, int timeoutSeconds) {
+        client = new NetworkClient(baseUrl, timeoutSeconds, Schedulers.io(), AndroidSchedulers.mainThread());
+        helper = OpenHelperManager.getHelper(BaseApplication.getContext(), WeTrackDatabaseHelper.class);
     }
 
-    WeTrackClient(String baseUrl, int timeoutSeconds,
-                  Scheduler subscribeScheduler, Scheduler observeScheduler) {
-        this.subscribeScheduler = subscribeScheduler;
-        this.observeScheduler = observeScheduler;
-
-        this.baseUrl = baseUrl;
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        clientBuilder.connectTimeout(timeoutSeconds, TimeUnit.SECONDS);
-        client = clientBuilder.build();
-
-        this.gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-                .registerTypeAdapter(Chat.class, new ChatSerializer())
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(baseUrl)
-                .build();
-
-        userService = retrofit.create(UserService.class);
-        chatService = retrofit.create(ChatService.class);
-        friendService = retrofit.create(FriendService.class);
-        locationService = retrofit.create(LocationService.class);
-    }
-
-    /**
-     * Checks if the given username and token is still valid.
-     * <p>
-     * The {@link EntityCallback#onReceive(Object)} method will be invoked if the provided token is still valid,
-     * provided with the token value and expired time sent from the server;
-     * otherwise the {@link EntityCallback#onErrorMessage(Message)} will be invoked with status code {@code 401}
-     * and empty response body.
-     *
-     * @param username the given username.
-     * @param token the given token to be verified.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void tokenVerify(String username, String token, final EntityCallback<UserToken> callback) {
-        userService.tokenValidate(username, RequestBody.create(MediaType.parse("text/plain"), token))
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Creates a user with the fields provided in the given {@link User} instance.
-     * <p>
-     * The {@link CreatedMessageCallback#onSuccess(String, String)} method will be invoked if the creation is
-     * successful; otherwise, the {@link CreatedMessageCallback#onFail(String, int)} method will be invoked.
-     * <p>
-     * Possible error response status code includes:
-     *
-     * <table>
-     *     <tr><th>Status Code</th><th>Meaning</th></tr>
-     *     <tr><td>{@code 400}</td><td>Some fields in the provided {@code User} instance are invalid.</td></tr>
-     *     <tr><td>{@code 403}</td><td>User with the same username already exist.</td></tr>
-     * </table>
-     *
-     * @param newUser the given {@code User} instance.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void createUser(User newUser, final CreatedMessageCallback callback) {
-        userService.createUser(newUser)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Updates the user with the given username with the fields provided in the given {@link User} instance.
-     * <p>
-     * The {@link MessageCallback#onSuccess(String)} method will be invoked if the update is successful;
-     * otherwise, the {@link MessageCallback#onFail(String, int)} method will be invoked.
-     * <p>
-     * Possible error response status code includes:
-     *
-     * <table>
-     *     <tr><th>Status Code</th><th>Meaning</th></tr>
-     *     <tr><td>{@code 400}</td><td>Some fields in the provided {@code User} instance are invalid.</td></tr>
-     *     <tr>
-     *         <td>{@code 401}</td>
-     *         <td>
-     *             The provided token is invalid or has expired; or the logged-in user has no permission for
-     *             this operation.
-     *         </td>
-     *     </tr>
-     *     <tr><td>{@code 404}</td><td>User with the given username does not exist.</td></tr>
-     * </table>
-     *
-     * @param username the given username.
-     * @param token given token for authentication and permission authorization.
-     * @param updatedUser the given {@code User} instance.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void updateUser(String username, String token, User updatedUser, final MessageCallback callback) {
-        updatedUser.setPassword(null);
-        userService.updateUser(username, token, updatedUser)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Updates the password of the user with the given username.
-     * <p>
-     * The user's original password and new password must be provided in plain text.
-     * <p>
-     * The {@link MessageCallback#onSuccess(String)} method will be invoked if the update is successful, and any
-     * formerly logged-in token of this user will be invalidated. Otherwise, the
-     * {@link MessageCallback#onFail(String, int)} method will be invoked.
-     * <p>
-     * Possible error response status code includes:
-     *
-     * <table>
-     *     <tr><th>Status Code</th><th>Meaning</th></tr>
-     *     <tr><td>{@code 400}</td><td>Given old or/and new password is/are empty or invalid.</td></tr>
-     *     <tr><td>{@code 401}</td><td>Given old password is incorrect.</td></tr>
-     *     <tr><td>{@code 404}</td><td>User with the given username does not exist.</td></tr>
-     * </table>
-     *
-     * @param username the given username.
-     * @param oldPassword the provided original password of the user in plain text.
-     * @param newPassword the new password of the user in plain text.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void updateUserPassword(String username, String oldPassword, String newPassword,
-                                   final MessageCallback callback) {
-        oldPassword = CryptoUtils.md5Digest(oldPassword);
-        userService.updateUserPassword(username, new UserService.PasswordUpdateRequest(oldPassword, newPassword))
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Fetches the list of locations of the designated user since the given time.
-     *
-     * @param username the given username of the designated user.
-     * @param sinceTime the given since time.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void getUserLocationsSince(String username, LocalDateTime sinceTime,
-                                      final EntityCallback<List<Location>> callback) {
-        locationService.getLocationSince(username, sinceTime.toString())
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Uploads the given list of locations for the designated user.
-     *
-     * @param username the given username of the designated user.
-     * @param token token of the current logged-in user.
-     * @param locations the given list of locations.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void uploadLocations(String username, String token, List<Location> locations,
-                                final MessageCallback callback) {
-        for (Location location : locations)
-            location.setUsername(username);
-        locationService.uploadLocations(username, new LocationService.LocationsUploadRequest(token, locations))
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Gets the latest location of the designated user.
-     *
-     * @param username the given username of the designated user.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void getUserLatestLocation(String username, final EntityCallback<Location> callback) {
-        locationService.getLatestLocation(username)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Creates a chat group with the fields of the given {@link Chat} object.
-     *
-     * @param token token of the current logged-in user.
-     * @param chat the given {@code Chat}.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void createChat(String token, Chat chat, final CreatedMessageCallback callback) {
-        chatService.createChat(token, chat)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Adds the given list of user to the chat group with the given id.
-     *
-     * @param chatId the given chat id.
-     * @param token token of the current logged-in user.
-     * @param newMembers the given list of new members.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void addChatMembers(String chatId, String token, List<User> newMembers,
-                               final MessageCallback callback) {
-        chatService.addChatMembers(chatId, token, usersToUsernames(newMembers))
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    private List<String> usersToUsernames(List<User> users) {
-        List<String> usernames = new ArrayList<>(users.size());
-        for (User user : users)
-            usernames.add(user.getUsername());
-        return usernames;
-    }
-
-    /**
-     * Gets the list of members of the chat with given id.
-     *
-     * @param chatId the given chat id.
-     * @param token token of the current logged-in user.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void getChatMembers(String chatId, String token, final EntityCallback<List<User>> callback) {
-        chatService.getChatMembers(chatId, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Removes the designated member from the chat with the given id.
-     *
-     * @param chatId the given chat id.
-     * @param token token of the current logged-in user.
-     * @param memberName the given name of the designated member.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void removeChatMember(String chatId, String token, String memberName, final MessageCallback callback) {
-        chatService.removeChatMember(chatId, memberName, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Fetches the list of chats of the designated user.
-     *
-     * @param username the given username of the designated user.
-     * @param token token of the current logged-in user.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void getUserChatList(String username, String token, final EntityCallback<List<Chat>> callback) {
-        chatService.getUserChatList(username, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Exits the chat with the given id.
-     *
-     * @param username username of the current logged-in user.
-     * @param token token of the current logged-in user.
-     * @param chatId the given chat id.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void exitChat(String username, String token, String chatId, final MessageCallback callback) {
-        chatService.exitChat(username, chatId, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Fetches the list of friend of the designated user.
-     *
-     * @param username the given username of the designated user.
-     * @param token token of the current logged-in user.
-     * @param callback callback object which defines how to handle different result.
-     */
-    public void getUserFriendList(String username, String token, final EntityCallback<List<User>> callback) {
-        friendService.getUserFriendList(username, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    public void addFriend(String username, String token, String friendName,
-                          final MessageCallback callback) {
-        friendService.addFriend(username, friendName, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    public void deleteFriend(String username, String token, String friendName,
-                             final MessageCallback callback) {
-        friendService.deleteFriend(username, friendName, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    public void isFriend(String username, String token, String friendName,
-                         final ResultCallback callback) {
-        friendService.isFriend(username, friendName, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Checks if a user with the given username exists.
-     * <p>
-     * The {@link ResultCallback#onSuccess()} method will be invoked if there is such user,
-     * otherwise the {@link ResultCallback#onFail(int)} will be invoked.
-     *
-     * @param username the given username
-     * @param callback callback object which defines how to handle different result
-     */
-    public void userExists(String username, final ResultCallback callback) {
-        userService.userExists(username)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Gets the information of the user with the given username.
-     * <p>
-     * The {@link EntityCallback#onReceive(Object)} method will be invoked when successfully
-     * received the response entity as a {@link User}.
-     *
-     * @param username the given username of the designated user.
-     * @param callback callback object which defines how to handle different response.
-     */
-    public void getUserInfo(String username, final EntityCallback<User> callback) {
-        userService.getUserInfo(username)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    /**
-     * Logs in with the given username and password.
-     * <p>
-     * The {@link EntityCallback#onReceive(Object)} method will be invoked with the received {@link UserToken}
-     * if the log in is successful.
-     *
-     * @param username the given username to be used for logging in.
-     * @param password the given password to be used for logging in.
-     * @param callback callback object which defines how to handle different response.
-     */
-    public void userLogin(String username, String password, final EntityCallback<UserToken> callback) {
-        password = CryptoUtils.md5Digest(password);
-        userService.userLogin(new UserService.UserLoginRequest(username, password))
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
-    }
-
-    public void getChatInfo(String chatId, String token, final EntityCallback<Chat> callback) {
-        chatService.getChatInfo(chatId, token)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
+    public void userLogin(String username, String password, EntityCallback<UserToken> callback) {
+        client.userLogin(username, password, callback);
     }
 
     public void getChatMessagesBefore(String chatId, String token, LocalDateTime before, int limit,
-                                      final EntityCallback<List<ChatMessage>> callback) {
-        chatService.getMessagesBefore(chatId, token, before.toString(), limit)
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
+                                      EntityCallback<List<ChatMessage>> callback
+    ) {
+        List<ChatMessage> messagesInDB = helper.getChatMessageDao().getMessageBefore(chatId, before, (long) limit);
+        if (messagesInDB != null && !messagesInDB.isEmpty())
+            callback.onReceive(messagesInDB);
+        client.getChatMessagesBefore(chatId, token, before, limit, callback);
+        // TODO Update cache database with the received messages
     }
 
     public void getChatMessagesSince(String chatId, String token, LocalDateTime since, LocalDateTime before,
-                                     final EntityCallback<List<ChatMessage>> callback) {
-        chatService.getMessagesSince(chatId, token, since.toString(), before == null ? null : before.toString())
-                .subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe(observer(callback));
+                                     EntityCallback<List<ChatMessage>> callback
+    ) {
+        List<ChatMessage> messagesInDB = helper.getChatMessageDao().getMessageSince(chatId, since, before);
+        if (messagesInDB != null && !messagesInDB.isEmpty())
+            callback.onReceive(messagesInDB);
+        client.getChatMessagesSince(chatId, token, since, before, callback);
+        // TODO Update cache database with the received messages
     }
 
-    public void getNewChatMessages(String chatId, String token, final EntityCallback<List<ChatMessage>> callback) {
-        throw new UnsupportedOperationException();
-    }
+    public void getNewChatMessages(String chatId, String token,
+                                   EntityCallback<List<ChatMessage>> callback
+    ) {
+        LocalDateTime latestReceivedTime = helper.getChatMessageDao().getLatestReceivedMessageTime();
 
-    public Gson getGson() {
-        return gson;
-    }
-
-    public OkHttpClient getClient() {
-        return client;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    private Observer<Response<CreatedMessage>> observer(final CreatedMessageCallback callback) {
-        return new Observer<Response<CreatedMessage>>() {
-            @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {
-                callback.onError(e);
-            }
-
-            @Override
-            public void onNext(Response<CreatedMessage> response) {
-                if (response.code() == 201) { // Created
-                    String newEntityUrl = response.body().getEntityUrl();
-                    String[] splitResult = newEntityUrl.split("/");
-                    callback.onSuccess(splitResult[splitResult.length - 1], response.body().getMessage());
-                } else {
-                    ResponseBody errorBody = response.errorBody();
-                    try {
-                        String errorResponse = errorBody.string();
-                        Message message = gson.fromJson(errorResponse, Message.class);
-                        callback.onFail(message.getMessage(), response.code());
-                    } catch (IOException e) {
-                        callback.onFail(response.message(), response.code());
-                    } finally {
-                        errorBody.close();
+        EntityCallback<List<ChatMessage>> realCallback =
+                new DelegatedEntityCallback<List<ChatMessage>>(callback) {
+                    @Override
+                    protected void onReceive(List<ChatMessage> messagesFromServer) {
+                        delegate.onReceive(messagesFromServer);
+                        for (ChatMessage message : messagesFromServer)
+                            helper.getChatMessageDao().create(message);
                     }
-                }
-            }
-        };
+                };
+
+        if (latestReceivedTime == null) { // No message in local database
+            Log.d(TAG, "Latest receiving time cannot be fetched. Querying for the latest 20 messages from server...");
+            getChatMessagesBefore(chatId, token, LocalDateTime.now(), 20, realCallback);
+        } else {
+            Log.d(TAG, "Fetched latest receiving time " + latestReceivedTime.toString());
+            getChatMessagesSince(chatId, token, latestReceivedTime.plusMillis(1), null, realCallback);
+        }
     }
 
-    private <T extends Message> Observer<Response<T>> observer(final MessageCallback callback) {
-        return new Observer<Response<T>>() {
+    public void createUser(final User newUser, CreatedMessageCallback callback) {
+        client.createUser(newUser, new DelegatedCreatedMessageCallback(callback) {
             @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {
-                callback.onError(e);
+            protected void onSuccess(String newEntityId, String message) {
+                Log.d(TAG, "User created. Saving user information to local database.");
+                helper.getUserDao().createOrUpdate(newUser);
+                Log.d(TAG, "Invoking original callback#onSuccess");
+                delegate.onSuccess(newEntityId, message);
             }
+        });
+    }
 
+    public void updateUser(String username, String token, final User updatedUser, MessageCallback callback) {
+        client.updateUser(username, token, updatedUser, new DelegatedMessageCallback(callback) {
             @Override
-            public void onNext(Response<T> response) {
-                if (response.code() == callback.getSuccessfulStatusCode()) {
-                    callback.onSuccess(response.body().getMessage());
-                } else {
-                    if (response.body() != null) {
-                        callback.onFail(response.body().getMessage(), response.code());
-                    } else {
-                        ResponseBody errorBody = response.errorBody();
-                        try {
-                            String errorResponse = errorBody.string();
-                            Message message = gson.fromJson(errorResponse, Message.class);
-                            callback.onFail(message.getMessage(), response.code());
-                        } catch (IOException e) {
-                            callback.onFail(response.message(), response.code());
-                        } finally {
-                            errorBody.close();
+            protected void onSuccess(String message) {
+                Log.d(TAG, "User updated. Saving updated user information to local database.");
+                helper.getUserDao().createOrUpdate(updatedUser);
+                Log.d(TAG, "Invoking original callback#onSuccess");
+                delegate.onSuccess(message);
+            }
+        });
+    }
+
+    public void getUserLocationsSince(String username, LocalDateTime sinceTime, EntityCallback<List<Location>> callback) {
+        final List<Location> fetchedLocations = helper.getLocationDao().getUserLocationsSince(username, sinceTime);
+        if (fetchedLocations != null && !fetchedLocations.isEmpty())
+            callback.onReceive(fetchedLocations);
+        client.getUserLocationsSince(username, sinceTime, callback);
+    }
+
+    public void uploadLocations(String username, String token, List<Location> locations, MessageCallback callback) {
+        for (Location location : locations)
+            helper.getLocationDao().create(location);
+        client.uploadLocations(username, token, locations, callback);
+    }
+
+    public void getUserLatestLocation(String username, EntityCallback<Location> callback) {
+        try {
+            PreparedQuery<Location> query =
+                    helper.getLocationDao().queryBuilder().orderBy("time", false)
+                            .where().eq("username", username).prepare();
+            Location fetchedLocation = helper.getLocationDao().queryForFirst(query);
+            if (fetchedLocation != null)
+                callback.onReceive(fetchedLocation);
+        } catch (SQLException ex) {
+            Log.e(TAG, "Failed to query for cached latest location from local database: ", ex);
+        }
+        client.getUserLatestLocation(username, callback);
+    }
+
+    public void createChat(String token, final Chat chat, CreatedMessageCallback callback) {
+        client.createChat(token, chat, new DelegatedCreatedMessageCallback(callback) {
+            @Override
+            protected void onSuccess(String newEntityId, String message) {
+                delegate.onSuccess(newEntityId, message);
+                Log.d(TAG, "Chat created. Saving chat information to local database.");
+                helper.getChatDao().create(chat);
+                Log.d(TAG, "Invoking original callback#onSuccess");
+            }
+        });
+    }
+
+    public void addChatMembers(final String chatId, String token, final List<User> newMembers, MessageCallback callback) {
+        client.addChatMembers(chatId, token, newMembers, new DelegatedMessageCallback(callback) {
+            @Override
+            protected void onSuccess(String message) {
+                Chat fetchedChat = helper.getChatDao().queryForId(chatId);
+                if (fetchedChat != null) {
+                    for (User newMember : newMembers)
+                        fetchedChat.getMemberNames().add(newMember.getUsername());
+                    helper.getChatDao().update(fetchedChat);
+                }
+                delegate.onSuccess(message);
+            }
+        });
+    }
+
+    public void getUserChatList(String username, String token, EntityCallback<List<Chat>> callback) {
+        final User userInDb = helper.getUserDao().queryForId(username);
+        if (userInDb != null) {
+            final List<Chat> cachedChats = new ArrayList<>(helper.getUserChatDao().getUserChatList(userInDb));
+            if (!cachedChats.isEmpty()) {
+                Log.d(TAG, "Fetched cached chat list for user `" + username + "`, invoking callback#onReceive");
+                callback.onReceive(cachedChats);
+            }
+            client.getUserChatList(username, token, new DelegatedEntityCallback<List<Chat>>(callback) {
+                @Override
+                protected void onReceive(List<Chat> chatsFromServer) {
+                    delegate.onReceive(chatsFromServer);
+                    for (Chat chat : chatsFromServer) {
+                        if (!cachedChats.contains(chat)) {
+                            Log.d(TAG, "Received new chat `" + chat.getChatId() + "` from server. Saving to database.");
+                            helper.getChatDao().createOrUpdate(chat);
+                            helper.getUserChatDao().create(new UserChat(userInDb, chat));
                         }
                     }
                 }
-            }
-        };
+            });
+        } else {
+            Log.w(TAG, "Local database does not have record for user `" + username + "`. Something's not right.");
+            client.getUserChatList(username, token, callback);
+        }
     }
 
-    private Observer<Response> observer(final ResultCallback callback) {
-        return new Observer<Response>() {
+    public void getUserInfo(String username, EntityCallback<User> callback) {
+        final User userInDb = helper.getUserDao().queryForId(username);
+        if (userInDb != null) {
+            Log.d(TAG, "Invoking callback#onReceive with cached user information of `" + username + "`");
+            callback.onReceive(userInDb);
+        }
+        Log.d(TAG, "Sending network request for user information of `" + username + "`");
+        client.getUserInfo(username, new DelegatedEntityCallback<User>(callback) {
             @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {
-                callback.onError(e);
+            protected void onReceive(User userFromServer) {
+                delegate.onReceive(userFromServer);
+                helper.getUserDao().createOrUpdate(userFromServer);
             }
+        });
+    }
 
+    public void getChatInfo(String chatId, String token, EntityCallback<Chat> callback) {
+        final Chat chatInDb = helper.getChatDao().queryForId(chatId);
+        if (chatInDb != null) {
+            Log.d(TAG, "Invoking callback#onReceive with cached chat information of `" + chatId + "`");
+            callback.onReceive(chatInDb);
+        }
+        Log.d(TAG, "Sending network request for chat information of `" + chatId + "`");
+        client.getChatInfo(chatId, token, new DelegatedEntityCallback<Chat>(callback) {
             @Override
-            public void onNext(Response response) {
-                if (response.code() == callback.getSuccessfulStatusCode())
-                    callback.onSuccess();
+            protected void onReceive(Chat chatFromServer) {
+                delegate.onReceive(chatFromServer);
+                helper.getChatDao().createOrUpdate(chatFromServer);
+            }
+        });
+    }
+
+    public void getUserFriendList(String username, String token, EntityCallback<List<User>> callback) {
+        final User userInDb = helper.getUserDao().queryForId(username);
+        if (userInDb != null) {
+            final List<User> cachedFriends =
+                    new ArrayList<>(helper.getFriendDao().getUserFriendList(userInDb));
+            if (!cachedFriends.isEmpty()) {
+                Log.d(TAG, "Fetched cached friend list for user `" + username + "`. Invoking callback#onReceive");
+                callback.onReceive(cachedFriends);
+            }
+            client.getUserFriendList(username, token, new DelegatedEntityCallback<List<User>>(callback) {
+                @Override
+                protected void onReceive(List<User> usersFromServer) {
+                    delegate.onReceive(usersFromServer);
+                    for (User user : usersFromServer) {
+                        if (!cachedFriends.contains(user)) {
+                            Log.d(TAG, "Received new friend `" + user.getUsername() + "` from server. Saving to database.");
+                            helper.getUserDao().createOrUpdate(user);
+                            helper.getFriendDao().create(new Friend(userInDb, user));
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.w(TAG, "Local database does not have record for user `" + username + "`. Something's not right.");
+            client.getUserFriendList(username, token, callback);
+        }
+    }
+
+    public void addFriend(final String username, String token, final String friendName,
+                          MessageCallback callback
+    ) {
+        client.addFriend(username, token, friendName, new DelegatedMessageCallback(callback) {
+            @Override
+            protected void onSuccess(String message) {
+                Log.d(TAG, "Friend added. Saving friend information to local database.");
+                User owner = helper.getUserDao().queryForId(username);
+                User friend = helper.getUserDao().queryForId(friendName);
+                if (owner != null && friend != null)
+                    helper.getFriendDao().create(new Friend(owner, friend));
+                else if (owner == null)
+                    Log.w(TAG, "Local database does not have record for user `" + username + "`. Something's not right.");
                 else
-                    callback.onFail(response.code());
+                    Log.w(TAG, "Local database does not have record for user `" + friendName + "`. Something's not right.");
+                Log.d(TAG, "Invoking original callback#onSuccess");
+                delegate.onSuccess(message);
             }
-        };
+        });
     }
 
-    private <T> Observer<Response<T>> observer(final EntityCallback<T> callback) {
-        return new Observer<Response<T>>() {
-            @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {
-                callback.onException(e);
+    public void getChatMembers(String chatId, String token, EntityCallback<List<User>> callback) {
+        Chat chat = helper.getChatDao().queryForId(chatId);
+        if (chat != null && chat.getMemberNames() != null && !chat.getMemberNames().isEmpty()) {
+            List<User> members = new ArrayList<>(chat.getMemberNames().size());
+            User userInDB;
+            for (String memberName : chat.getMemberNames()) {
+                userInDB = helper.getUserDao().queryForId(memberName);
+                if (userInDB != null)
+                    members.add(userInDB);
             }
-
+            callback.onReceive(members);
+        }
+        client.getChatMembers(chatId, token, new DelegatedEntityCallback<List<User>>(callback) {
             @Override
-            public void onNext(Response<T> response) {
-                callback.onResponse(response);
-                if (response.code() >= 200 && response.code() < 300)
-                    callback.onReceive(response.body());
-                else {
-                    try {
-                        Message receivedMessage = gson.fromJson(response.errorBody().string(), Message.class);
-                        callback.onErrorMessage(receivedMessage);
-                    } catch (IOException e) {
-                        callback.onException(e);
+            protected void onReceive(List<User> membersFromServer) {
+                delegate.onReceive(membersFromServer);
+                for (User user : membersFromServer)
+                    helper.getUserDao().createOrUpdate(user);
+            }
+        });
+    }
+
+    public void uploadUserPortrait(final String username, String token, final File portrait, CreatedMessageCallback callback) {
+        File cachedDir = BaseApplication.getContext().getCacheDir();
+        final File cachedPortraitPath = FileUtils.getFile(cachedDir, PORTRAIT_FOLDER, username);
+        client.uploadUserPortrait(username, token, portrait, new DelegatedCreatedMessageCallback(callback) {
+            @Override
+            protected void onSuccess(String newEntityId, String message) {
+                delegate.onSuccess(newEntityId, message);
+                try {
+                    FileUtils.forceMkdirParent(cachedPortraitPath);
+                    FileUtils.copyFile(portrait, cachedPortraitPath);
+                    UserPortrait portrait = new UserPortrait(username, DateTime.now());
+                    helper.getPortraitDao().createOrUpdate(portrait);
+                } catch (IOException ex) {
+                    Log.w(TAG, "Failed to copy the new portrait to cache folder: ", ex);
+                }
+            }
+        });
+    }
+
+    public void getUserPortrait(final String username, boolean forceNetworkRequest, EntityCallback<Bitmap> callback) {
+        File cachedDir = BaseApplication.getContext().getCacheDir();
+        final File cachedPortraitPath = FileUtils.getFile(cachedDir, PORTRAIT_FOLDER, username);
+
+        final EntityCallback<Bitmap> realCallback = new DelegatedEntityCallback<Bitmap>(callback) {
+            @Override
+            protected void onReceive(Bitmap bitmap) {
+                delegate.onReceive(bitmap);
+
+                Log.d(TAG, "Received new portrait for user `" + username + "` from server. Caching it...");
+                // Cache the received Bitmap
+                OutputStream out = null;
+                try {
+                    FileUtils.forceMkdirParent(cachedPortraitPath);
+                    out = new FileOutputStream(cachedPortraitPath);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    UserPortrait portrait = new UserPortrait(username, DateTime.now());
+                    helper.getPortraitDao().createOrUpdate(portrait);
+                } catch (IOException ex) {
+                    Log.w(TAG, "Failed to write received portrait to designated cache directory: ", ex);
+                } finally {
+                    if (out != null) {
+                        try {
+                            out.close();
+                        } catch (IOException e) {}
                     }
                 }
             }
         };
+
+        UserPortrait cachedRecord = helper.getPortraitDao().queryForId(username);
+        if (cachedRecord != null) {
+            if (cachedPortraitPath.exists()) {
+                Log.d(TAG, "Found cached portrait for user `" + username + "`.");
+                callback.onReceive(BitmapFactory.decodeFile(cachedPortraitPath.toString()));
+                if (forceNetworkRequest)
+                    client.getUserPortrait(username, cachedRecord.getUpdateTime(), realCallback);
+            } else {
+                Log.d(TAG, "User `" + username + "`'s portrait cached record is found, but cached file does not exist. "
+                        + "Deleting cached record...");
+                helper.getPortraitDao().delete(cachedRecord);
+            }
+        } else
+            client.getUserPortrait(username, null, realCallback);
     }
 
+    private static abstract class DelegatedEntityCallback<T> extends EntityCallback<T> {
+        protected final EntityCallback<T> delegate;
+
+        DelegatedEntityCallback(EntityCallback delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        protected void onException(Throwable ex) {
+            delegate.onException(ex);
+        }
+
+        @Override
+        protected void onResponse(Response<T> response) {
+            delegate.onResponse(response);
+        }
+
+        @Override
+        protected void onErrorMessage(Message response) {
+            delegate.onErrorMessage(response);
+        }
+
+        protected abstract void onReceive(T value);
+    }
+
+    private static abstract class DelegatedMessageCallback extends MessageCallback {
+        protected final MessageCallback delegate;
+
+        DelegatedMessageCallback(MessageCallback delegate) {
+            super(delegate.getSuccessfulStatusCode());
+            this.delegate = delegate;
+        }
+
+        @Override
+        public int getSuccessfulStatusCode() {
+            return delegate.getSuccessfulStatusCode();
+        }
+
+        @Override
+        protected void onFail(String message, int failedStatusCode) {
+            delegate.onFail(message, failedStatusCode);
+        }
+
+        @Override
+        protected void onError(Throwable ex) {
+            delegate.onError(ex);
+        }
+
+        protected abstract void onSuccess(String message);
+    }
+
+    private static abstract class DelegatedCreatedMessageCallback extends CreatedMessageCallback {
+        protected final CreatedMessageCallback delegate;
+
+        DelegatedCreatedMessageCallback(CreatedMessageCallback delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        protected void onFail(String message, int failedStatusCode) {
+            delegate.onFail(message, failedStatusCode);
+        }
+
+        @Override
+        protected void onError(Throwable ex) {
+            delegate.onError(ex);
+        }
+
+        protected abstract void onSuccess(String newEntityId, String message);
+    }
+
+    public String getBaseUrl() { return client.getBaseUrl(); }
 }
