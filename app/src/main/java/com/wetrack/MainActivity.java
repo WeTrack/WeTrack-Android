@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -11,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.map.MapController;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton chatListImageButton;
     private RelativeLayout mainLayout;
     private RelativeLayout buttonLayout;
+    private RelativeLayout mainContain;
 
     private ChatServiceManager mChatServiceManager = null;
     private TextView unreadMessage;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         initChatServiceManager();
 
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
+        mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
         initSidebar();
@@ -82,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
     private void initSidebar() {
         sidebarView = new SidebarView(this);
 
-        RelativeLayout mainContain = (RelativeLayout) findViewById(R.id.main_contain);
         mainLayout.addView(sidebarView, mainLayout.indexOfChild(mainContain) + 1);
         openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +109,15 @@ public class MainActivity extends AppCompatActivity {
                         LoginActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
+            }
+        });
+        sidebarView.setUserInfoClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sidebarView.close();
+                Intent intent = new Intent(MainActivity.this,
+                        UserInfoActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -208,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-
 
     private void hideAllOtherLayout(Object object) {
         if (!(object instanceof AddOptionListView)) {

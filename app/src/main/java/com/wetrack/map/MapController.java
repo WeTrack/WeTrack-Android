@@ -78,7 +78,7 @@ public class MapController {
         mGpsLocationManager = GpsLocationManager.getInstance(mContext);
         mGpsLocationManager.setmGpsLocationListener(new MyGpsLocationListener());
 
-        googleMapFragment.setMyOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        googleMapFragment.setmOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 createMarkerDialog(marker);
@@ -231,5 +231,4 @@ public class MapController {
                 latitudeRangeLength,
                 longitudeRangeLength);
     }
-
 }

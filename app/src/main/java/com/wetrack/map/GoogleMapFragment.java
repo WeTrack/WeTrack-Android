@@ -82,7 +82,7 @@ public class GoogleMapFragment extends SupportMapFragment {
     }
 
     GoogleMap.OnMarkerClickListener mOnMarkerClickListener = null;
-    public void setMyOnMarkerClickListener(GoogleMap.OnMarkerClickListener onMarkerClickListener) {
+    public void setmOnMarkerClickListener(GoogleMap.OnMarkerClickListener onMarkerClickListener) {
         mOnMarkerClickListener = onMarkerClickListener;
     }
 

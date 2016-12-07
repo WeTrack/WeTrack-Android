@@ -146,4 +146,8 @@ public class SidebarView extends RelativeLayout {
     public void setLogoutListener(View.OnClickListener onClickListener) {
         logoutButton.setOnClickListener(onClickListener);
     }
+
+    public void setUserInfoClickListener(View.OnClickListener onClickListener) {
+        changeInfoButton.setOnClickListener(onClickListener);
+    }
 }
