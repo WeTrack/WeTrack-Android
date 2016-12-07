@@ -1,7 +1,7 @@
 package com.wetrack.client;
 
 /**
- * Asynchronous callback object for methods in {@code WeTrackClient} which returns empty body
+ * Asynchronous callback object for methods in {@code NetworkClient} which returns empty body
  * in all cases. Whether the request is successful will be determined by comparing the received
  * status code with the successful status code provided by this callback object.
  */

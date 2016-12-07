@@ -1,6 +1,6 @@
-package com.wetrack.client.user;
+package com.wetrack.client;
 
-import com.wetrack.client.ResultResponseHelper;
+import com.wetrack.client.test.ResultResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 
 import org.junit.Test;

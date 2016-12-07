@@ -1,6 +1,6 @@
-package com.wetrack.client.user;
+package com.wetrack.client;
 
-import com.wetrack.client.MessageResponseHelper;
+import com.wetrack.client.test.MessageResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 
 import org.junit.Test;
@@ -13,24 +13,21 @@ import okhttp3.mockwebserver.RecordedRequest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UserChatExitTest extends WeTrackClientTest {
-
-    private String dummyChatId = "12346523";
+public class FriendAddTest extends WeTrackClientTest {
 
     private MessageResponseHelper helper = new MessageResponseHelper(200);
 
     @Test
-    public void testUserChatExitRequestFormat() throws InterruptedException {
+    public void testFriendAddRequestFormat() throws InterruptedException {
         MockResponse response = new MockResponse().setResponseCode(200)
-                .setBody(readResource("test_user_chat_exit/200.json"));
+                .setBody(readResource("test_friend_add/200.json"));
         server.enqueue(response);
 
-        String expectedPath = "/users/" + robertPeng.getUsername() + "/chats/" + dummyChatId
+        String expectedPath = "/users/" + robertPeng.getUsername() + "/friends/" + windyChan.getUsername()
                 + "?token=" + dummyToken;
-
-        client.exitChat(robertPeng.getUsername(), dummyToken, dummyChatId, helper.callback());
+        client.addFriend(robertPeng.getUsername(), dummyToken, windyChan.getUsername(), helper.callback());
         RecordedRequest request = server.takeRequest(3, TimeUnit.SECONDS);
-        assertThat(request.getMethod(), is("DELETE"));
+        assertThat(request.getMethod(), is("POST"));
         assertThat(request.getPath(), is(expectedPath));
         assertThat(request.getBody().readUtf8().isEmpty(), is(true));
     }

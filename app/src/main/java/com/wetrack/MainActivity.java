@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
-import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.map.MapController;
 import com.wetrack.model.Chat;
 import com.wetrack.model.ChatMessage;
@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private ChatServiceManager mChatServiceManager = null;
     private TextView unreadMessage;
     private int unread;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     private void initChatList() {
         chatListButton = (Button) findViewById(R.id.chat_list_button);
         chatListImageButton = (ImageButton) findViewById(R.id.chat_list_imagebutton);
-        WeTrackClientWithDbCache.singleton().getChatInfo(
+        WeTrackClient.singleton().getChatInfo(
                 PreferenceUtils.getCurrentChatId(), PreferenceUtils.getCurrentToken(),
                 new EntityCallback<Chat>() {
                     @Override

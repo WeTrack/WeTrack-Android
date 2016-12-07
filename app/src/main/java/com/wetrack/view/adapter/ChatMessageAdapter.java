@@ -1,6 +1,7 @@
 package com.wetrack.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.wetrack.BaseApplication;
 import com.wetrack.R;
+import com.wetrack.client.EntityCallback;
+import com.wetrack.client.EntityCallbackWithLog;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.model.User;
 
@@ -69,7 +74,7 @@ public class ChatMessageAdapter extends BaseAdapter {
         if (!message.getFromUsername().equals(currentUsername)) {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.left_msg);
-            ImageView portrait = (ImageView) row.findViewById(R.id.tv_userhead);
+            final ImageView portrait = (ImageView) row.findViewById(R.id.tv_userhead);
 
             if (lastMessage != null && lastMessage.getSendTime().plusMinutes(3).isAfter(message.getSendTime()))
                 timestamp.setVisibility(View.GONE);
@@ -84,18 +89,13 @@ public class ChatMessageAdapter extends BaseAdapter {
             rightLayout.setVisibility(View.GONE);
             leftLayout.setVisibility(View.VISIBLE);
 
-
-            // TODO Set the portrait for user
-            //这里直接使用drawable的head1.png头像
-
-            if(message.getFromUsername().equals("ken"))
-                portrait.setBackgroundResource(R.drawable.portrait_boy);
-            else if(message.getFromUsername().equals("robert.peng"))
-                portrait.setBackgroundResource(R.drawable.dai);
-            else if(message.getFromUsername().equals("CCWindy"))
-                portrait.setBackgroundResource(R.drawable.windy);
-            else
-                portrait.setImageResource(R.drawable.portrait_boy);
+            portrait.setImageResource(R.drawable.portrait_boy);
+            WeTrackClient.singleton().getUserPortrait(message.getFromUsername(), false, new EntityCallback<Bitmap>() {
+                @Override
+                protected void onReceive(Bitmap bitmap) {
+                    portrait.setImageBitmap(bitmap);
+                }
+            });
 
             return row;
         }
@@ -103,7 +103,7 @@ public class ChatMessageAdapter extends BaseAdapter {
         else {
             TextView timestamp = (TextView) row.findViewById(R.id.timestamp);
             TextView content = (TextView) row.findViewById(R.id.right_msg);
-            ImageView portrait = (ImageView) row.findViewById(R.id.iv_userhead);
+            final ImageView portrait = (ImageView) row.findViewById(R.id.iv_userhead);
 
             if (lastMessage != null && lastMessage.getSendTime().plusMinutes(3).isAfter(message.getSendTime()))
                 timestamp.setVisibility(View.GONE);
@@ -120,17 +120,14 @@ public class ChatMessageAdapter extends BaseAdapter {
             leftLayout.setVisibility(View.GONE);
             rightLayout.setVisibility(View.VISIBLE);
 
-            // 用currentUser.getIconUrl()currentUser头像
-            // 这里直接使用head2.png
+            portrait.setImageResource(R.drawable.portrait_boy);
+            WeTrackClient.singleton().getUserPortrait(message.getFromUsername(), false, new EntityCallback<Bitmap>() {
+                @Override
+                protected void onReceive(Bitmap bitmap) {
+                    portrait.setImageBitmap(bitmap);
+                }
+            });
 
-            if(currentUsername.equals("ken"))
-                portrait.setBackgroundResource(R.drawable.portrait_boy);
-            else if(currentUsername.equals("robert.peng"))
-                portrait.setBackgroundResource(R.drawable.dai);
-            else if(currentUsername.equals("CCWindy"))
-                portrait.setBackgroundResource(R.drawable.windy);
-            else
-                portrait.setBackgroundResource(R.drawable.portrait_boy);
             return row;
         }
     }

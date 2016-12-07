@@ -1,7 +1,7 @@
-package com.wetrack.client.user;
+package com.wetrack.client;
 
 import com.google.gson.JsonParseException;
-import com.wetrack.client.EntityResponseHelper;
+import com.wetrack.client.test.EntityResponseHelper;
 import com.wetrack.client.WeTrackClientTest;
 import com.wetrack.model.User;
 

@@ -15,7 +15,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationFormat;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationManager;
 import com.wetrack.map.GoogleNavigation.GoogleNavigationResultListener;
@@ -50,7 +49,7 @@ public class MapController {
     private GoogleNavigationManager mGoogleNavigationManager;
     private GpsLocationManager mGpsLocationManager;
     private LocationServiceManager mLocationServiceManager = null;
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     public void createFragmentInContainer(FragmentManager fragmentManager, int containerViewId) {
         mContext = Tools.getMainContext();

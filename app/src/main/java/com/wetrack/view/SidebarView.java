@@ -1,6 +1,7 @@
 package com.wetrack.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,18 +14,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wetrack.R;
 import com.wetrack.client.EntityCallback;
+import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
+import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.utils.Tools;
 import com.wetrack.utils.PreferenceUtils;
 
 public class SidebarView extends RelativeLayout {
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     private ImageView portraitImageView;
     private ImageView genderImageView;
@@ -79,7 +82,7 @@ public class SidebarView extends RelativeLayout {
         String username = PreferenceUtils.getCurrentUsername();
 
         // Fetch user's latest information from server
-        client.getUserInfo(username, new EntityCallback<User>() {
+        client.getUserInfo(username, new EntityCallbackWithLog<User>(getContext()) {
             @Override
             protected void onReceive(User receivedUser) {
                 nicknameTextView.setText(receivedUser.getNickname());
@@ -88,16 +91,18 @@ public class SidebarView extends RelativeLayout {
                 } else {
                     genderImageView.setImageResource(R.drawable.gender_female);
                 }
-                if (receivedUser.getUsername().equals("ken"))
+            }
+        });
+        client.getUserPortrait(username, true, new EntityCallbackWithLog<Bitmap>(getContext()) {
+            @Override
+            protected void onReceive(Bitmap bitmap) {
+                portraitImageView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            protected void onErrorMessage(Message response) {
+                if (response.getStatusCode() == 404)
                     portraitImageView.setImageResource(R.drawable.portrait_boy);
-                else if (receivedUser.getUsername().equals("robert.peng"))
-                    portraitImageView.setImageResource(R.drawable.dai);
-                else if (receivedUser.getUsername().equals("CCWindy"))
-                    portraitImageView.setImageResource(R.drawable.windy);
-                else if (receivedUser.getGender() == User.Gender.Male)
-                    portraitImageView.setImageResource(R.drawable.portrait_boy);
-                else
-                    portraitImageView.setImageResource(R.drawable.portrait_girl);
             }
         });
     }

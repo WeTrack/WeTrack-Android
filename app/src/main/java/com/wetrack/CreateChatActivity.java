@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
-import com.wetrack.client.WeTrackClientWithDbCache;
 import com.wetrack.model.Chat;
 import com.wetrack.model.User;
 import com.wetrack.utils.PreferenceUtils;
@@ -30,7 +29,7 @@ import java.util.List;
 
 public class CreateChatActivity extends AppCompatActivity {
 
-    private WeTrackClient client = WeTrackClientWithDbCache.singleton();
+    private WeTrackClient client = WeTrackClient.singleton();
 
     private String username;
     private String token;

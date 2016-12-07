@@ -1,9 +1,8 @@
-package com.wetrack.client.chat;
+package com.wetrack.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.wetrack.client.CreatedResponseHelper;
-import com.wetrack.client.WeTrackClientTest;
+import com.wetrack.client.test.CreatedResponseHelper;
 import com.wetrack.model.Chat;
 
 import org.junit.Test;

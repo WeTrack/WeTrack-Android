@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
 
 public abstract class WeTrackClientTest {
     protected MockWebServer server;
-    protected WeTrackClient client;
+    protected NetworkClient client;
     protected Gson gson;
 
     protected String dummyToken = "1234567890abcdef1234567890abcdef";
@@ -32,17 +32,17 @@ public abstract class WeTrackClientTest {
     public void setUp() throws IOException {
         server = new MockWebServer();
         server.start();
-        client = new WeTrackClient(server.url("/").toString(), 3, Schedulers.immediate(), Schedulers.immediate());
+        client = new NetworkClient(server.url("/").toString(), 3, Schedulers.immediate(), Schedulers.immediate());
 
         try {
-            Field gsonField = WeTrackClient.class.getDeclaredField("gson");
+            Field gsonField = NetworkClient.class.getDeclaredField("gson");
             if (!gsonField.isAccessible())
                 gsonField.setAccessible(true);
             gson = (Gson) gsonField.get(client);
         } catch (NoSuchFieldException ex) {
-            throw new AssertionError("Cannot find field `gson` in class `WeTrackClient`.");
+            throw new AssertionError("Cannot find field `gson` in class `NetworkClient`.");
         } catch (IllegalAccessException ex) {
-            throw new AssertionError("Failed to access `gson` field of `WeTrackClient`.");
+            throw new AssertionError("Failed to access `gson` field of `NetworkClient`.");
         }
     }
 

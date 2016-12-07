@@ -10,8 +10,9 @@ public abstract class Tags {
      * Filter for {@link Client}: {@code Client*}
      */
     public static abstract class Client {
+        public static final String CALLBACK = "Client Callback";
         public static final String NETWORK = "Client Network";
-        public static final String DB_CACHE = "Client DB Cache";
+        public static final String CACHED = "Client Cached";
     }
 
     /**
