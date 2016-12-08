@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 sidebarView.close();
                 Intent intent = new Intent(MainActivity.this,
                         UserInfoActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, ConstantValues.USER_INFO_REQUEST_CODE);
             }
         });
     }
@@ -265,10 +265,10 @@ public class MainActivity extends AppCompatActivity {
             case ConstantValues.ADD_FRIEND_REQUEST_CODE:
                 switch (resultCode) {
                     case RESULT_CANCELED:
-                        Log.d(ConstantValues.debugTab, "add friend cenceled");
+                        Log.d(ConstantValues.debugTab, "adding friend cenceled");
                         break;
                     case RESULT_OK:
-                        Log.d(ConstantValues.debugTab, "add friend success");
+                        Log.d(ConstantValues.debugTab, "adding friend succeeds");
                         //TODO get information from 'data' here
                         break;
                 }
@@ -276,6 +276,20 @@ public class MainActivity extends AppCompatActivity {
             case ConstantValues.CHAT_REQUEST_CODE:
                 unread = 0;
                 unreadMessage.setVisibility(View.GONE);
+                break;
+
+            case ConstantValues.USER_INFO_REQUEST_CODE:
+                switch (resultCode) {
+                    case RESULT_CANCELED:
+                        Log.d(ConstantValues.debugTab, "user-info activity cenceled");
+                        break;
+                    case RESULT_OK:
+                        Log.d(ConstantValues.debugTab, "user-info activity succeeds");
+                        if (data.getBooleanExtra("USER_INFO", false)) {
+                            sidebarView.updateUserInfo();
+                        }
+                        break;
+                }
                 break;
         }
 

@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="com.wetrack.UserInfoActivity"
-    android:background="@color/white">
+    android:id="@+id/user_info_container">
 
     <RelativeLayout
         android:id="@+id/user_info_menu_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_alignParentTop="true"
         android:background="#41B5E6">
 
@@ -18,6 +19,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:background="@drawable/back_white" />
 
@@ -26,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@color/transparent"
             android:text="EDIT"
@@ -37,81 +40,125 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@drawable/done"
             android:visibility="gone" />
     </RelativeLayout>
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/user_info_menu_bar"
-        android:layout_alignParentBottom="true">
+        android:layout_centerHorizontal="true">
 
         <LinearLayout
+            android:id="@+id/user_info_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="50dp">
+
             <ImageButton
                 android:id="@+id/user_info_portrait"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
                 android:background="@drawable/portrait_boy"
-                android:layout_gravity="center_horizontal"/>
+                android:scaleType="fitCenter"
+                />
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
                 <ImageView
                     android:id="@+id/user_info_nickname_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/nickname"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/nickname" />
+
                 <EditText
                     android:id="@+id/user_info_nickname_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/user_info_nickname_icon"
-                    android:layout_toEndOf="@id/user_info_nickname_icon"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="15dp"
                     android:layout_marginStart="15dp"
+                    android:layout_toEndOf="@id/user_info_nickname_icon"
+                    android:layout_toRightOf="@id/user_info_nickname_icon"
+                    android:enabled="false"
                     android:hint="Please input nickname"
-                    android:textSize="20sp"
+                    android:maxLength="20"
                     android:textColor="@color/gray"
-                    android:textColorLink="@color/gray"/>
+                    android:textColorLink="@color/gray"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="20sp" />
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
                 <ImageView
                     android:id="@+id/user_info_gender_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/gender"
-                    android:layout_centerVertical="true"/>
-                <Spinner
-                    android:id="@+id/user_info_gender_spinner"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/gender" />
+
+                <TextView
+                    android:id="@+id/user_info_gender_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/user_info_gender_icon"
-                    android:layout_toEndOf="@id/user_info_gender_icon"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginStart="15dp"/>
+                    android:layout_marginStart="15dp"
+                    android:layout_toEndOf="@id/user_info_gender_icon"
+                    android:layout_toRightOf="@id/user_info_gender_icon"
+                    android:textColor="@color/gray"
+                    android:textColorLink="@color/gray"
+                    android:textSize="20sp" />
+
+                <!-- Gender Radio -->
+                <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/user_info_gender_radio"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_toEndOf="@id/user_info_gender_icon"
+                    android:layout_toRightOf="@id/user_info_gender_icon"
+                    android:visibility="invisible">
+                    <RadioButton android:id="@+id/user_info_radio_male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gender_male"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray"
+                        android:layout_weight="1"/>
+                    <RadioButton android:id="@+id/user_info_radio_female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gender_female"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray"
+                        android:layout_weight="1"/>
+                </RadioGroup>
+
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

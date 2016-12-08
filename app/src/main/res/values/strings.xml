@@ -20,4 +20,8 @@
     <!-- group -->
     <string name="allFriend">All Friend</string>
 
+    <!--gender-->
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+
 </resources>

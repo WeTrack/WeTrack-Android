@@ -23,6 +23,8 @@ public abstract class ConstantValues {
     final public static int CREATE_CHAT_REQUEST_CODE = 2;
     final public static int ADD_FRIEND_REQUEST_CODE = 3;
     final public static int CHAT_REQUEST_CODE = 4;
+    final public static int USER_INFO_REQUEST_CODE = 5;
+    final public static int CHOOSE_FILE_REQUEST_CODE = 6;
 
     //marker arraylist operation code
     public static final int MARKERLIST_CLEAR = 0xffffffff;

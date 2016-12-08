@@ -107,6 +107,39 @@ public class SidebarView extends RelativeLayout {
         });
     }
 
+    public void updateUserInfo() {
+        String username = PreferenceUtils.getCurrentUsername();
+        // Fetch user's latest information from server
+        client.getUserInfo(username, new EntityCallbackWithLog<User>(getContext()) {
+            @Override
+            protected void onReceive(User receivedUser) {
+                nicknameTextView.setText(receivedUser.getNickname());
+                if (receivedUser.getGender() == User.Gender.Male) {
+                    genderImageView.setImageResource(R.drawable.gender_male);
+                } else {
+                    genderImageView.setImageResource(R.drawable.gender_female);
+                }
+            }
+        });
+    }
+
+    public void updateUserPortrait() {
+        String username = PreferenceUtils.getCurrentUsername();
+
+        client.getUserPortrait(username, true, new EntityCallbackWithLog<Bitmap>(getContext()) {
+            @Override
+            protected void onReceive(Bitmap bitmap) {
+                portraitImageView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            protected void onErrorMessage(Message response) {
+                if (response.getStatusCode() == 404)
+                    portraitImageView.setImageResource(R.drawable.portrait_boy);
+            }
+        });
+    }
+
     public boolean getSidebarState() {
         return sidebarState;
     }
