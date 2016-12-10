@@ -140,4 +140,7 @@ public class SidebarView extends RelativeLayout {
         changeInfoButton.setOnClickListener(onClickListener);
     }
 
+    public void setSettingClickListener(View.OnClickListener onClickListener) {
+        settingButton.setOnClickListener(onClickListener);
+    }
 }

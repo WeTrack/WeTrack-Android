@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.FieldNamingPolicy;
@@ -16,10 +17,12 @@ import com.wetrack.BaseApplication;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.model.Location;
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.Tags;
 
 import org.joda.time.LocalDateTime;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class LocationServiceManager {
 
@@ -31,9 +34,12 @@ public abstract class LocationServiceManager {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
             .create();
+    static private boolean shareLocPermission;
 
     public LocationServiceManager(Context mContext) {
         this.mContext = mContext;
+
+        shareLocPermission = true;
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConstantValues.ACTION_UPDATE_LOCATION);
@@ -70,11 +76,18 @@ public abstract class LocationServiceManager {
         }
     }
 
+    public void setShareLocPermission(boolean permission) {
+        shareLocPermission = permission;
+    }
+
     public void sendLocation(List<Location> locationList) {
         if (!connected) {
             Toast.makeText(mContext, "service-connection has been closed", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (shareLocPermission){
+//            Log.d(Tags.Setting.SHARE_LOC_PERMISSION, "has permission to share");
             mService.sendLocation(locationList);
+        } else {
+//            Log.d(Tags.Setting.SHARE_LOC_PERMISSION, "has no permission to share");
         }
     }
 

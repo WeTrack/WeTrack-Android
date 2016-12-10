@@ -37,4 +37,8 @@ public abstract class Tags {
     public static abstract class UserInfo{
         public static final String PORTRAIT = "PORTRAIT";
     }
+
+    public static abstract class Setting{
+        public static final String SHARE_LOC_PERMISSION = "sharePermission";
+    }
 }

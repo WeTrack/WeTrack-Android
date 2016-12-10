@@ -59,7 +59,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".UserInfoActivity"></activity>
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".SettingActivity"></activity>
     </application>
 
 </manifest>

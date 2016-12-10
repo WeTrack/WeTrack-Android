@@ -145,6 +145,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, ConstantValues.USER_INFO_REQUEST_CODE);
             }
         });
+        sidebarView.setSettingClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.closeDrawer(sidebarView);
+
+                Intent intent = new Intent(MainActivity.this,
+                        SettingActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initAddContact() {

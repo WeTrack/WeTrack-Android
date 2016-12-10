@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -102,6 +103,7 @@ public class MapController {
     }
 
     private LatLng myCurrentLocation = null;
+
     public LatLng getMyCurrentLocation() {
         return myCurrentLocation;
     }
@@ -157,19 +159,16 @@ public class MapController {
                                 }
                                 drawPathOnMap(newList);
                             }
-
                             @Override
                             protected void onResponse(Response<List<com.wetrack.model.Location>> response) {
                                 super.onResponse(response);
                             }
-
                             @Override
                             protected void onException(Throwable ex) {
                                 super.onException(ex);
                                 Toast.makeText(mContext, "Fail in getting history path",
                                         Toast.LENGTH_SHORT).show();
                             }
-
                             @Override
                             protected void onErrorMessage(Message response) {
                                 super.onErrorMessage(response);
@@ -180,7 +179,12 @@ public class MapController {
                 dialog.dismiss();
             }
         });
-        builder.create().show();
+//        TextView lastUpdateText = new TextView(builder.getContext());
+//        lastUpdateText.setText();
+
+        AlertDialog alertDialog = builder.create();
+//        alertDialog.addContentView();
+        alertDialog.show();
     }
 
     public void clearAllSymbols() {
