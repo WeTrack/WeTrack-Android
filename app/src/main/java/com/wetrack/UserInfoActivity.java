@@ -2,9 +2,14 @@ package com.wetrack;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wetrack.client.CreatedMessageCallback;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.EntityCallbackWithLog;
 import com.wetrack.client.MessageCallback;
@@ -31,7 +37,12 @@ import com.wetrack.model.Message;
 import com.wetrack.model.User;
 import com.wetrack.utils.ConstantValues;
 import com.wetrack.utils.PreferenceUtils;
+import com.wetrack.utils.Tags;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
 import java.io.InputStream;
 
 import retrofit2.Response;
@@ -99,7 +110,6 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
 
-        portraitButton.setEnabled(false);
         portraitButton.setOnClickListener(new PortraitOnClickListener());
 
         genderRadioGroup.setOnCheckedChangeListener(new GenderOnCheckedChangeListener());
@@ -112,23 +122,42 @@ public class UserInfoActivity extends AppCompatActivity {
 
         imeManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        switchToReadOnlyMode();
+    }
+
+    private void switchToEditMode() {
+        editButton.setVisibility(View.GONE);
+        commitButton.setVisibility(View.VISIBLE);
+        nicknameEdit.setEnabled(true);
+        portraitButton.setEnabled(true);
+        genderText.setVisibility(View.INVISIBLE);
+        genderRadioGroup.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToReadOnlyMode() {
+        editButton.setVisibility(View.VISIBLE);
+        commitButton.setVisibility(View.GONE);
+        nicknameEdit.setEnabled(false);
+        portraitButton.setEnabled(false);
+        genderText.setVisibility(View.VISIBLE);
+        genderRadioGroup.setVisibility(View.INVISIBLE);
+
+        hideKeyboard();
     }
 
     private class EditOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            editButton.setVisibility(View.GONE);
-            commitButton.setVisibility(View.VISIBLE);
-            nicknameEdit.setEnabled(true);
-            portraitButton.setEnabled(true);
-            genderText.setVisibility(View.INVISIBLE);
-            genderRadioGroup.setVisibility(View.VISIBLE);
+            switchToEditMode();
         }
     }
 
     private class CommitOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            commitButton.setEnabled(false);
+
             final String nickname = nicknameEdit.getText().toString();
             if (nickname.equals("")) {
                 Toast.makeText(UserInfoActivity.this,
@@ -150,17 +179,16 @@ public class UserInfoActivity extends AppCompatActivity {
 
             client.updateUser(currentUsername, PreferenceUtils.getCurrentToken(), user, new CommitUserInfoMessageCallback());
 
-//            client.uploadUserPortrait();
-
-
+            commitButton.setEnabled(true);
         }
     }
 
     private class PortraitOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_APP_GALLERY);
+            portraitButton.setEnabled(false);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+//            intent.addCategory(Intent.CATEGORY_APP_GALLERY);
             intent.setType("image/*");
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), ConstantValues.CHOOSE_FILE_REQUEST_CODE);
         }
@@ -237,14 +265,7 @@ public class UserInfoActivity extends AppCompatActivity {
             intent.putExtra("USER_INFO", true);
             setResult(RESULT_OK, intent);
 
-            hideKeyboard();
-
-            commitButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.VISIBLE);
-            nicknameEdit.setEnabled(false);
-            portraitButton.setEnabled(false);
-            genderText.setVisibility(View.VISIBLE);
-            genderRadioGroup.setVisibility(View.INVISIBLE);
+            switchToReadOnlyMode();
         }
 
         @Override
@@ -270,6 +291,8 @@ public class UserInfoActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        portraitButton.setEnabled(true);
+
         if (requestCode == ConstantValues.CHOOSE_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
             if (data == null) {
                 Toast.makeText(UserInfoActivity.this,
@@ -277,7 +300,43 @@ public class UserInfoActivity extends AppCompatActivity {
                 return;
             }
             try {
-                InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                Uri uri = data.getData();
+                String[] projection = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+                if(cursor != null && cursor.moveToFirst()){
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    String path = cursor.getString(column_index);
+                    Log.d(Tags.UserInfo.PORTRAIT, "current uri-path is: " + path);
+                    cursor.close();
+
+                    client.uploadUserPortrait(PreferenceUtils.getCurrentUsername(),
+                            PreferenceUtils.getCurrentToken(), new File(path),
+                            new CreatedMessageCallback() {
+                                @Override
+                                protected void onSuccess(String newEntityId, String message) {
+                                    super.onSuccess(newEntityId, message);
+
+                                    updateUserPortrait();
+
+                                    Toast.makeText(UserInfoActivity.this,
+                                            "uploading portrait succeeds", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                protected void onFail(String message, int failedStatusCode) {
+                                    super.onFail(message, failedStatusCode);
+                                    Toast.makeText(UserInfoActivity.this,
+                                            "uploading portrait fails", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                protected void onError(Throwable ex) {
+                                    super.onError(ex);
+                                    Toast.makeText(UserInfoActivity.this,
+                                            "uploading portrait gets error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
             }catch (Exception e) {
                 e.printStackTrace();
             }

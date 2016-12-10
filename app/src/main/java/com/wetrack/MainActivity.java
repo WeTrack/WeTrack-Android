@@ -1,19 +1,21 @@
 package com.wetrack;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.wetrack.client.EntityCallback;
 import com.wetrack.client.WeTrackClient;
 import com.wetrack.map.MapController;
@@ -35,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private AddOptionListView addOptionListView = null;
     private Button chatListButton;
     private ImageButton chatListImageButton;
-    private RelativeLayout mainLayout;
     private RelativeLayout buttonLayout;
-    private RelativeLayout mainContain;
+    private DrawerLayout mDrawerLayout;
+    private DrawerLayout.DrawerListener mDrawerListener;
 
     private ChatServiceManager mChatServiceManager = null;
     private TextView unreadMessage;
@@ -50,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
         Tools.setMainContext(this);
 
         initChatServiceManager();
-
-        mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
-        mainContain = (RelativeLayout) findViewById(R.id.main_contain);
 
         initMapInView(R.id.map_content);
         initSidebar();
@@ -84,19 +83,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSidebar() {
-        sidebarView = new SidebarView(this);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        mainLayout.addView(sidebarView, mainLayout.indexOfChild(mainContain) + 1);
+        mDrawerListener = new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {}
+            @Override
+            public void onDrawerOpened(View drawerView) {}
+            @Override
+            public void onDrawerClosed(View drawerView) {}
+            @Override
+            public void onDrawerStateChanged(int newState) {}
+        };
+
+        mDrawerLayout.addDrawerListener(mDrawerListener);
+
+        sidebarView = new SidebarView(this);
+        mDrawerLayout.addView(sidebarView, mDrawerLayout.getChildCount());
+
+        DrawerLayout.LayoutParams layoutParams = new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, Gravity.LEFT);
+        mDrawerLayout.updateViewLayout(sidebarView, layoutParams);
+
+        mDrawerLayout.closeDrawer(sidebarView);
+
         openSidebarButton = (ImageButton) findViewById(R.id.open_sidebar_button);
         openSidebarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
-                    sidebarView.close();
-                } else {
-                    hideAllOtherLayout(sidebarView);
-                    sidebarView.open();
+                openSidebarButton.setEnabled(false);
+                if (addOptionListView.getVisibility() == View.VISIBLE) {
+                    addOptionListView.close();
                 }
+                if (mDrawerLayout.isDrawerOpen(sidebarView)) {
+                    mDrawerLayout.closeDrawer(sidebarView);
+                } else {
+                    mDrawerLayout.openDrawer(sidebarView);
+                }
+                openSidebarButton.setEnabled(true);
             }
         });
         sidebarView.setLogoutListener(new View.OnClickListener() {
@@ -113,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
         sidebarView.setUserInfoClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sidebarView.close();
+                mDrawerLayout.closeDrawer(sidebarView);
+
                 Intent intent = new Intent(MainActivity.this,
                         UserInfoActivity.class);
                 startActivityForResult(intent, ConstantValues.USER_INFO_REQUEST_CODE);
@@ -126,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         final String[] texts = {"New Group", "Add Friend"};
         addContactButton = (ImageButton) findViewById(R.id.add_contact_button);
         addOptionListView = (AddOptionListView) findViewById(R.id.add_option_listview);
-        addOptionListView.setVisibility(View.GONE);
+        addOptionListView.setVisibility(View.INVISIBLE);
         AddContactAdapter adapter = new AddContactAdapter(this, imgs, texts);
 
         addOptionListView.setAdapter(adapter);
@@ -134,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //addOptionListView.close();
-                addOptionListView.setVisibility(View.GONE);
+                addOptionListView.setVisibility(View.INVISIBLE);
                 if (texts[position].equals(texts[0])) {
                     Intent intent = new Intent(MainActivity.this, CreateChatActivity.class);
                     startActivityForResult(intent, ConstantValues.CREATE_CHAT_REQUEST_CODE);
@@ -148,14 +174,18 @@ public class MainActivity extends AppCompatActivity {
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //addContactButton.setEnabled(false);
-                if (addOptionListView.getVisibility() == View.GONE) {
-                    hideAllOtherLayout(addOptionListView);
+                addContactButton.setEnabled(false);
+
+                if (mDrawerLayout.isDrawerOpen(sidebarView)) {
+                    mDrawerLayout.closeDrawer(sidebarView);
+                }
+
+                if (addOptionListView.getVisibility() == View.INVISIBLE) {
                     addOptionListView.open();
                 } else {
                     addOptionListView.close();
                 }
-                //  addContactButton.setEnabled(true);
+                addContactButton.setEnabled(true);
             }
         });
 
@@ -177,7 +207,12 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener chatListListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideAllOtherLayout(null);
+                if (addOptionListView.getVisibility() == View.VISIBLE) {
+                    addOptionListView.close();
+                }
+                if (mDrawerLayout.isDrawerOpen(sidebarView)) {
+                    mDrawerLayout.closeDrawer(sidebarView);
+                }
                 Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
                 startActivityForResult(intent, ConstantValues.CHAT_LIST_REQUEST_CODE);
                 overridePendingTransition(R.anim.slide_in_up, R.anim.fade_out);
@@ -219,19 +254,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-    }
-
-    private void hideAllOtherLayout(Object object) {
-        if (!(object instanceof AddOptionListView)) {
-            if (addOptionListView.getVisibility() == View.VISIBLE) {
-                addOptionListView.close();
-            }
-        }
-        if (!(object instanceof SidebarView)) {
-            if (sidebarView.getSidebarState() == SidebarView.OPEN_STATE) {
-                sidebarView.close();
-            }
-        }
     }
 
     @Override
@@ -279,6 +301,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case ConstantValues.USER_INFO_REQUEST_CODE:
+
+                sidebarView.updateUserPortrait();
+
                 switch (resultCode) {
                     case RESULT_CANCELED:
                         Log.d(ConstantValues.debugTab, "user-info activity cenceled");

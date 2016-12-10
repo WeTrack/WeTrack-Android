@@ -33,4 +33,8 @@ public abstract class Tags {
     public static abstract class Map{
         public static final String MARKER = "MapMarker";
     }
+
+    public static abstract class UserInfo{
+        public static final String PORTRAIT = "PORTRAIT";
+    }
 }

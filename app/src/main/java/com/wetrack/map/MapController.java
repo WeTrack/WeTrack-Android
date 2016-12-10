@@ -42,7 +42,9 @@ public class MapController {
         }
         return mMapController;
     }
-    private MapController() {}
+
+    private MapController() {
+    }
 
     private Context mContext;
     private GoogleMapFragment googleMapFragment;
@@ -99,25 +101,23 @@ public class MapController {
         mLocationServiceManager = null;
     }
 
-    private Location myCurrentLocation = null;
+    private LatLng myCurrentLocation = null;
     public LatLng getMyCurrentLocation() {
-        if (myCurrentLocation != null) {
-            return new LatLng(myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude());
-        }
-        return null;
+        return myCurrentLocation;
     }
 
     private class MyGpsLocationListener implements GpsLocationManager.GpsLocationListener {
         @Override
         public void onGpsLocationReceived(Location location) {
-            myCurrentLocation = location;
+            myCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             if (mLocationServiceManager != null) {
                 com.wetrack.model.Location loc = new com.wetrack.model.Location(
                         PreferenceUtils.getCurrentUsername(),
                         location.getLongitude(), location.getLatitude(), LocalDateTime.now());
-                List<com.wetrack.model.Location>locationList =
+                List<com.wetrack.model.Location> locationList =
                         new ArrayList<>(Arrays.asList(loc));
                 mLocationServiceManager.sendLocation(locationList);
+                googleMapFragment.addMarker(PreferenceUtils.getCurrentUsername(), myCurrentLocation);
             }
         }
     }
@@ -193,7 +193,7 @@ public class MapController {
 
     /**
      * show navigation path
-     * **/
+     **/
     public void planNavigation(LatLng fromPosition, LatLng toPosition) {
         GoogleNavigationFormat googleNavigationData = new GoogleNavigationFormat();
         googleNavigationData.origin = fromPosition;
@@ -219,7 +219,7 @@ public class MapController {
     public void drawPathOnMap(ArrayList<LatLng> positions) {
         googleMapFragment.drawPathOnMap(positions);
 
-        double[]result = MathUtils.getCenterAndLengthRange(positions);
+        double[] result = MathUtils.getCenterAndLengthRange(positions);
         double centerLatitude = result[0];
         double centerLongitude = result[1];
         double latitudeRangeLength = result[2];

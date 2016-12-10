@@ -1,6 +1,7 @@
 package com.wetrack.map;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,6 +27,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.wetrack.R;
+import com.wetrack.client.EntityCallbackWithLog;
+import com.wetrack.client.WeTrackClient;
 import com.wetrack.utils.MathUtils;
 import com.wetrack.utils.Tags;
 import com.wetrack.utils.Tools;
@@ -42,6 +46,7 @@ public class GoogleMapFragment extends SupportMapFragment {
 
     private GoogleMap mMap = null;
     static private Context mContext;
+    private WeTrackClient client = WeTrackClient.singleton();
 
     public static GoogleMapFragment newInstance(Context context) {
         mContext = context;
@@ -109,7 +114,7 @@ public class GoogleMapFragment extends SupportMapFragment {
 
     //the below 4 functions are for marker operation
     private Map<String, Marker> allMarkers = new HashMap<>();
-    private Object allMarkersSynObject = new Object();
+    final private Object allMarkersSynObject = new Object();
     public void addMarker(String title, LatLng latLng) {
         synchronized (allMarkersSynObject) {
             if (allMarkers.containsKey(title)) {
@@ -122,13 +127,11 @@ public class GoogleMapFragment extends SupportMapFragment {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng).title(title).snippet("getting location description").alpha(0.8f);
         Marker currentMarker = mMap.addMarker(markerOptions);
-        currentMarker.setIcon(BitmapDescriptorFactory.fromBitmap(
-                Tools.getMarkerFromBitmap(BitmapFactory.decodeResource(
-                        mContext.getResources(), R.drawable.portrait_boy))));
-        asynGetLocationInfo(title, latLng);
         synchronized (allMarkersSynObject) {
             allMarkers.put(currentMarker.getTitle(), currentMarker);
         }
+        asynSetMarkerIcon(title);
+        asynGetLocationInfo(title, latLng);
         // check if it is the first time show location
         int mapSize;
         synchronized (allMarkersSynObject) {
@@ -153,7 +156,6 @@ public class GoogleMapFragment extends SupportMapFragment {
                     new LatLng(centerLatitude, centerLongitude),
                     latitudeRangeLength,
                     longitudeRangeLength);
-
         }
     }
 
@@ -192,6 +194,30 @@ public class GoogleMapFragment extends SupportMapFragment {
                 }
             }
         }).start();
+    }
+
+    public void asynSetMarkerIcon(final String username) {
+        client.getUserPortrait(username, true, new EntityCallbackWithLog<Bitmap>(getContext()) {
+            @Override
+            protected void onReceive(Bitmap bitmap) {
+                BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(
+                        Tools.getMarkerFromBitmap(bitmap));
+                synchronized (allMarkersSynObject) {
+                    allMarkers.get(username).setIcon(bitmapDescriptor);
+                }
+            }
+            @Override
+            protected void onErrorMessage(com.wetrack.model.Message response) {
+                if (response.getStatusCode() == 404) {
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(
+                            Tools.getMarkerFromBitmap(BitmapFactory.decodeResource(
+                                    mContext.getResources(), R.drawable.portrait_boy)));
+                    synchronized (allMarkersSynObject) {
+                        allMarkers.get(username).setIcon(bitmapDescriptor);
+                    }
+                }
+            }
+        });
     }
 
     Polyline currentPolyline = null;

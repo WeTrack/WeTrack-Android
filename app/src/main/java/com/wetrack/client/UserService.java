@@ -57,7 +57,7 @@ interface UserService {
     Observable<Response<CreatedMessage>> uploadUserPortrait(
             @Path("username") String username,
             @Query("token") String token,
-            @Part("data") MultipartBody.Part portrait
+            @Part MultipartBody.Part portrait
     );
 
     @GET("/users/{username}/portrait")
