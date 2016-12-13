@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -26,6 +27,7 @@ import com.wetrack.model.ChatMessage;
 import com.wetrack.service.ChatServiceManager;
 import com.wetrack.utils.CryptoUtils;
 import com.wetrack.utils.PreferenceUtils;
+import com.wetrack.utils.Tags;
 import com.wetrack.view.adapter.ChatMessageAdapter;
 
 import org.joda.time.LocalDateTime;
@@ -227,6 +229,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         if (mChatServiceManager != null) {
+            Log.d(Tags.Chat.SERVICE, "onDestroy");
             mChatServiceManager.stop();
             mChatServiceManager = null;
         }

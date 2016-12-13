@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.FieldNamingPolicy;
@@ -16,6 +17,7 @@ import com.wetrack.BaseApplication;
 import com.wetrack.client.json.LocalDateTimeTypeAdapter;
 import com.wetrack.model.ChatMessage;
 import com.wetrack.utils.ConstantValues;
+import com.wetrack.utils.Tags;
 
 import org.joda.time.LocalDateTime;
 
@@ -61,6 +63,7 @@ public abstract class ChatServiceManager {
     public void stop() {
         if (connected) {
             mContext.unbindService(mConnection);
+            Log.d(Tags.Chat.SERVICE, "unbindService");
             connected = false;
         }
     }
