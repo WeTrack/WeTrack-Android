@@ -38,11 +38,10 @@ import rx.schedulers.Schedulers;
 public class WeTrackClient {
     private static final String TAG = Tags.Client.CACHED;
 
-    private static WeTrackClient instance = null;
+    private static final WeTrackClient instance =
+            new WeTrackClient("http://www.wetrack.site/", 5);
 
-    public static synchronized WeTrackClient singleton() {
-        if (instance == null)
-            instance = new WeTrackClient("http://www.robertshome.com.cn/", 5);
+    public static WeTrackClient singleton() {
         return instance;
     }
 
